@@ -11,31 +11,25 @@ import app.majo.ui.components.ActivityCard
 
 @Composable
 fun ActivityListScreen(
-    viewModel: ActivityListViewModel
+    viewModel: ActivityListViewModel,
+    onAddClick: () -> Unit,
+    onItemClick: (Long) -> Unit
 ) {
     val state by viewModel.state.collectAsState()
 
     Scaffold(
         floatingActionButton = {
-            FloatingActionButton(onClick = {
-                viewModel.onEvent(ActivityListEvent.OnAddClick)
-            }) {
+            FloatingActionButton(onClick = onAddClick) {
                 Text("+")
             }
         }
     ) { padding ->
-        if (state.isLoading) {
-            CircularProgressIndicator()
-        } else {
-            LazyColumn(modifier = Modifier.padding(padding)) {
-                items(state.activities) { activity ->
-                    ActivityCard(
-                        activity = activity,
-                        onClick = {
-                            viewModel.onEvent(ActivityListEvent.OnActivityClick(activity.id))
-                        }
-                    )
-                }
+        LazyColumn(modifier = Modifier.padding(padding)) {
+            items(state.activities) { activity ->
+                ActivityCard(
+                    activity = activity,
+                    onClick = { onItemClick(activity.id) }
+                )
             }
         }
     }
