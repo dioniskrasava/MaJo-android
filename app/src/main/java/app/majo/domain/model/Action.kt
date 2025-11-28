@@ -13,13 +13,13 @@ package app.majo.domain.model
  * - в каких единицах измеряется выполнение
  * - сколько очков начисляется за единицу
  */
-data class Activity(
+data class Action(
     val id: Long,
     val name: String,
-    val type: ActivityType,
+    val type: ActionType,
     val unit: UnitType,
     val pointsPerUnit: Double,
-    val category: ActivityCategory = ActivityCategory.OTHER,
+    val category: ActionCategory = ActionCategory.OTHER,
     val isActive: Boolean = true,
     val createdAt: Long = System.currentTimeMillis()
 )

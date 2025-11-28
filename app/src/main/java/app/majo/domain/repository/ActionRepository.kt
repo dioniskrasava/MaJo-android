@@ -1,33 +1,33 @@
 package app.majo.domain.repository
 
 
-import app.majo.domain.model.Activity
+import app.majo.domain.model.Action
 import kotlinx.coroutines.flow.Flow
 
 /**
  * Репозиторий для управления активностями.
  */
-interface ActivityRepository {
+interface ActionRepository {
 
     /**
      * Возвращает поток всех активных активностей.
      */
-    fun getActivities(): Flow<List<Activity>>
+    fun getActions(): Flow<List<Action>>
 
     /**
      * Возвращает активность по ID.
      */
-    suspend fun getActivityById(id: Long): Activity?
+    suspend fun getActionById(id: Long): Action?
 
     /**
      * Добавляет новую активность.
      */
-    suspend fun insert(activity: Activity)
+    suspend fun insert(action: Action)
 
     /**
      * Обновляет активность.
      */
-    suspend fun update(activity: Activity)
+    suspend fun update(action: Action)
 
     /**
      * Архивирует или удаляет активность.

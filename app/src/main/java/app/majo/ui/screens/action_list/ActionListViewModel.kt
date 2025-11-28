@@ -1,17 +1,17 @@
-package app.majo.ui.screens.activity_list
+package app.majo.ui.screens.action_list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.majo.domain.repository.ActivityRepository
+import app.majo.domain.repository.ActionRepository
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class ActivityListViewModel(
-    private val repository: ActivityRepository
+class ActionListViewModel(
+    private val repository: ActionRepository
 ) : ViewModel() {
 
-    var state = kotlinx.coroutines.flow.MutableStateFlow(ActivityListState())
+    var state = kotlinx.coroutines.flow.MutableStateFlow(ActionListState())
         private set
 
     init {
@@ -20,18 +20,18 @@ class ActivityListViewModel(
 
     private fun loadActivities() {
         viewModelScope.launch {
-            repository.getActivities().collectLatest { activities ->
-                state.update { it.copy(activities = activities, isLoading = false) }
+            repository.getActions().collectLatest { activities ->
+                state.update { it.copy(actions = activities, isLoading = false) }
             }
         }
     }
 
-    fun onEvent(event: ActivityListEvent) {
+    fun onEvent(event: ActionListEvent) {
         when (event) {
-            is ActivityListEvent.OnActivityClick -> {
+            is ActionListEvent.OnActionClick -> {
                 // TODO: добавить навигацию
             }
-            ActivityListEvent.OnAddClick -> {
+            ActionListEvent.OnAddClick -> {
                 // TODO: добавить навигацию
             }
         }

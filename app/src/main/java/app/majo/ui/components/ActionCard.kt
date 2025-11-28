@@ -8,11 +8,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import app.majo.domain.model.Activity
+import app.majo.domain.model.Action
 
 @Composable
-fun ActivityCard(
-    activity: Activity,
+fun ActionCard(
+    action: Action,
     onClick: () -> Unit
 ) {
     Card(
@@ -22,10 +22,10 @@ fun ActivityCard(
             .clickable(onClick = onClick)
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = activity.name, style = MaterialTheme.typography.titleMedium)
+            Text(text = action.name, style = MaterialTheme.typography.titleMedium)
             Spacer(modifier = Modifier.height(4.dp))
             Text(
-                text = "Очков за единицу: ${activity.pointsPerUnit}",
+                text = "Очков за единицу: ${action.pointsPerUnit}",
                 style = MaterialTheme.typography.bodyMedium
             )
         }

@@ -1,7 +1,7 @@
 package app.majo.domain.repository
 
 
-import app.majo.domain.model.ActivityRecord
+import app.majo.domain.model.ActionRecord
 import kotlinx.coroutines.flow.Flow
 
 /**
@@ -12,17 +12,17 @@ interface RecordRepository {
     /**
      * Возвращает все записи для конкретной активности.
      */
-    fun getRecordsForActivity(activityId: Long): Flow<List<ActivityRecord>>
+    fun getRecordsForActivity(activityId: Long): Flow<List<ActionRecord>>
 
     /**
      * Возвращает записи за период.
      */
-    fun getRecordsForPeriod(start: Long, end: Long): Flow<List<ActivityRecord>>
+    fun getRecordsForPeriod(start: Long, end: Long): Flow<List<ActionRecord>>
 
     /**
      * Добавляет новую запись.
      */
-    suspend fun insert(record: ActivityRecord)
+    suspend fun insert(record: ActionRecord)
 
     /**
      * Удаляет запись.

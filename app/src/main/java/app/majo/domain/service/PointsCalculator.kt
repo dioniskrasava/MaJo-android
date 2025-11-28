@@ -1,7 +1,7 @@
 package app.majo.domain.service
 
-import app.majo.domain.model.Activity
-import app.majo.domain.model.ActivityType
+import app.majo.domain.model.Action
+import app.majo.domain.model.ActionType
 
 /**
  * Бизнес-логика начисления очков.
@@ -14,12 +14,12 @@ object PointsCalculator {
      * Вычисляет количество очков,
      * исходя из типа активности.
      */
-    fun calculatePoints(activity: Activity, value: Double): Double {
-        return when (activity.type) {
-            ActivityType.BINARY ->
-                if (value > 0.0) activity.pointsPerUnit else 0.0
+    fun calculatePoints(action: Action, value: Double): Double {
+        return when (action.type) {
+            ActionType.BINARY ->
+                if (value > 0.0) action.pointsPerUnit else 0.0
 
-            else -> value * activity.pointsPerUnit
+            else -> value * action.pointsPerUnit
         }
     }
 }

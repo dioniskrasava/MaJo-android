@@ -1,4 +1,4 @@
-package app.majo.ui.screens.add_activity
+package app.majo.ui.screens.add_action
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -11,14 +11,14 @@ import app.majo.domain.model.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddActivityScreen(
-    viewModel: AddActivityViewModel,
+    viewModel: AddActionViewModel,
     onSaved: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
 
     if (state.isSaved) {
         onSaved()
-        viewModel.onEvent(AddActivityEvent.OnSavedHandled)
+        viewModel.onEvent(AddActionEvent.OnSavedHandled)
     }
 
     Scaffold(
@@ -36,7 +36,7 @@ fun AddActivityScreen(
             // Name
             OutlinedTextField(
                 value = state.name,
-                onValueChange = { viewModel.onEvent(AddActivityEvent.OnNameChange(it)) },
+                onValueChange = { viewModel.onEvent(AddActionEvent.OnNameChange(it)) },
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text("Название") }
             )
@@ -47,9 +47,9 @@ fun AddActivityScreen(
             DropdownField(
                 label = "Тип активности",
                 current = state.type.name,
-                items = ActivityType.values().map { it.name },
+                items = ActionType.values().map { it.name },
                 onSelect = {
-                    viewModel.onEvent(AddActivityEvent.OnTypeChange(ActivityType.valueOf(it)))
+                    viewModel.onEvent(AddActionEvent.OnTypeChange(ActionType.valueOf(it)))
                 }
             )
 
@@ -61,7 +61,7 @@ fun AddActivityScreen(
                 current = state.unit.name,
                 items = UnitType.values().map { it.name },
                 onSelect = {
-                    viewModel.onEvent(AddActivityEvent.OnUnitChange(UnitType.valueOf(it)))
+                    viewModel.onEvent(AddActionEvent.OnUnitChange(UnitType.valueOf(it)))
                 }
             )
 
@@ -70,7 +70,7 @@ fun AddActivityScreen(
             // Points
             OutlinedTextField(
                 value = state.pointsPerUnit,
-                onValueChange = { viewModel.onEvent(AddActivityEvent.OnPointsChange(it)) },
+                onValueChange = { viewModel.onEvent(AddActionEvent.OnPointsChange(it)) },
                 modifier = Modifier.fillMaxWidth(),
                 label = { Text("Очков за единицу") }
             )
@@ -81,16 +81,16 @@ fun AddActivityScreen(
             DropdownField(
                 label = "Категория",
                 current = state.category.name,
-                items = ActivityCategory.values().map { it.name },
+                items = ActionCategory.values().map { it.name },
                 onSelect = {
-                    viewModel.onEvent(AddActivityEvent.OnCategoryChange(ActivityCategory.valueOf(it)))
+                    viewModel.onEvent(AddActionEvent.OnCategoryChange(ActionCategory.valueOf(it)))
                 }
             )
 
             Spacer(Modifier.height(24.dp))
 
             Button(
-                onClick = { viewModel.onEvent(AddActivityEvent.OnSaveClick) },
+                onClick = { viewModel.onEvent(AddActionEvent.OnSaveClick) },
                 enabled = !state.isSaving,
                 modifier = Modifier.fillMaxWidth()
             ) {

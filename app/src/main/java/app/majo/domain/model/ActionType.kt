@@ -8,7 +8,7 @@ package app.majo.domain.model
  * COUNT — количество повторений или единиц
  * BINARY — бинарная активность (сделано / не сделано)
  */
-enum class ActivityType {
+enum class ActionType {
     DISTANCE,
     TIME,
     COUNT,

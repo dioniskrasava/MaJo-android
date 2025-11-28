@@ -1,42 +1,42 @@
-package app.majo.ui.screens.add_activity
+package app.majo.ui.screens.add_action
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.majo.domain.model.Activity
-import app.majo.domain.repository.ActivityRepository
+import app.majo.domain.model.Action
+import app.majo.domain.repository.ActionRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-class AddActivityViewModel(
-    private val repository: ActivityRepository
+class AddActionViewModel(
+    private val repository: ActionRepository
 ) : ViewModel() {
 
-    var state = MutableStateFlow(AddActivityState())
+    var state = MutableStateFlow(AddActionState())
         private set
 
-    fun onEvent(event: AddActivityEvent) {
+    fun onEvent(event: AddActionEvent) {
         when (event) {
 
-            is AddActivityEvent.OnNameChange ->
+            is AddActionEvent.OnNameChange ->
                 state.update { it.copy(name = event.name) }
 
-            is AddActivityEvent.OnTypeChange ->
+            is AddActionEvent.OnTypeChange ->
                 state.update { it.copy(type = event.type) }
 
-            is AddActivityEvent.OnUnitChange ->
+            is AddActionEvent.OnUnitChange ->
                 state.update { it.copy(unit = event.unit) }
 
-            is AddActivityEvent.OnCategoryChange ->
+            is AddActionEvent.OnCategoryChange ->
                 state.update { it.copy(category = event.category) }
 
-            is AddActivityEvent.OnPointsChange ->
+            is AddActionEvent.OnPointsChange ->
                 state.update { it.copy(pointsPerUnit = event.points) }
 
-            AddActivityEvent.OnSaveClick ->
+            AddActionEvent.OnSaveClick ->
                 save()
 
-            AddActivityEvent.OnSavedHandled ->
+            AddActionEvent.OnSavedHandled ->
                 state.update { it.copy(isSaved = false) }
         }
     }
@@ -53,7 +53,7 @@ class AddActivityViewModel(
         viewModelScope.launch {
             state.update { it.copy(isSaving = true) }
 
-            val newActivity = Activity(
+            val newActivity = Action(
                 id = 0,
                 name = s.name.trim(),
                 type = s.type,

@@ -1,17 +1,16 @@
-package app.majo.ui.screens.activity_list
+package app.majo.ui.screens.action_list
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.dp
-import app.majo.ui.components.ActivityCard
+import app.majo.ui.components.ActionCard
+
 
 @Composable
-fun ActivityListScreen(
-    viewModel: ActivityListViewModel,
+fun ActionListScreen(
+    viewModel: ActionListViewModel,
     onAddClick: () -> Unit,
     onItemClick: (Long) -> Unit
 ) {
@@ -25,12 +24,13 @@ fun ActivityListScreen(
         }
     ) { padding ->
         LazyColumn(modifier = Modifier.padding(padding)) {
-            items(state.activities) { activity ->
-                ActivityCard(
-                    activity = activity,
-                    onClick = { onItemClick(activity.id) }
+            items(state.actions) { action ->
+                ActionCard(
+                    action = action,
+                    onClick = { onItemClick(action.id) }
                 )
             }
         }
     }
 }
+

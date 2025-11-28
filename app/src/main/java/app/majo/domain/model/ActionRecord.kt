@@ -11,7 +11,7 @@ package app.majo.domain.model
  * totalPoints — кешированное значение,
  * чтобы быстро показывать статистику.
  */
-data class ActivityRecord(
+data class ActionRecord(
     val id: Long,
     val activityId: Long,
     val value: Double,

@@ -1,25 +1,25 @@
 package app.majo.data.repository
 
-import app.majo.domain.model.ActivityRecord
+import app.majo.domain.model.ActionRecord
 import app.majo.domain.repository.RecordRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 
 class FakeRecordRepository : RecordRepository {
 
-    private val records = MutableStateFlow<List<ActivityRecord>>(emptyList())
+    private val records = MutableStateFlow<List<ActionRecord>>(emptyList())
 
-    override fun getRecordsForActivity(activityId: Long): Flow<List<ActivityRecord>> {
+    override fun getRecordsForActivity(activityId: Long): Flow<List<ActionRecord>> {
         return MutableStateFlow(records.value.filter { it.activityId == activityId })
     }
 
-    override fun getRecordsForPeriod(start: Long, end: Long): Flow<List<ActivityRecord>> {
+    override fun getRecordsForPeriod(start: Long, end: Long): Flow<List<ActionRecord>> {
         return MutableStateFlow(records.value.filter {
             it.timestamp in start..end
         })
     }
 
-    override suspend fun insert(record: ActivityRecord) {
+    override suspend fun insert(record: ActionRecord) {
         val newId = (records.value.maxOfOrNull { it.id } ?: 0L) + 1
         val newRecord = record.copy(id = newId)
         records.value = records.value + newRecord
