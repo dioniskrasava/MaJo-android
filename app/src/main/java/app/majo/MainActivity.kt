@@ -11,13 +11,18 @@ import app.majo.ui.theme.MaJoandroidTheme
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import app.majo.data.repository.FakeActionRepository
 import app.majo.ui.screens.action_list.ActionListScreen
 import app.majo.ui.screens.action_list.ActionListViewModel
 import app.majo.ui.screens.add_action.ActionListViewModelFactory
 import app.majo.ui.screens.add_action.AddActivityScreen
 import app.majo.ui.screens.add_action.AddActionViewModel
 import app.majo.ui.screens.add_action.AddActionViewModelFactory
+
+import androidx.compose.ui.platform.LocalContext
+import app.majo.data.local.database.AppDatabaseInstance
+import app.majo.data.local.ActionEntity
+import app.majo.data.local.dao.ActionDao
+import app.majo.data.repository.ActionRepositoryImpl
 
 
 class MainActivity : ComponentActivity() {
@@ -27,7 +32,12 @@ class MainActivity : ComponentActivity() {
         setContent {
             MaJoandroidTheme {
 
-                val activityRepo = remember { FakeActionRepository() }
+                val context = LocalContext.current
+                val database = remember { AppDatabaseInstance.getDatabase(context) }
+                val actionDao = database.actionDao()
+                val activityRepo = remember { ActionRepositoryImpl(actionDao) }
+
+
                 val navController = rememberNavController()
 
                 NavHost(

@@ -7,6 +7,7 @@ import androidx.room.PrimaryKey
  * Это таблица "actions" в базе данных Room.
  * Каждое поле — это колонка в таблице.
  */
+// Entity = “сущность”, “объект таблицы”, "шаблон одной строки таблицы"
 @Entity(tableName = "actions")
 data class ActionEntity(
 
