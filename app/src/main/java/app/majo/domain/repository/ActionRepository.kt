@@ -1,7 +1,7 @@
 package app.majo.domain.repository
 
 
-import app.majo.domain.model.Action
+import app.majo.domain.model.action.Action
 import kotlinx.coroutines.flow.Flow
 
 /**

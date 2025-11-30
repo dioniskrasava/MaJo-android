@@ -1,4 +1,4 @@
-package app.majo.domain.model
+package app.majo.domain.model.action
 
 /**
  * Модель отслеживаемой активности.

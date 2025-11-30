@@ -1,8 +1,8 @@
 package app.majo.ui.screens.add_action
 
-import app.majo.domain.model.ActionCategory
-import app.majo.domain.model.ActionType
-import app.majo.domain.model.UnitType
+import app.majo.domain.model.action.ActionCategory
+import app.majo.domain.model.action.ActionType
+import app.majo.domain.model.action.UnitType
 
 sealed interface AddActionEvent {
     data class OnNameChange(val name: String) : AddActionEvent

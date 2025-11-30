@@ -6,7 +6,9 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import app.majo.domain.model.*
+import app.majo.domain.model.action.ActionCategory
+import app.majo.domain.model.action.ActionType
+import app.majo.domain.model.action.UnitType
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

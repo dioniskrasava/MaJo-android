@@ -1,10 +1,9 @@
 package app.majo.data.repository
 
-import app.majo.data.local.ActionEntity
 import app.majo.data.local.dao.ActionDao
 import app.majo.data.local.mappers.toDomain
 import app.majo.data.local.mappers.toEntity
-import app.majo.domain.model.Action
+import app.majo.domain.model.action.Action
 import app.majo.domain.repository.ActionRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

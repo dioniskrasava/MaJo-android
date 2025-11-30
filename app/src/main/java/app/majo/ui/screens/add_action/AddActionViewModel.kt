@@ -2,7 +2,7 @@ package app.majo.ui.screens.add_action
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import app.majo.domain.model.Action
+import app.majo.domain.model.action.Action
 import app.majo.domain.repository.ActionRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update

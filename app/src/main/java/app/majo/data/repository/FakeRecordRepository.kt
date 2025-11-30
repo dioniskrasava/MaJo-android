@@ -1,6 +1,6 @@
 package app.majo.data.repository
 
-import app.majo.domain.model.ActionRecord
+import app.majo.domain.model.action.ActionRecord
 import app.majo.domain.repository.RecordRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow

@@ -1,7 +1,7 @@
 package app.majo.domain.service
 
-import app.majo.domain.model.Action
-import app.majo.domain.model.ActionType
+import app.majo.domain.model.action.Action
+import app.majo.domain.model.action.ActionType
 
 /**
  * Бизнес-логика начисления очков.

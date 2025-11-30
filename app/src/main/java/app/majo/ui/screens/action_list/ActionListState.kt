@@ -1,7 +1,7 @@
 package app.majo.ui.screens.action_list
 
 
-import app.majo.domain.model.Action
+import app.majo.domain.model.action.Action
 
 data class ActionListState(
     val actions: List<Action> = emptyList(),

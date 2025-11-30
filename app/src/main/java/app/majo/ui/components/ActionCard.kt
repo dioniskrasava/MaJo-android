@@ -8,7 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
-import app.majo.domain.model.Action
+import app.majo.domain.model.action.Action
 
 @Composable
 fun ActionCard(
