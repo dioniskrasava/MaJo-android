@@ -109,6 +109,7 @@ fun AddActivityScreen(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DropdownField(
     label: String,
@@ -118,31 +119,32 @@ fun DropdownField(
 ) {
     var expanded by remember { mutableStateOf(false) }
 
-    Column {
-        Text(text = label, style = MaterialTheme.typography.labelMedium)
-        Box {
-            OutlinedTextField(
-                value = current,
-                onValueChange = {},
-                readOnly = true,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { expanded = true }
-            )
+    ExposedDropdownMenuBox(
+        expanded = expanded,
+        onExpandedChange = { expanded = !expanded }
+    ) {
+        OutlinedTextField(
+            value = current,
+            onValueChange = {},
+            readOnly = true,
+            label = { Text(label) },
+            modifier = Modifier
+                .menuAnchor()
+                .fillMaxWidth()
+        )
 
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-            ) {
-                items.forEach { item ->
-                    DropdownMenuItem(
-                        text = { Text(item) },
-                        onClick = {
-                            expanded = false
-                            onSelect(item)
-                        }
-                    )
-                }
+        ExposedDropdownMenu(
+            expanded = expanded,
+            onDismissRequest = { expanded = false }
+        ) {
+            items.forEach { item ->
+                DropdownMenuItem(
+                    text = { Text(item) },
+                    onClick = {
+                        expanded = false
+                        onSelect(item)
+                    }
+                )
             }
         }
     }
