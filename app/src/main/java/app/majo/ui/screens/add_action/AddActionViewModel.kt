@@ -15,6 +15,9 @@ class AddActionViewModel(
     var state = MutableStateFlow(AddActionState())
         private set
 
+
+
+
     fun onEvent(event: AddActionEvent) {
         when (event) {
 
@@ -44,6 +47,11 @@ class AddActionViewModel(
     private fun save() {
         val s = state.value
 
+        if (s.isEditMode) {
+            update()
+            return
+        }
+
         val points = s.pointsPerUnit.toDoubleOrNull()
         if (points == null || points < 0) {
             state.update { it.copy(error = "Неверное значение очков") }
@@ -72,4 +80,77 @@ class AddActionViewModel(
             }
         }
     }
+
+
+
+    fun loadAction(id: Long) {
+        viewModelScope.launch {
+            val action = repository.getActionById(id)
+            action?.let {
+                state.update { s ->
+                    s.copy(
+                        name = it.name,
+                        type = it.type,
+                        unit = it.unit,
+                        pointsPerUnit = it.pointsPerUnit.toString(),
+                        category = it.category,
+
+                        // ↓↓↓ добавляем эти два поля
+                        isEditMode = true,
+                        editId = id
+                    )
+                }
+            }
+        }
+    }
+
+    private fun update() {
+        val s = state.value
+
+        val points = s.pointsPerUnit.toDoubleOrNull()
+        if (points == null || points < 0) {
+            state.update { it.copy(error = "Неверное значение очков") }
+            return
+        }
+
+        viewModelScope.launch {
+            state.update { it.copy(isSaving = true) }
+
+            val updated = Action(
+                id = s.editId!!,
+                name = s.name.trim(),
+                type = s.type,
+                unit = s.unit,
+                pointsPerUnit = points,
+                category = s.category
+            )
+
+            repository.update(updated)
+
+            state.update {
+                it.copy(
+                    isSaving = false,
+                    isSaved = true
+                )
+            }
+        }
+    }
+
+
+    fun delete() {
+        val id = state.value.editId ?: return
+
+        viewModelScope.launch {
+            repository.delete(id)
+
+            state.update {
+                it.copy(
+                    isSaved = true // чтобы закрыть экран
+                )
+            }
+        }
+    }
+
+
+
 }

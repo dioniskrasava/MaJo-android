@@ -12,5 +12,7 @@ data class AddActionState(
     val category: ActionCategory = ActionCategory.OTHER,
     val isSaving: Boolean = false,
     val isSaved: Boolean = false,
-    val error: String? = null
+    val error: String? = null,
+    val isEditMode: Boolean = false,
+    val editId: Long? = null
 )

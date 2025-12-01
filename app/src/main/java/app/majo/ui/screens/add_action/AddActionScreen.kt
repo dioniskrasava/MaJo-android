@@ -14,9 +14,16 @@ import app.majo.domain.model.action.UnitType
 @Composable
 fun AddActivityScreen(
     viewModel: AddActionViewModel,
+    actionId: Long? = null,
     onSaved: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
+
+    LaunchedEffect(actionId) {
+        if (actionId != null) {
+            viewModel.loadAction(actionId)
+        }
+    }
 
     if (state.isSaved) {
         onSaved()
@@ -25,7 +32,14 @@ fun AddActivityScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(title = { Text("Добавить активность") })
+            TopAppBar(
+                title = {
+                    Text(
+                        if (state.isEditMode) "Редактировать активность"
+                        else "Добавить активность"
+                    )
+                }
+            )
         }
     ) { padding ->
         Column(
@@ -105,6 +119,23 @@ fun AddActivityScreen(
                     color = MaterialTheme.colorScheme.error
                 )
             }
+
+            // ---- КНОПКА УДАЛИТЬ (только в режиме редактирования) ----
+            if (state.isEditMode) {
+                Spacer(Modifier.height(16.dp))
+
+                Button(
+                    onClick = { viewModel.delete() },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Удалить")
+                }
+            }
+
+
         }
     }
 }

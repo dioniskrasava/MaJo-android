@@ -44,6 +44,7 @@ class MainActivity : ComponentActivity() {
                     navController = navController,
                     startDestination = "activities"
                 ) {
+                    // ------------------ LIST SCREEN ------------------
                     composable("activities") {
 
                         val vm: ActionListViewModel = viewModel(
@@ -52,13 +53,16 @@ class MainActivity : ComponentActivity() {
 
                         ActionListScreen(
                             viewModel = vm,
-                            onAddClick = { navController.navigate("addActivity") },
+                            onAddClick = {
+                                navController.navigate("addActivity")
+                            },
                             onItemClick = { id ->
-                                // позже сделаем: navController.navigate("activity/$id")
+                                navController.navigate("editActivity/$id")
                             }
                         )
                     }
 
+                    // ------------------ ADD SCREEN ------------------
                     composable("addActivity") {
 
                         val vm: AddActionViewModel = viewModel(
@@ -67,10 +71,28 @@ class MainActivity : ComponentActivity() {
 
                         AddActivityScreen(
                             viewModel = vm,
+                            actionId = null,
+                            onSaved = { navController.popBackStack() }
+                        )
+                    }
+
+                    // ------------------ EDIT SCREEN ------------------
+                    composable("editActivity/{id}") { backStackEntry ->
+
+                        val id = backStackEntry.arguments?.getString("id")!!.toLong()
+
+                        val vm: AddActionViewModel = viewModel(
+                            factory = AddActionViewModelFactory(activityRepo)
+                        )
+
+                        AddActivityScreen(
+                            viewModel = vm,
+                            actionId = id,                         // <<< ВАЖНО!!!
                             onSaved = { navController.popBackStack() }
                         )
                     }
                 }
+
             }
         }
 
