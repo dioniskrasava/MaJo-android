@@ -29,6 +29,7 @@ import app.majo.ui.screens.add_action.ActionListViewModelFactory
 import app.majo.ui.screens.add_action.AddActionViewModel
 import app.majo.ui.screens.add_action.AddActionViewModelFactory
 import app.majo.ui.screens.add_action.AddActivityScreen
+import app.majo.ui.screens.settings.SettingsScreen
 
 /**
  * Главный экран-обертка.
@@ -51,17 +52,17 @@ fun MainScreen(
                 elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
                 shape = CircleShape,
                 modifier = Modifier
-                    .size(76.dp)
+                    .size(62.dp)
                     // ↓↓↓ ВОТ ГЛАВНОЕ ИЗМЕНЕНИЕ ↓↓↓
                     // Сдвигаем кнопку вниз на 45dp, чтобы она "села" на бар
                     // Можешь менять это число, чтобы настроить глубину посадки
-                    .offset(y = 75.dp)
+                    //.offset(y = 48.dp)
             ) {
                 Icon(Icons.Filled.Add, "Добавить запись", modifier = Modifier.size(32.dp))
             }
         },
         // Позиция по центру (по умолчанию она НАД баром)
-        floatingActionButtonPosition = FabPosition.Center,
+        //floatingActionButtonPosition = FabPosition.Center,
 
         // 2. НИЖНИЙ БАР
         bottomBar = {
@@ -94,7 +95,8 @@ fun MainScreen(
                     IconButton(
                         modifier = Modifier.padding(end = 16.dp),
                         onClick = {
-                            Toast.makeText(context, "Настройки (скоро)", Toast.LENGTH_SHORT).show()
+                            // ↓↓↓ ИЗМЕНЯЕМ: Навигация на "settings" ↓↓↓
+                            navController.navigate("settings")
                         }) {
                         Icon(Icons.Filled.Settings, contentDescription = "Настройки")
                     }
@@ -141,6 +143,13 @@ fun MainScreen(
                     viewModel = vm,
                     actionId = id,
                     onSaved = { navController.popBackStack() }
+                )
+            }
+
+            // ↓↓↓ НОВЫЙ МАРШРУТ: Экран настроек ↓↓↓
+            composable("settings") {
+                SettingsScreen(
+                    onBack = { navController.popBackStack() }
                 )
             }
         }
