@@ -4,43 +4,39 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.activity.viewModels
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
+import androidx.activity.viewModels // <-- НОВЫЙ ИМПОРТ
 import app.majo.data.local.database.AppDatabaseInstance
 import app.majo.data.repository.ActionRepositoryImpl
-import app.majo.data.repository.FakeActionRepository
-import app.majo.domain.repository.ActionRepository
-import app.majo.ui.MainScreen // Импортируем наш новый экран
-import app.majo.ui.screens.settings.SettingsViewModel
-import app.majo.ui.theme.MaJoTheme
+import app.majo.ui.MainScreen
+import app.majo.ui.screens.settings.SettingsViewModel // <-- НОВЫЙ ИМПОРТ
+import app.majo.ui.theme.MaJoTheme // <-- УБЕДИСЬ, ЧТО ИМПОРТ ТЕМЫ ПРАВИЛЬНЫЙ
 
 class MainActivity : ComponentActivity() {
+
+    // 1. Создаем единственный экземпляр ViewModel для настроек,
+    // привязанный к жизненному циклу Activity
+    private val settingsViewModel: SettingsViewModel by viewModels()
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        // 1. Создаем единственный экземпляр ViewModel для настроек
-        // Используем стандартную функцию by viewModels()
-        // (убедись, что импортировано androidx.activity.viewModels)
-        val settingsViewModel: SettingsViewModel by viewModels()
-
-        // ВАЖНО: Тебе также понадобится ActionRepository, который ты уже используешь
-        val actionRepository: ActionRepository by lazy {
-            // ... Здесь должно быть получение твоего ActionRepository (Room или Fake)
-            // Я предполагаю, что у тебя уже есть доступ к нему в MainActivity
-            // Используем заглушку, чтобы код был полным
-            FakeActionRepository() // Или ActionRepositoryImpl(database.dao)
-        }
-
+        enableEdgeToEdge()
         setContent {
-            // 2. Передаем ЕДИНЫЙ settingsViewModel в MaJoTheme
+
+            // --- ТВОЯ ОРИГИНАЛЬНАЯ ЛОГИКА ROOM (ОСТАВЛЯЕМ ЕЕ!) ---
+            val context = LocalContext.current
+            val database = remember { AppDatabaseInstance.getDatabase(context) }
+            val actionDao = database.actionDao()
+            val activityRepo = remember { ActionRepositoryImpl(actionDao) }
+
+            // 2. Используем MaJoTheme и передаем в него наш общий ViewModel
             MaJoTheme(settingsViewModel = settingsViewModel) {
 
-                // 3. Передаем ЕДИНЫЙ settingsViewModel в MainScreen,
-                // чтобы он мог быть передан в SettingsScreen
+                // 3. Передаем обе зависимости в MainScreen
                 MainScreen(
-                    repository = actionRepository,
-                    settingsViewModel = settingsViewModel // <-- НОВЫЙ АРГУМЕНТ
+                    repository = activityRepo,
+                    settingsViewModel = settingsViewModel // <-- ПЕРЕДАЕМ VM
                 )
             }
         }
