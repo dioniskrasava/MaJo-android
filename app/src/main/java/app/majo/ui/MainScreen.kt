@@ -30,13 +30,15 @@ import app.majo.ui.screens.add_action.AddActionViewModel
 import app.majo.ui.screens.add_action.AddActionViewModelFactory
 import app.majo.ui.screens.add_action.AddActivityScreen
 import app.majo.ui.screens.settings.SettingsScreen
+import app.majo.ui.screens.settings.SettingsViewModel
 
 /**
  * Главный экран-обертка.
  */
 @Composable
 fun MainScreen(
-    repository: ActionRepository
+    repository: ActionRepository,
+    settingsViewModel: SettingsViewModel
 ) {
     val navController = rememberNavController()
     val context = LocalContext.current
@@ -149,7 +151,9 @@ fun MainScreen(
             // ↓↓↓ НОВЫЙ МАРШРУТ: Экран настроек ↓↓↓
             composable("settings") {
                 SettingsScreen(
-                    onBack = { navController.popBackStack() }
+                    onBack = { navController.popBackStack() },
+                    // ПЕРЕДАЕМ НАШ ОБЩИЙ settingsViewModel
+                    viewModel = settingsViewModel
                 )
             }
         }

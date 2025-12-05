@@ -17,8 +17,7 @@ import app.majo.ui.screens.add_action.DropdownField
 @Composable
 fun SettingsScreen(
     onBack: () -> Unit,
-    // ViewModel здесь создается с помощью factory = null, так как он простой
-    viewModel: SettingsViewModel = viewModel()
+    viewModel: SettingsViewModel
 ) {
     // Подписываемся на состояние ViewModel
     val state by viewModel.state.collectAsState()
