@@ -2,6 +2,8 @@ package app.majo.ui.screens.add_action
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -9,6 +11,8 @@ import androidx.compose.ui.unit.dp
 import app.majo.domain.model.action.ActionCategory
 import app.majo.domain.model.action.ActionType
 import app.majo.domain.model.action.UnitType
+
+const val HEIGHT_SPACER = 12 // высота между элементами
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,9 +46,12 @@ fun AddActivityScreen(
             )
         }
     ) { padding ->
+
+        val scrollState = rememberScrollState()
         Column(
             modifier = Modifier
                 .padding(padding)
+                .verticalScroll(scrollState)
                 .padding(16.dp)
                 .fillMaxWidth()
         ) {
@@ -57,7 +64,7 @@ fun AddActivityScreen(
                 label = { Text("Название") }
             )
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(HEIGHT_SPACER.dp))
 
             // Type selector
             DropdownField(
@@ -69,7 +76,7 @@ fun AddActivityScreen(
                 }
             )
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(HEIGHT_SPACER.dp))
 
             // Unit selector
             DropdownField(
@@ -81,7 +88,7 @@ fun AddActivityScreen(
                 }
             )
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(HEIGHT_SPACER.dp))
 
             // Points
             OutlinedTextField(
@@ -91,7 +98,7 @@ fun AddActivityScreen(
                 label = { Text("Очков за единицу") }
             )
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.height(HEIGHT_SPACER.dp))
 
             // Category selector
             DropdownField(
@@ -103,7 +110,7 @@ fun AddActivityScreen(
                 }
             )
 
-            Spacer(Modifier.height(24.dp))
+            Spacer(Modifier.height(HEIGHT_SPACER.dp))
 
             Button(
                 onClick = { viewModel.onEvent(AddActionEvent.OnSaveClick) },
@@ -122,7 +129,7 @@ fun AddActivityScreen(
 
             // ---- КНОПКА УДАЛИТЬ (только в режиме редактирования) ----
             if (state.isEditMode) {
-                Spacer(Modifier.height(16.dp))
+                Spacer(Modifier.height(HEIGHT_SPACER.dp))
 
                 Button(
                     onClick = { viewModel.delete() },
