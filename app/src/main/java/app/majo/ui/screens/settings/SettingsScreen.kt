@@ -93,6 +93,17 @@ fun SettingsScreen(
                     }
                 )
             }
+
+            Spacer(Modifier.height(32.dp))
+
+            DropdownField(
+                label = "Акцентный цвет",
+                current = state.currentAccentColor,
+                items = state.availableAccentColors,
+                onSelect = { selectedColor ->
+                    viewModel.onEvent(SettingsEvent.AccentColorChanged(selectedColor))
+                }
+            )
         }
     }
 }

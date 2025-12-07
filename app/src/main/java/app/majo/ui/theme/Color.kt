@@ -21,3 +21,22 @@ val Pink80 = Color(0xFFEFB8C8)
 val Purple40 = Color(0xFF6650a4)
 val PurpleGrey40 = Color(0xFF625b71)
 val Pink40 = Color(0xFF7D5260)
+
+
+
+// Новые цвета для примера:
+val Blue500 = Color(0xFF2196F3)
+val Blue200 = Color(0xFF90CAF9)
+
+val Green500 = Color(0xFF4CAF50)
+val Green200 = Color(0xFFA5D6A7)
+
+
+fun getColorByName(name: String, isLight: Boolean): Color {
+    return when (name) {
+        "Blue" -> if (isLight) Blue500 else Blue200
+        "Green" -> if (isLight) Green500 else Green200
+        "Purple" -> if (isLight) Purple40 else Purple80
+        else -> if (isLight) Purple40 else Purple80 // По умолчанию
+    }
+}

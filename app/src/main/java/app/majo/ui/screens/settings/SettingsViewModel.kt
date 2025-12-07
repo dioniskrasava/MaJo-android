@@ -24,6 +24,9 @@ sealed class SettingsEvent {
      * @property isChecked Текущее логическое значение переключателя.
      */
     data class DarkModeToggled(val isChecked: Boolean) : SettingsEvent()
+
+    // Акцентный цвет для приложения
+    data class AccentColorChanged(val newColor: String) : SettingsEvent()
 }
 
 
@@ -66,6 +69,12 @@ class SettingsViewModel : ViewModel() {
                 }
                 // ! Здесь в будущем будет вызов репозитория для сохранения (например: repository.saveDarkMode(event.isChecked))
             }
+            is SettingsEvent.AccentColorChanged -> {
+                _state.update {
+                    it.copy(currentAccentColor = event.newColor)
+                }
+            }
+
         }
     }
 

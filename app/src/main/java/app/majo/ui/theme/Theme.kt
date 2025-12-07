@@ -9,6 +9,7 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
 import app.majo.ui.screens.settings.SettingsViewModel
@@ -76,8 +77,11 @@ fun MaJoTheme(
     val state by settingsViewModel.state.collectAsState()
     val useDarkMode = state.isDarkMode
 
-    // Выбираем соответствующую цветовую схему
-    val colorScheme = if (useDarkMode) DarkColorScheme else LightColorScheme
+    // Измененный код: генерируем схему динамически
+    val colorScheme = createColorScheme(
+        isDark = useDarkMode,
+        accentColorName = state.currentAccentColor
+    )
 
     val view = LocalView.current
     if (!view.isInEditMode) {
@@ -106,4 +110,31 @@ fun MaJoTheme(
         typography = Typography, // Предполагается, что Typography определен
         content = content
     )
+}
+
+
+
+// Вспомогательная функция для генерации ColorScheme
+@Composable
+fun createColorScheme(
+    isDark: Boolean,
+    accentColorName: String
+): ColorScheme {
+    val primaryColor = getColorByName(accentColorName, isLight = !isDark)
+
+    // В реальном приложении нужно вычислить или задать остальные цвета
+    // на основе primary. Здесь для простоты используем существующие PurpleGrey.
+    return if (isDark) {
+        darkColorScheme(
+            primary = primaryColor,
+            secondary = PurpleGrey80,
+            tertiary = Pink80
+        )
+    } else {
+        lightColorScheme(
+            primary = primaryColor,
+            secondary = PurpleGrey40,
+            tertiary = Pink40
+        )
+    }
 }
