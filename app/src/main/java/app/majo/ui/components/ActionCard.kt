@@ -17,19 +17,14 @@ import app.majo.domain.model.action.*
 /**
  * Отображает карточку одной активности в списке.
  *
- * Card выглядит как "плитка" с:
- * - иконкой (слева)
- * - названием активности
- * - типом и единицей измерения
- * - количеством очков
- * - цветным бейджем категории (справа)
+ * Это основной компонент для представления [Action] в списке активностей.
+ * Card представляет собой "плитку" с:
+ * - Иконкой, зависящей от типа активности.
+ * - Названием, типом и количеством очков.
+ * - Цветным бейджем категории ([CategoryChip]).
  *
- * Основная задача — компактно, аккуратно и понятно показать пользователю данные.
- *
- * @param action данные активности из доменной модели
- * @param onClick вызывается при нажатии на карточку
- *
- * Подходит для экрана списка активностей (ActionListScreen).
+ * @param action Данные активности из доменной модели.
+ * @param onClick Лямбда-функция, вызываемая при нажатии на карточку (например, для перехода на экран деталей).
  */
 @Composable
 fun ActionCard(
@@ -47,34 +42,32 @@ fun ActionCard(
             .clickable(onClick = onClick),
         colors = CardDefaults.cardColors(
             // MaterialTheme автоматически подбирает цвета под тему (светлую/тёмную)
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = MaterialTheme.colorScheme.surfaceVariant // Использует слегка отличающийся от фона цвет
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
 
-        // Row = горизонтальный контейнер
+        // Row = горизонтальный контейнер, выравнивает все элементы по вертикали (CenterVertically)
         Row(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
 
             /**
-             * Иконка слева.
-             * Размер 32dp — хороший баланс между заметностью и компактностью.
-             * Цвет = основной цвет темы.
+             * Иконка слева. Выбирается с помощью вспомогательной функции [getActionIcon].
              */
             Icon(
                 imageVector = getActionIcon(action.type),
-                contentDescription = null, // нет смысла проговаривать вслух в скринридере
-                tint = MaterialTheme.colorScheme.primary,
+                contentDescription = action.name, // Используем название как описание для скринридера
+                tint = MaterialTheme.colorScheme.primary, // Основной акцентный цвет
                 modifier = Modifier.size(32.dp)
             )
 
             Spacer(modifier = Modifier.width(16.dp))
 
             /**
-             * Основной текстовый блок (название, тип, юнит, очки).
-             * Column с weight(1f) занимает всё доступное пространство.
+             * Основной текстовый блок. [Column] с [Modifier.weight(1f)] заставляет его
+             * занять всё доступное пространство между иконкой и чипом.
              */
             Column(modifier = Modifier.weight(1f)) {
 
@@ -103,28 +96,30 @@ fun ActionCard(
             }
 
             /**
-             * Бейдж категории (правее всего).
-             * Например: FITNESS зелёный, HEALTH оранжевый.
-             * Компактный цветной индикатор.
+             * Бейдж категории (правее всего), созданный отдельным композаблом.
              */
             CategoryChip(action.category)
         }
     }
 }
 
+// -------------------------------------------------------------------------------------------------
+
 /**
- * Визуальный бейдж категории.
- * Состоит из:
- * - цветного фона (20% прозрачности)
- * - текста CATEGORY_NAME
+ * Визуальный бейдж категории ("Chip").
  *
- * Такой элемент часто называют "Chip" (чип).
+ * Отображает название категории, используя соответствующий цвет (Color) для фона
+ * (с прозрачностью) и текста.
+ *
+ * @param category Категория [ActionCategory] для отображения.
  */
 @Composable
 fun CategoryChip(category: ActionCategory) {
 
-    // Выбор цвета для каждой категории.
-    // В идеале вынести в отдельный файл theme.
+    /**
+     * Выбор цвета для каждой категории.
+     * Здесь цвета жестко закодированы; в крупных проектах их выносят в Theme.
+     */
     val color = when (category) {
         ActionCategory.FITNESS -> Color(0xFF4CAF50)    // зелёный
         ActionCategory.PRODUCTIVITY -> Color(0xFF2196F3) // синий
@@ -135,38 +130,40 @@ fun CategoryChip(category: ActionCategory) {
 
     Box(
         modifier = Modifier
-            // фон чипа слегка прозрачный → нежное оформление
+            // фон чипа слегка прозрачный (alpha = 0.2f)
             .background(color.copy(alpha = 0.2f), shape = MaterialTheme.shapes.small)
             .padding(horizontal = 8.dp, vertical = 4.dp)
     ) {
         Text(
             text = category.name,
             color = color,
-            style = MaterialTheme.typography.labelSmall
+            style = MaterialTheme.typography.labelSmall // Небольшой, но заметный шрифт
         )
     }
 }
 
+// -------------------------------------------------------------------------------------------------
+
 /**
- * Функция подбирает подходящую иконку под тип активности.
+ * Вспомогательная Composable-функция для подбора иконки по типу активности.
  *
- * Это удобно:
- * - уменьшает дублирование кода
- * - делает использование в ActionCard проще
- * - визуально помогает пользователю быстро различать активности
+ * Это удобно: уменьшает дублирование кода и делает ActionCard более чистым.
+ *
+ * @param type Тип активности [ActionType].
+ * @return [ImageVector] — векторная иконка Material Design.
  */
 @Composable
 fun getActionIcon(type: ActionType) = when (type) {
 
-    // Для DISTANCE лучше всего подходит бегун
+    // Для DISTANCE лучше всего подходит иконка бегуна
     ActionType.DISTANCE -> Icons.Filled.DirectionsRun
 
     // Время — часы
     ActionType.TIME     -> Icons.Filled.AccessTime
 
-    // Повторы — гантеля лучше всего смотрится
+    // Повторы/Количество — гантеля
     ActionType.COUNT    -> Icons.Filled.FitnessCenter
 
-    // Бинарная активность (сделано/не сделано)
+    // Бинарная активность (сделано/не сделано) — галочка
     ActionType.BINARY   -> Icons.Filled.Check
 }

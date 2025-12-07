@@ -33,18 +33,28 @@ import app.majo.ui.screens.settings.SettingsScreen
 import app.majo.ui.screens.settings.SettingsViewModel
 
 /**
- * Главный экран-обертка.
+ * Главный экран-оболочка (Application Shell) приложения.
+ *
+ * Отвечает за:
+ * 1. Предоставление каркаса UI (Scaffold) с нижним баром и FAB.
+ * 2. Управление навигацией ([NavHost]) между основными экранами.
+ * 3. Оркестрацию зависимостей (ViewModel) для каждого маршрута.
+ *
+ * @param repository Интерфейс репозитория активностей, необходимый для создания VM.
+ * @param settingsViewModel Общий экземпляр ViewModel для настроек,
+ * привязанный к жизненному циклу Activity, для управления глобальным состоянием темы.
  */
 @Composable
 fun MainScreen(
     repository: ActionRepository,
     settingsViewModel: SettingsViewModel
 ) {
+    // Контроллер навигации. Сохраняет стек экранов.
     val navController = rememberNavController()
-    val context = LocalContext.current
+    val context = LocalContext.current // Нужен для Toast
 
     Scaffold(
-        // 1. КНОПКА (FAB)
+        // 1. ПЛАВАЮЩАЯ КНОПКА (FAB)
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
@@ -55,30 +65,24 @@ fun MainScreen(
                 shape = CircleShape,
                 modifier = Modifier
                     .size(62.dp)
-                    // ↓↓↓ ВОТ ГЛАВНОЕ ИЗМЕНЕНИЕ ↓↓↓
-                    // Сдвигаем кнопку вниз на 45dp, чтобы она "села" на бар
-                    // Можешь менять это число, чтобы настроить глубину посадки
-                    //.offset(y = 48.dp)
+                // Комментарий о сдвиге (для визуального выравнивания)
+                //.offset(y = 48.dp)
             ) {
                 Icon(Icons.Filled.Add, "Добавить запись", modifier = Modifier.size(32.dp))
             }
         },
-        // Позиция по центру (по умолчанию она НАД баром)
-        //floatingActionButtonPosition = FabPosition.Center,
 
-        // 2. НИЖНИЙ БАР
+        // 2. НИЖНИЙ БАР (BottomAppBar)
         bottomBar = {
             BottomAppBar(
-                // Отключаем свой паддинг, чтобы мы могли управлять расположением сами
+                // Убираем внутренний паддинг, чтобы мы могли управлять расположением сами
                 contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp),
                 actions = {
-                    // Чтобы иконки были красиво распределены, используем Row внутри
-                    // и Spacer-ы
-
-                    // Левая кнопка
+                    // Кнопка: Список активностей
                     IconButton(
                         modifier = Modifier.padding(start = 16.dp),
                         onClick = {
+                            // Навигация, которая предотвращает создание дубликатов в стеке
                             navController.navigate("activities") {
                                 popUpTo("activities") { inclusive = true }
                             }
@@ -86,18 +90,18 @@ fun MainScreen(
                         Icon(Icons.Filled.Home, contentDescription = "Список")
                     }
 
-                    // Центральная распорка (отодвигает левые и правые кнопки)
+                    // Центральная распорка: Сдвигает остальные кнопки, оставляя место для FAB
                     Spacer(Modifier.weight(1f))
 
-                    // Правые кнопки
+                    // Кнопка: Создание новой активности
                     IconButton(onClick = { navController.navigate("addActivity") }) {
                         Icon(Icons.Filled.Create, contentDescription = "Новый тип")
                     }
 
+                    // Кнопка: Настройки
                     IconButton(
                         modifier = Modifier.padding(end = 16.dp),
                         onClick = {
-                            // ↓↓↓ ИЗМЕНЯЕМ: Навигация на "settings" ↓↓↓
                             navController.navigate("settings")
                         }) {
                         Icon(Icons.Filled.Settings, contentDescription = "Настройки")
@@ -107,52 +111,59 @@ fun MainScreen(
         }
     ) { innerPadding ->
 
-        // --- ОБЛАСТЬ КОНТЕНТА ---
+        // --- ОБЛАСТЬ КОНТЕНТА (NavHost) ---
+        // NavHost занимает всю область Scaffold, исключая padding, созданный Bottom Bar
         NavHost(
             navController = navController,
             startDestination = "activities",
             modifier = Modifier.padding(innerPadding)
         ) {
+            // МАРШРУТ 1: Список активностей
             composable("activities") {
+                // Внедрение ViewModel через Factory, привязанной к жизненному циклу этого Composable
                 val vm: ActionListViewModel = viewModel(
                     factory = ActionListViewModelFactory(repository)
                 )
                 ActionListScreen(
                     viewModel = vm,
                     onItemClick = { id ->
+                        // Навигация на редактирование с передачей ID в качестве аргумента
                         navController.navigate("editActivity/$id")
                     }
                 )
             }
 
+            // МАРШРУТ 2: Создание активности
             composable("addActivity") {
                 val vm: AddActionViewModel = viewModel(
                     factory = AddActionViewModelFactory(repository)
                 )
                 AddActivityScreen(
                     viewModel = vm,
-                    actionId = null,
-                    onSaved = { navController.popBackStack() }
+                    actionId = null, // Сигнал для ViewModel, что это режим создания
+                    onSaved = { navController.popBackStack() } // Закрываем экран после сохранения
                 )
             }
 
+            // МАРШРУТ 3: Редактирование активности (с аргументом {id})
             composable("editActivity/{id}") { backStackEntry ->
+                // Извлечение аргумента "id" из маршрута и его преобразование
                 val id = backStackEntry.arguments?.getString("id")!!.toLong()
                 val vm: AddActionViewModel = viewModel(
                     factory = AddActionViewModelFactory(repository)
                 )
                 AddActivityScreen(
                     viewModel = vm,
-                    actionId = id,
-                    onSaved = { navController.popBackStack() }
+                    actionId = id, // Сигнал для ViewModel, что это режим редактирования
+                    onSaved = { navController.popBackStack() } // Закрываем экран после сохранения/удаления
                 )
             }
 
-            // ↓↓↓ НОВЫЙ МАРШРУТ: Экран настроек ↓↓↓
+            // МАРШРУТ 4: Экран настроек
             composable("settings") {
                 SettingsScreen(
                     onBack = { navController.popBackStack() },
-                    // ПЕРЕДАЕМ НАШ ОБЩИЙ settingsViewModel
+                    // Передача общего экземпляра SettingsViewModel для управления глобальным состоянием
                     viewModel = settingsViewModel
                 )
             }

@@ -12,8 +12,23 @@ import app.majo.domain.model.action.ActionCategory
 import app.majo.domain.model.action.ActionType
 import app.majo.domain.model.action.UnitType
 
+/**
+ * Стандартная высота в dp для вертикального отступа между элементами формы.
+ */
 const val HEIGHT_SPACER = 12 // высота между элементами
 
+/**
+ * Экран создания и редактирования активности.
+ *
+ * Этот Composable является "тупым" (dumb) экраном: он не содержит логики,
+ * а только отображает данные из [AddActionViewModel.state] и
+ * отправляет намерения пользователя ([AddActionEvent]) обратно в ViewModel.
+ *
+ * @param viewModel Экземпляр ViewModel, управляющий логикой формы.
+ * @param actionId ID активности для режима редактирования. Если null — режим создания.
+ * @param onSaved Колбэк, вызываемый после успешного сохранения или удаления активности,
+ * используется для навигации назад или закрытия экрана.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddActivityScreen(
@@ -21,16 +36,22 @@ fun AddActivityScreen(
     actionId: Long? = null,
     onSaved: () -> Unit
 ) {
+    // 1. Потребление состояния
     val state by viewModel.state.collectAsState()
 
+    // 2. Эффект для загрузки данных
+    // Выполняется только один раз при первом actionId.
     LaunchedEffect(actionId) {
         if (actionId != null) {
             viewModel.loadAction(actionId)
         }
     }
 
+    // 3. Обработка одноразового события (Навигация)
+    // Если ViewModel сигнализирует об успешном сохранении, вызываем внешний колбэк
     if (state.isSaved) {
         onSaved()
+        // Обязательно сообщаем ViewModel, что событие обработано, чтобы оно не сработало повторно.
         viewModel.onEvent(AddActionEvent.OnSavedHandled)
     }
 
@@ -51,12 +72,13 @@ fun AddActivityScreen(
         Column(
             modifier = Modifier
                 .padding(padding)
+                // Обеспечивает прокрутку формы, если экран слишком мал
                 .verticalScroll(scrollState)
                 .padding(16.dp)
                 .fillMaxWidth()
         ) {
 
-            // Name
+            // Поле ввода Названия
             OutlinedTextField(
                 value = state.name,
                 onValueChange = { viewModel.onEvent(AddActionEvent.OnNameChange(it)) },
@@ -66,7 +88,7 @@ fun AddActivityScreen(
 
             Spacer(Modifier.height(HEIGHT_SPACER.dp))
 
-            // Type selector
+            // Селектор Типа активности
             DropdownField(
                 label = "Тип активности",
                 current = state.type.name,
@@ -78,7 +100,7 @@ fun AddActivityScreen(
 
             Spacer(Modifier.height(HEIGHT_SPACER.dp))
 
-            // Unit selector
+            // Селектор Единицы измерения
             DropdownField(
                 label = "Единица измерения",
                 current = state.unit.name,
@@ -90,7 +112,7 @@ fun AddActivityScreen(
 
             Spacer(Modifier.height(HEIGHT_SPACER.dp))
 
-            // Points
+            // Поле ввода Очков за единицу
             OutlinedTextField(
                 value = state.pointsPerUnit,
                 onValueChange = { viewModel.onEvent(AddActionEvent.OnPointsChange(it)) },
@@ -100,7 +122,7 @@ fun AddActivityScreen(
 
             Spacer(Modifier.height(HEIGHT_SPACER.dp))
 
-            // Category selector
+            // Селектор Категории
             DropdownField(
                 label = "Категория",
                 current = state.category.name,
@@ -112,14 +134,16 @@ fun AddActivityScreen(
 
             Spacer(Modifier.height(HEIGHT_SPACER.dp))
 
+            // Кнопка сохранения
             Button(
                 onClick = { viewModel.onEvent(AddActionEvent.OnSaveClick) },
-                enabled = !state.isSaving,
+                enabled = !state.isSaving, // Отключаем кнопку во время сохранения
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Сохранить")
             }
 
+            // Отображение ошибки
             if (state.error != null) {
                 Text(
                     text = state.error!!,
@@ -127,12 +151,12 @@ fun AddActivityScreen(
                 )
             }
 
-            // ---- КНОПКА УДАЛИТЬ (только в режиме редактирования) ----
+            // КНОПКА УДАЛИТЬ (только в режиме редактирования)
             if (state.isEditMode) {
                 Spacer(Modifier.height(HEIGHT_SPACER.dp))
 
                 Button(
-                    onClick = { viewModel.delete() },
+                    onClick = { /* TODO: viewModel.onEvent(AddActionEvent.OnDeleteClick) */ viewModel.delete() },
                     colors = ButtonDefaults.buttonColors(
                         containerColor = MaterialTheme.colorScheme.error
                     ),
@@ -147,6 +171,17 @@ fun AddActivityScreen(
     }
 }
 
+/**
+ * Переиспользуемый Composable-компонент для выбора одного значения из списка
+ * через выпадающее меню (Dropdown).
+ *
+ * Использует [ExposedDropdownMenuBox], что обеспечивает интеграцию с полем [OutlinedTextField].
+ *
+ * @param label Текстовая метка (Label) для поля.
+ * @param current Текущее выбранное значение (строка).
+ * @param items Список всех возможных строковых значений для выбора.
+ * @param onSelect Колбэк, вызываемый при выборе нового элемента.
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DropdownField(
@@ -155,6 +190,7 @@ fun DropdownField(
     items: List<String>,
     onSelect: (String) -> Unit
 ) {
+    // Внутреннее состояние для управления открытием/закрытием меню
     var expanded by remember { mutableStateOf(false) }
 
     ExposedDropdownMenuBox(
@@ -163,7 +199,7 @@ fun DropdownField(
     ) {
         OutlinedTextField(
             value = current,
-            onValueChange = {},
+            onValueChange = {}, // Невозможно изменить вручную, только через меню
             readOnly = true,
             label = { Text(label) },
             modifier = Modifier
@@ -179,8 +215,8 @@ fun DropdownField(
                 DropdownMenuItem(
                     text = { Text(item) },
                     onClick = {
-                        expanded = false
-                        onSelect(item)
+                        expanded = false // Закрываем меню после выбора
+                        onSelect(item)  // Передаем выбранное значение во внешний колбэк
                     }
                 )
             }

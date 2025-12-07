@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.majo.domain.repository.ActionRepository
 import kotlinx.coroutines.flow.collectLatest
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
@@ -11,50 +12,58 @@ import kotlinx.coroutines.launch
  * ViewModel экрана списка активностей.
  *
  * Основные задачи:
- *  1. Загружать данные из репозитория
- *  2. Хранить состояние экрана (state)
- *  3. Реагировать на события UI (ActionListEvent)
- *  4. Отделять UI от бизнес-логики
+ * 1. Получать данные об активностях из репозитория [ActionRepository].
+ * 2. Хранить и управлять состоянием экрана ([ActionListState]) с помощью [MutableStateFlow].
+ * 3. Реагировать на события UI ([ActionListEvent]), инициируя бизнес-логику.
+ * 4. Предоставлять чистый API для UI, отделяя его от деталей данных.
  *
- * Важно: UI = "тупой", вся логика — здесь.
+ * @property repository Контракт, через который ViewModel получает доступ к данным.
  */
 class ActionListViewModel(
     private val repository: ActionRepository
 ) : ViewModel() {
 
     /**
-     * MutableStateFlow — источник состояния.
-     * UI подписывается на state через collectAsState().
+     * MutableStateFlow — реактивный источник состояния экрана.
      *
-     * private set → UI не может менять state напрямую.
+     * UI (Composable) подписывается на этот Flow через collectAsState().
+     * Приватный сеттер (`private set`) гарантирует, что состояние может быть изменено
+     * только внутри ViewModel (принцип **однонаправленного потока данных**).
      */
-    var state = kotlinx.coroutines.flow.MutableStateFlow(ActionListState())
+    var state = MutableStateFlow(ActionListState())
         private set
 
     /**
-     * init{} вызывается сразу после создания ViewModel.
-     * Используем его для первичной загрузки данных.
+     * Блок инициализации, вызываемый сразу после создания ViewModel.
+     * Используется для запуска асинхронной загрузки данных.
      */
     init {
         loadActivities()
     }
 
     /**
-     * Загрузка списка активностей из репозитория.
-     * Репозиторий возвращает Flow<List<Action>>, поэтому мы подписываемся на него.
+     * Асинхронная загрузка списка активностей из репозитория.
+     *
+     * Подписывается на Flow, возвращаемый репозиторием, чтобы UI автоматически
+     * обновлялся при любых изменениях в базе данных.
      */
     private fun loadActivities() {
+        // viewModelScope привязывает корутину к жизненному циклу ViewModel.
+        // При уничтожении ViewModel корутина автоматически отменяется.
         viewModelScope.launch {
+
+            // Устанавливаем флаг загрузки в true (для первого запуска)
+            state.update { it.copy(isLoading = true, error = null) }
 
             /**
              * collectLatest:
-             *  - подписывается на поток репозитория
-             *  - получает новое значение при любом обновлении БД
-             *  - автоматически обновляет UI
+             * - Подписывается на поток данных из репозитория.
+             * - Ждет новое значение (список activities) при любом обновлении БД.
+             * - Предыдущий обработчик (если есть) автоматически отменяется.
              */
             repository.getActions().collectLatest { activities ->
 
-                // Обновляем состояние (копируем, потому что data class immutable)
+                // Обновляем состояние, передавая новый список и устанавливая isLoading = false
                 state.update {
                     it.copy(
                         actions = activities,
@@ -66,18 +75,23 @@ class ActionListViewModel(
     }
 
     /**
-     * Обработка событий от UI.
-     * UI посылает ActionListEvent → ViewModel реагирует.
+     * Обработка событий, поступающих от пользовательского интерфейса ([ActionListEvent]).
+     *
+     * Это метод-диспетчер, который направляет UI-интенты к соответствующей логике.
+     *
+     * @param event Конкретное событие, инициированное пользователем.
      */
     fun onEvent(event: ActionListEvent) {
         when (event) {
 
             is ActionListEvent.OnActionClick -> {
-                // Здесь будет навигация на экран деталей (позже)
+                // TODO: Здесь будет логика для навигации на экран деталей активности.
+                // Например: navigator.navigateToDetails(event.id)
             }
 
             ActionListEvent.OnAddClick -> {
-                // Навигация на AddActivityScreen (позже)
+                // TODO: Здесь будет логика для навигации на экран создания новой активности.
+                // Например: navigator.navigateToAdd()
             }
         }
     }

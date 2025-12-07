@@ -6,8 +6,20 @@ import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 
-// Set of Material typography styles to start with
+/**
+ * Объект, определяющий набор стилей типографики (шрифтов) для приложения.
+ *
+ * Этот объект передается в корневой Composable [MaterialTheme] и позволяет
+ * всем элементам UI использовать консистентные, заранее определенные стили
+ * (например, headlineLarge, bodyLarge, labelSmall) через [MaterialTheme.typography].
+ *
+ * Здесь определены стили по умолчанию, которые при необходимости могут быть переопределены.
+ */
 val Typography = Typography(
+    /**
+     * bodyLarge: Стандартный стиль текста для основного содержимого (body text)
+     * в больших блоках.
+     */
     bodyLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,
@@ -15,7 +27,7 @@ val Typography = Typography(
         lineHeight = 24.sp,
         letterSpacing = 0.5.sp
     )
-    /* Other default text styles to override
+    /* Другие стили Material, которые можно переопределить:
     titleLarge = TextStyle(
         fontFamily = FontFamily.Default,
         fontWeight = FontWeight.Normal,

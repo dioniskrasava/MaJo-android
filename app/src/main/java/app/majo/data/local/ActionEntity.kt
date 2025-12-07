@@ -18,7 +18,7 @@ import androidx.room.PrimaryKey
  * @property isActive Флаг, указывающий на доступность активности для использования.
  * @property createdAt Временная метка (timestamp) создания записи в миллисекундах.
  */
-// Entity = “сущность”, “объект таблицы”, "шаблон одной строки таблицы"
+
 @Entity(tableName = "actions")
 data class ActionEntity(
 
