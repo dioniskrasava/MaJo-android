@@ -6,12 +6,15 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
-import androidx.activity.viewModels // Импорт для делегата by viewModels()
+//import androidx.activity.viewModels // Импорт для делегата by viewModels()
+import androidx.lifecycle.viewmodel.compose.viewModel // Добавляем импорт
 import app.majo.data.local.database.AppDatabaseInstance
 import app.majo.data.repository.ActionRepositoryImpl
 import app.majo.ui.MainScreen
 import app.majo.ui.screens.settings.SettingsViewModel // ViewModel для управления настройками
+import app.majo.ui.screens.settings.SettingsViewModelFactory // Добавляем импорт
 import app.majo.ui.theme.MaJoTheme // Корневой Composable для применения темы
+import app.majo.data.local.datastore.SettingsDataStore // Добавляем импорт
 
 /**
  * Единственная Activity в приложении (Single Activity Architecture).
@@ -31,7 +34,7 @@ class MainActivity : ComponentActivity() {
      * что позволяет ей управлять глобальным состоянием (например, темной темой)
      * и быть доступной для всех дочерних экранов.
      */
-    private val settingsViewModel: SettingsViewModel by viewModels()
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,6 +53,14 @@ class MainActivity : ComponentActivity() {
 
             // Создаем реализацию репозитория, используя DAO
             val activityRepo = remember { ActionRepositoryImpl(actionDao) }
+
+            // Создаем DataStore
+            val settingsDataStore = remember { SettingsDataStore(context) }
+
+            // Создаем SettingsViewModel с помощью Factory
+            val settingsViewModel: SettingsViewModel = viewModel(
+                factory = SettingsViewModelFactory(settingsDataStore)
+            )
 
             // 2. Применение Темы
             // MaJoTheme использует settingsViewModel для реактивного переключения темы.

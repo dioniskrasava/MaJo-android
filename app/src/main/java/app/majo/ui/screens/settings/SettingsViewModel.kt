@@ -1,9 +1,12 @@
 package app.majo.ui.screens.settings
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope // Добавляем импорт
+import app.majo.data.local.datastore.SettingsDataStore // Добавляем импорт
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.launch // Добавляем импорт
 
 /**
  * Определяет все возможные **события (Intents)**, которые могут быть отправлены
@@ -37,7 +40,10 @@ sealed class SettingsEvent {
  * обрабатывая пользовательские события ([SettingsEvent]) и, в будущем,
  * взаимодействуя с репозиторием ([UserSettingsRepository]) для персистентного хранения.
  */
-class SettingsViewModel : ViewModel() {
+class SettingsViewModel(
+    // Изменяем конструктор, чтобы принимать наш DataStore Manager
+    private val dataStore: SettingsDataStore
+) : ViewModel() {
 
     // Внутренний, изменяемый источник состояния (MutableStateFlow)
     private val _state = MutableStateFlow(SettingsState())
@@ -47,6 +53,18 @@ class SettingsViewModel : ViewModel() {
      * UI (Composable) подписывается на него, чтобы получать обновления.
      */
     val state: StateFlow<SettingsState> = _state
+
+
+    init {
+        // Запускаем сбор Flow из DataStore
+        viewModelScope.launch {
+            dataStore.settingsFlow.collect { storedSettings ->
+                // Обновляем StateFlow нашей ViewModel новыми/сохраненными значениями
+                _state.update { storedSettings }
+            }
+        }
+    }
+
 
     /**
      * Обработка пользовательских действий, поступающих от UI.
@@ -58,20 +76,23 @@ class SettingsViewModel : ViewModel() {
             is SettingsEvent.LanguageChanged -> {
                 // Обновляем состояние: меняем код языка
                 val newCode = mapLanguageToCode(event.newLanguage)
-                _state.update {
-                    it.copy(currentLanguageCode = newCode)
+                viewModelScope.launch {
+                    // 1. Сначала записываем в DataStore (асинхронно)
+                    dataStore.setLanguageCode(newCode)
                 }
-                // ! Здесь в будущем будет вызов репозитория для сохранения (например: repository.saveLanguage(newCode))
+                // 2. DataStore Flow обновит _state автоматически,
+                //    поэтому ручное _state.update() здесь не нужно!
             }
             is SettingsEvent.DarkModeToggled -> {
-                _state.update {
-                    it.copy(isDarkMode = event.isChecked)
+                viewModelScope.launch {
+                    // 1. Записываем в DataStore
+                    dataStore.setDarkMode(event.isChecked)
                 }
-                // ! Здесь в будущем будет вызов репозитория для сохранения (например: repository.saveDarkMode(event.isChecked))
             }
             is SettingsEvent.AccentColorChanged -> {
-                _state.update {
-                    it.copy(currentAccentColor = event.newColor)
+                viewModelScope.launch {
+                    // 1. Записываем в DataStore
+                    dataStore.setAccentColor(event.newColor)
                 }
             }
 
