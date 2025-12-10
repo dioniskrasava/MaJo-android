@@ -18,8 +18,8 @@ MaJo — это приложение для Android (в будущем такж�
 ## 🧭 Концепция (Манифест приложения)
 
 ### Основные сущности
-- **Activity** — тип активности (бег, медитация, программирование)
-- **ActivityRecord** — запись о выполнении активности
+- **Action** — тип активности (бег, медитация, программирование)
+- **ActionRecord** — запись о выполнении активности
 - **PeriodSummary** — статистика за день/неделю/месяц
 - **UserSettings** — настройки приложения
 
@@ -77,61 +77,13 @@ Data Layer (Room / Repository Impl)
 #### **DI**
 - Koin (или Hilt)
 
----
-
-## 📦 Структура проекта
-
-```
-
-com.selftrack/
-domain/
-model/
-service/
-usecase/
-repository/
-data/
-repository/
-local/
-room/
-ui/
-screens/
-home/
-activity_list/
-add_activity/
-statistics/
-components/
-navigation/
-di/
-util/
-
-````
-
----
-
-## 📚 Основные модели
-
-Пример:
-
-```kotlin
-data class Activity(
-    val id: Long,
-    val name: String,
-    val type: ActivityType,
-    val unit: UnitType,
-    val pointsPerUnit: Double,
-    val category: ActivityCategory,
-    val isActive: Boolean = true
-)
-````
-
----
 
 ## 🔧 Используемые технологии
 
 * **Kotlin**
 * **Jetpack Compose**
 * **MVVM**
-* **Koin / Hilt**
+* **Koin / Hilt** (планируется)
 * **Room**
 * **Flow / StateFlow**
 * **Clean Architecture**
@@ -184,7 +136,7 @@ MIT License
 
 ## 💬 Контакты
 
-**Автор:** *(твое имя/никнейм)*
-При желании — ссылка на GitHub или Telegram.
+**Автор:** *(DionisKrasava)*
+ссылка на GitHub : https://github.com/dioniskrasava/.
 
 
