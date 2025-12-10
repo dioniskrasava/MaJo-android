@@ -4,6 +4,8 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.majo.domain.model.action.Action
 import app.majo.domain.repository.ActionRepository
+import app.majo.domain.model.ActionTypeUnitMapper // <-- ИМПОРТ
+import app.majo.domain.model.action.UnitType // <-- ИМПОРТ
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -43,8 +45,33 @@ class AddActionViewModel(
             is AddActionEvent.OnNameChange ->
                 state.update { it.copy(name = event.name, error = null) } // Сбрасываем ошибку при вводе
 
-            is AddActionEvent.OnTypeChange ->
-                state.update { it.copy(type = event.type) }
+            is AddActionEvent.OnTypeChange -> { // <-- ИЗМЕНЕНИЕ ЗДЕСЬ
+                val newType = event.type
+                // 1. Получаем корректный список единиц для нового типа
+                val newAvailableUnits = ActionTypeUnitMapper.getValidUnitsForActionType(newType)
+
+                // 2. Определяем новую выбранную единицу
+                val currentUnit = state.value.unit
+                val newUnit = when {
+                    // Если текущая единица (currentUnit) все еще валидна, оставляем ее
+                    newAvailableUnits.contains(currentUnit) -> currentUnit
+                    // Если единицы вообще доступны, выбираем первую из нового списка
+                    newAvailableUnits.isNotEmpty() -> newAvailableUnits.first()
+                    // Если единицы не нужны (например, для BINARY), ставим NONE или любую заглушку
+                    else -> UnitType.NONE
+                }
+
+                // 3. Обновляем состояние
+                state.update {
+                    it.copy(
+                        type = newType,
+                        // Обновляем список доступных единиц
+                        availableUnits = newAvailableUnits,
+                        // Обновляем выбранную единицу на корректную
+                        unit = newUnit
+                    )
+                }
+            }
 
             is AddActionEvent.OnUnitChange ->
                 state.update { it.copy(unit = event.unit) }
@@ -120,6 +147,9 @@ class AddActionViewModel(
         viewModelScope.launch {
             val action = repository.getActionById(id)
             action?.let {
+                // 1. Сначала рассчитываем корректный список единиц для загруженного типа
+                val availableUnitsForLoadedAction = ActionTypeUnitMapper.getValidUnitsForActionType(it.type) // <-- ИЗМЕНЕНИЕ
+
                 state.update { s ->
                     s.copy(
                         name = it.name,
@@ -128,6 +158,9 @@ class AddActionViewModel(
                         // Конвертируем обратно в String для поля ввода
                         pointsPerUnit = it.pointsPerUnit.toString(),
                         category = it.category,
+
+                        // ОБНОВЛЯЕМ availableUnits здесь
+                        availableUnits = availableUnitsForLoadedAction, // <-- ИЗМЕНЕНИЕ
 
                         // Настраиваем режим редактирования
                         isEditMode = true,

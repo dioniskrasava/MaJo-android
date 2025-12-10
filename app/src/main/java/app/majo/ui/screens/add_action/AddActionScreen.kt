@@ -104,7 +104,7 @@ fun AddActivityScreen(
             DropdownField(
                 label = "Единица измерения",
                 current = state.unit.name,
-                items = UnitType.values().map { it.name },
+                items = state.availableUnits.map { it.name },
                 onSelect = {
                     viewModel.onEvent(AddActionEvent.OnUnitChange(UnitType.valueOf(it)))
                 }

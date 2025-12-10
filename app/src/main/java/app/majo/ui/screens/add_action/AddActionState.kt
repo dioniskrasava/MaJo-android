@@ -3,6 +3,7 @@ package app.majo.ui.screens.add_action
 import app.majo.domain.model.action.ActionCategory
 import app.majo.domain.model.action.ActionType
 import app.majo.domain.model.action.UnitType
+import app.majo.domain.model.ActionTypeUnitMapper
 
 /**
  * Состояние экрана создания и редактирования активности.
@@ -30,6 +31,8 @@ data class AddActionState(
     val unit: UnitType = UnitType.REPETITION,
     val pointsPerUnit: String = "1",
     val category: ActionCategory = ActionCategory.OTHER,
+    // НОВОЕ ПОЛЕ: Список доступных UnitType
+    val availableUnits: List<UnitType> = ActionTypeUnitMapper.getValidUnitsForActionType(ActionType.COUNT), // <-- Инициализация
     val isSaving: Boolean = false,
     val isSaved: Boolean = false,
     val error: String? = null,
