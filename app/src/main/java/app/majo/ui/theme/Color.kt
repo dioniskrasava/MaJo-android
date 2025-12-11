@@ -31,12 +31,16 @@ val Blue200 = Color(0xFF90CAF9)
 val Green500 = Color(0xFF4CAF50)
 val Green200 = Color(0xFFA5D6A7)
 
+val Red500 = Color(0xFFAF4C4C)
+val Red200 = Color(0xFFD6A5A5)
+
 
 fun getColorByName(name: String, isLight: Boolean): Color {
     return when (name) {
         "Blue" -> if (isLight) Blue500 else Blue200
         "Green" -> if (isLight) Green500 else Green200
         "Purple" -> if (isLight) Purple40 else Purple80
+        "Red" -> if (isLight) Red500 else Red200
         else -> if (isLight) Purple40 else Purple80 // По умолчанию
     }
 }
