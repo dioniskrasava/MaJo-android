@@ -141,6 +141,7 @@ fun MainScreen(
                 )
             }
 
+
             // МАРШРУТ 2: Создание активности
             composable("addActivity") {
                 val vm: AddActionViewModel = viewModel(
