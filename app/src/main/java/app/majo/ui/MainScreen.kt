@@ -25,6 +25,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 
 import app.majo.domain.repository.ActionRepository
+import app.majo.domain.repository.RecordRepository // <-- Добавлен импорт
 import app.majo.ui.screens.action_list.ActionListScreen
 import app.majo.ui.screens.action_list.ActionListViewModel
 import app.majo.ui.screens.add_action.ActionListViewModelFactory
@@ -33,6 +34,10 @@ import app.majo.ui.screens.add_action.AddActionViewModelFactory
 import app.majo.ui.screens.add_action.AddActivityScreen
 import app.majo.ui.screens.settings.SettingsScreen
 import app.majo.ui.screens.settings.SettingsViewModel
+
+import app.majo.ui.screens.addrecord.AddRecordViewModel // <-- Новый импорт
+import app.majo.ui.screens.addrecord.AddRecordViewModelFactory // <-- Новый импорт
+import app.majo.ui.screens.addrecord.AddRecordScreen // <-- Новый импорт
 
 /**
  * Главный экран-оболочка (Application Shell) приложения.
@@ -48,7 +53,8 @@ import app.majo.ui.screens.settings.SettingsViewModel
  */
 @Composable
 fun MainScreen(
-    repository: ActionRepository,
+    actionRepository: ActionRepository, // <-- Изменено
+    recordRepository: RecordRepository, // <-- NEW: Добавлен новый репозиторий
     settingsViewModel: SettingsViewModel
 ) {
     // Контроллер навигации. Сохраняет стек экранов.
@@ -60,7 +66,7 @@ fun MainScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    Toast.makeText(context, "Добавить запись (скоро)", Toast.LENGTH_SHORT).show()
+                    navController.navigate("addRecord") // <-- NEW: Переход к новому экрану
                 },
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
@@ -124,7 +130,7 @@ fun MainScreen(
             composable("activities") {
                 // Внедрение ViewModel через Factory, привязанной к жизненному циклу этого Composable
                 val vm: ActionListViewModel = viewModel(
-                    factory = ActionListViewModelFactory(repository)
+                    factory = ActionListViewModelFactory(actionRepository)
                 )
                 ActionListScreen(
                     viewModel = vm,
@@ -138,7 +144,7 @@ fun MainScreen(
             // МАРШРУТ 2: Создание активности
             composable("addActivity") {
                 val vm: AddActionViewModel = viewModel(
-                    factory = AddActionViewModelFactory(repository)
+                    factory = AddActionViewModelFactory(actionRepository)
                 )
                 AddActivityScreen(
                     viewModel = vm,
@@ -152,7 +158,7 @@ fun MainScreen(
                 // Извлечение аргумента "id" из маршрута и его преобразование
                 val id = backStackEntry.arguments?.getString("id")!!.toLong()
                 val vm: AddActionViewModel = viewModel(
-                    factory = AddActionViewModelFactory(repository)
+                    factory = AddActionViewModelFactory(actionRepository)
                 )
                 AddActivityScreen(
                     viewModel = vm,
@@ -167,6 +173,18 @@ fun MainScreen(
                     onBack = { navController.popBackStack() },
                     // Передача общего экземпляра SettingsViewModel для управления глобальным состоянием
                     viewModel = settingsViewModel
+                )
+            }
+
+            composable("addRecord") {
+                val vm: AddRecordViewModel = viewModel(
+                    factory = AddRecordViewModelFactory(actionRepository, recordRepository) // <-- Передаем оба репозитория
+                )
+                AddRecordScreen(
+                    viewModel = vm,
+                    onNavigateBack = {
+                        navController.popBackStack()
+                    }
                 )
             }
         }

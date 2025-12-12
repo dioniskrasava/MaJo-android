@@ -16,6 +16,11 @@ import app.majo.ui.screens.settings.SettingsViewModelFactory // Добавляе
 import app.majo.ui.theme.MaJoTheme // Корневой Composable для применения темы
 import app.majo.data.local.datastore.SettingsDataStore // Добавляем импорт
 
+import app.majo.data.repository.RecordRepositoryImpl // <-- Добавлен импорт
+import app.majo.domain.repository.ActionRepository // Добавлен импорт для явного указания типа
+import app.majo.domain.repository.RecordRepository // <-- Добавлен импорт для явного указания типа
+// ...
+
 /**
  * Единственная Activity в приложении (Single Activity Architecture).
  *
@@ -51,8 +56,13 @@ class MainActivity : ComponentActivity() {
             // Получаем DAO
             val actionDao = database.actionDao()
 
+            // Получаем DAO для записей
+            val recordDao = database.recordDao()
+
             // Создаем реализацию репозитория, используя DAO
             val activityRepo = remember { ActionRepositoryImpl(actionDao) }
+
+            val recordRepo: RecordRepository = remember { RecordRepositoryImpl(recordDao) } // <-- NEW: Создаем репозиторий для записей
 
             // Создаем DataStore
             val settingsDataStore = remember { SettingsDataStore(context) }
@@ -69,7 +79,8 @@ class MainActivity : ComponentActivity() {
                 // 3. Корневой Экран
                 // MainScreen получает все необходимые зависимости для дальнейшей передачи в NavHost.
                 MainScreen(
-                    repository = activityRepo,
+                    actionRepository = activityRepo, // <-- Имя параметра изменено для ясности
+                    recordRepository = recordRepo, // <-- NEW: Передаем репозиторий записей
                     settingsViewModel = settingsViewModel // Передача общего VM в NavHost для SettingsScreen
                 )
             }
