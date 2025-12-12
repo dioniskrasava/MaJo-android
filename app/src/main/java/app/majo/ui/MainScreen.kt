@@ -15,7 +15,13 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
+import androidx.compose.material3.BottomAppBar // <-- Убедись, что импорт есть
+import androidx.compose.material3.NavigationBarItem // <-- Убедись, что импорт есть
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
@@ -28,7 +34,7 @@ import app.majo.domain.repository.ActionRepository
 import app.majo.domain.repository.RecordRepository // <-- Добавлен импорт
 import app.majo.ui.screens.action_list.ActionListScreen
 import app.majo.ui.screens.action_list.ActionListViewModel
-import app.majo.ui.screens.add_action.ActionListViewModelFactory
+import app.majo.ui.screens.action_list.ActionListViewModelFactory
 import app.majo.ui.screens.add_action.AddActionViewModel
 import app.majo.ui.screens.add_action.AddActionViewModelFactory
 import app.majo.ui.screens.add_action.AddActivityScreen
@@ -38,6 +44,14 @@ import app.majo.ui.screens.settings.SettingsViewModel
 import app.majo.ui.screens.addrecord.AddRecordViewModel // <-- Новый импорт
 import app.majo.ui.screens.addrecord.AddRecordViewModelFactory // <-- Новый импорт
 import app.majo.ui.screens.addrecord.AddRecordScreen // <-- Новый импорт
+
+
+import app.majo.ui.screens.recordlist.RecordListScreen
+
+import app.majo.ui.util.Screen
+
+import app.majo.ui.screens.recordlist.RecordListViewModel // <-- ДОБАВИТЬ
+import app.majo.ui.screens.recordlist.RecordListViewModelFactory // <-- ДОБАВИТЬ
 
 /**
  * Главный экран-оболочка (Application Shell) приложения.
@@ -59,14 +73,21 @@ fun MainScreen(
 ) {
     // Контроллер навигации. Сохраняет стек экранов.
     val navController = rememberNavController()
-    val context = LocalContext.current // Нужен для Toast
+
+    // Состояние для отслеживания выбранной вкладки (Records или Activities)
+    val navItems = listOf(Screen.Records, Screen.Activities)
+
+    // НОВЫЙ КОД: Сохраняем только СТРОКУ маршрута, которая поддерживается rememberSaveable.
+    var selectedRoute by rememberSaveable { mutableStateOf(Screen.Records.route) } // Тип String выводится автоматически.
+
+
 
     Scaffold(
         // 1. ПЛАВАЮЩАЯ КНОПКА (FAB)
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    navController.navigate("addRecord") // <-- NEW: Переход к новому экрану
+                    navController.navigate(Screen.AddRecord.route) // <-- NEW: Переход к новому экрану
                 },
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
@@ -82,40 +103,29 @@ fun MainScreen(
 
         // 2. НИЖНИЙ БАР (BottomAppBar)
         bottomBar = {
-            BottomAppBar(
-                // Убираем внутренний паддинг, чтобы мы могли управлять расположением сами
-                contentPadding = androidx.compose.foundation.layout.PaddingValues(0.dp),
-                actions = {
-                    // Кнопка: Список активностей
-                    IconButton(
-                        modifier = Modifier.padding(start = 16.dp),
+            BottomAppBar {
+                navItems.forEach { screen ->
+                    // ИЗМЕНЕНИЕ 1: Сравниваем выбранный маршрут с маршрутом текущего экрана
+                    val isSelected = selectedRoute == screen.route
+                    NavigationBarItem(
+                        icon = { Icon(screen.icon, contentDescription = screen.title) },
+                        label = { Text(screen.title) },
+                        selected = isSelected,
                         onClick = {
-                            // Навигация, которая предотвращает создание дубликатов в стеке
-                            navController.navigate("activities") {
-                                popUpTo("activities") { inclusive = true }
+                            // ИЗМЕНЕНИЕ 2: Сохраняем только строку маршрута
+                            selectedRoute = screen.route
+                            navController.navigate(screen.route) {
+                                // Навигационные флаги для переключения между вкладками
+                                popUpTo(navController.graph.startDestinationId) {
+                                    saveState = true
+                                }
+                                launchSingleTop = true
+                                restoreState = true
                             }
-                        }) {
-                        Icon(Icons.Filled.Home, contentDescription = "Список")
-                    }
-
-                    // Центральная распорка: Сдвигает остальные кнопки, оставляя место для FAB
-                    Spacer(Modifier.weight(1f))
-
-                    // Кнопка: Создание новой активности
-                    IconButton(onClick = { navController.navigate("addActivity") }) {
-                        Icon(Icons.AutoMirrored.Filled.PlaylistAdd, contentDescription = "Новый тип")
-                    }
-
-                    // Кнопка: Настройки
-                    IconButton(
-                        modifier = Modifier.padding(end = 16.dp),
-                        onClick = {
-                            navController.navigate("settings")
-                        }) {
-                        Icon(Icons.Filled.Settings, contentDescription = "Настройки")
-                    }
+                        }
+                    )
                 }
-            )
+            }
         }
     ) { innerPadding ->
 
@@ -123,21 +133,37 @@ fun MainScreen(
         // NavHost занимает всю область Scaffold, исключая padding, созданный Bottom Bar
         NavHost(
             navController = navController,
-            startDestination = "activities",
+            startDestination = Screen.Records.route,
             modifier = Modifier.padding(innerPadding)
         ) {
-            // МАРШРУТ 1: Список активностей
-            composable("activities") {
-                // Внедрение ViewModel через Factory, привязанной к жизненному циклу этого Composable
+
+            // НОВЫЙ БЛОК:
+// NEW: МАРШРУТ 1: Список ЗАПИСЕЙ (новый главный экран)
+            composable(Screen.Records.route) {
+                val vm: RecordListViewModel = viewModel(
+                    factory = RecordListViewModelFactory(actionRepository, recordRepository)
+                )
+                RecordListScreen(
+                    viewModel = vm,
+                    // Передаем функцию для перехода на экран настроек
+                    onNavigateToSettings = { navController.navigate("settings") }
+                )
+            }
+
+
+            // МАРШРУТ 2: Список АКТИВНОСТЕЙ (перенесен на второй маршрут)
+            // МАРШРУТ 2: Список АКТИВНОСТЕЙ
+            composable(Screen.Activities.route) {
                 val vm: ActionListViewModel = viewModel(
-                    factory = ActionListViewModelFactory(actionRepository)
+                    factory = ActionListViewModelFactory(actionRepository, recordRepository)
                 )
                 ActionListScreen(
                     viewModel = vm,
                     onItemClick = { id ->
-                        // Навигация на редактирование с передачей ID в качестве аргумента
                         navController.navigate("editActivity/$id")
-                    }
+                    },
+                    // ВОТ ЭТА СТРОКА:
+                    onNavigateToAddActivity = { navController.navigate("addActivity") }
                 )
             }
 
@@ -170,14 +196,17 @@ fun MainScreen(
 
             // МАРШРУТ 4: Экран настроек
             composable("settings") {
+                // ВАЖНО: Убедитесь, что импорт SettingsScreen присутствует
                 SettingsScreen(
                     onBack = { navController.popBackStack() },
-                    // Передача общего экземпляра SettingsViewModel для управления глобальным состоянием
+                    // settingsViewModel передается в MainScreen как аргумент
                     viewModel = settingsViewModel
                 )
             }
 
-            composable("addRecord") {
+
+
+            composable(Screen.AddRecord.route) {
                 val vm: AddRecordViewModel = viewModel(
                     factory = AddRecordViewModelFactory(actionRepository, recordRepository) // <-- Передаем оба репозитория
                 )

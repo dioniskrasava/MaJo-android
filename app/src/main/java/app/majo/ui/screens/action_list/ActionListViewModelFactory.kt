@@ -1,23 +1,24 @@
-package app.majo.ui.screens.add_action
+package app.majo.ui.screens.action_list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import app.majo.domain.repository.ActionRepository
-import app.majo.ui.screens.action_list.ActionListViewModel
+import app.majo.domain.repository.RecordRepository
 
 /**
  * Фабрика (Factory) для создания экземпляров [ActionListViewModel].
  *
  * Этот класс является реализацией паттерна **Фабрика** и необходим для **внедрения зависимостей (Dependency Injection)**
- * в [ActionListViewModel], которая требует [ActionRepository] в качестве аргумента конструктора.
+ * в [ActionListViewModel], которая требует [app.majo.domain.repository.ActionRepository] в качестве аргумента конструктора.
  *
  * Поскольку Android Framework не может самостоятельно создать ViewModel с параметрами,
- * мы используем [ViewModelProvider.Factory] для ручного создания экземпляра и передачи ему репозитория.
+ * мы используем [androidx.lifecycle.ViewModelProvider.Factory] для ручного создания экземпляра и передачи ему репозитория.
  *
- * @property repository Реализация контракта [ActionRepository], который будет внедрен в ViewModel.
+ * @property repository Реализация контракта [app.majo.domain.repository.ActionRepository], который будет внедрен в ViewModel.
  */
 class ActionListViewModelFactory(
-    private val repository: ActionRepository
+    private val actionRepository: ActionRepository,
+    private val recordRepository: RecordRepository
 ) : ViewModelProvider.Factory {
 
     /**
@@ -31,10 +32,10 @@ class ActionListViewModelFactory(
      */
     @Suppress("UNCHECKED_CAST")
     override fun <T : ViewModel> create(modelClass: Class<T>): T {
-        // Здесь обычно проверяется, что modelClass == ActionListViewModel::class.java.
-        // Если это так, создаем экземпляр и возвращаем его.
-        // Оператор 'as T' необходим для соответствия сигнатуре метода,
-        // а @Suppress("UNCHECKED_CAST") отключает предупреждение компилятора.
-        return ActionListViewModel(repository) as T
+        if (modelClass.isAssignableFrom(ActionListViewModel::class.java)) {
+            // NEW: Передаем оба репозитория в ActionListViewModel
+            return ActionListViewModel(actionRepository, recordRepository) as T
+        }
+        throw IllegalArgumentException("Unknown ViewModel class")
     }
 }

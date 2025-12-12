@@ -1,51 +1,74 @@
+// Файл: /home/ivan/AndroidStudioProjects/MaJo-android/app/src/main/java/app/majo/ui/screens/action_list/ActionListScreen.kt
+
 package app.majo.ui.screens.action_list
 
+// ... (Оставь существующие импорты)
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding // <-- NEW: Нужен для отступов
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Scaffold // <-- NEW: Импорт
+import androidx.compose.material3.TopAppBar // <-- NEW: Импорт
+import androidx.compose.material3.Text // <-- NEW: Импорт
+import androidx.compose.material3.IconButton // <-- NEW: Импорт
+import androidx.compose.material3.Icon // <-- NEW: Импорт
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import app.majo.ui.components.ActionCard
 
+// ... (Оставь остальные импорты)
+
 /**
  * Экран списка активностей.
- *
- * Этот Composable является корневым элементом экрана, ответственным за:
- * 1. Получение (потребление) состояния ([ActionListState]) из ViewModel.
- * 2. Отображение списка активностей, используя компонент [ActionCard].
- * 3. Передачу событий навигации через колбэки.
- *
- * Теперь он занимает всё доступное место внутри MainScreen.
- *
- * @param viewModel Экземпляр [ActionListViewModel], который управляет состоянием экрана.
- * @param onItemClick Колбэк, вызываемый при нажатии на карточку активности.
- * Он используется для навигации.
+ * ...
  */
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ActionListScreen(
     viewModel: ActionListViewModel,
-    onItemClick: (Long) -> Unit
+    onItemClick: (Long) -> Unit,
+    onNavigateToAddActivity: () -> Unit // <-- NEW: Добавляем обработчик
 ) {
-    // 1. Потребление состояния
-    // collectAsState преобразует Flow<ActionListState> из ViewModel
-    // в реактивное состояние Compose (State), за которым следит Composable.
-    // При изменении данных в Flow, Composable автоматически перерисовывается.
     val state by viewModel.state.collectAsState()
 
-    // 2. Отображение списка
-    // LazyColumn используется для эффективного рендеринга больших списков,
-    // создавая элементы только тогда, когда они видны пользователю.
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
-
-        // Перебираем список доменных моделей Action из текущего состояния
-        items(state.actions) { action ->
-            ActionCard(
-                action = action,
-                // При нажатии ActionCard, вызываем внешний колбэк onItemClick
-                onClick = { onItemClick(action.id) }
+    // 1. Обертываем экран в Scaffold
+    Scaffold(
+        // NEW: Верхний бар с кнопкой "Добавить Активность"
+        topBar = {
+            TopAppBar(
+                title = { Text(text = "Типы активностей") },
+                actions = {
+                    // Кнопка: Создание новой активности (Добавить тип)
+                    IconButton(onClick = onNavigateToAddActivity) {
+                        Icon(
+                            Icons.AutoMirrored.Filled.PlaylistAdd,
+                            contentDescription = "Добавить новый тип активности"
+                        )
+                    }
+                }
             )
+        }
+    ) { innerPadding -> // 2. Получаем отступы от TopAppBar и BottomAppBar
+
+        // 3. Отображение списка
+        LazyColumn(
+            // Применяем отступы, чтобы контент не перекрывался барами
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding)
+        ) {
+            // Перебираем список доменных моделей Action из текущего состояния
+            items(state.actions) { action ->
+                ActionCard(
+                    action = action,
+                    onClick = { onItemClick(action.id) }
+                )
+            }
         }
     }
 }

@@ -3,6 +3,7 @@ package app.majo.ui.screens.action_list
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.majo.domain.repository.ActionRepository
+import app.majo.domain.repository.RecordRepository
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.update
@@ -20,7 +21,8 @@ import kotlinx.coroutines.launch
  * @property repository Контракт, через который ViewModel получает доступ к данным.
  */
 class ActionListViewModel(
-    private val repository: ActionRepository
+    private val repository: ActionRepository,
+    recordRepository: RecordRepository
 ) : ViewModel() {
 
     /**

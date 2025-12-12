@@ -3,7 +3,7 @@ package app.majo.data.repository
 import app.majo.data.local.dao.RecordDao
 import app.majo.data.local.mappers.toDomain
 import app.majo.data.local.mappers.toEntity
-import app.majo.domain.model.action.ActionRecord
+import app.majo.domain.model.record.ActionRecord
 import app.majo.domain.repository.RecordRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map

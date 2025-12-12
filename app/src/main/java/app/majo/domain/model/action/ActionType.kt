@@ -30,7 +30,7 @@ enum class ActionType {
 
     /**
      * **Бинарная** активность — фиксируется только факт выполнения (Да/Нет, Сделано/Не сделано).
-     * В этом случае поле `value` в [ActionRecord] обычно равно 1.
+     * В этом случае поле `value` в [app.majo.domain.model.record.ActionRecord] обычно равно 1.
      */
     BINARY
 }

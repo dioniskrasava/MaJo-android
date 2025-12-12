@@ -5,7 +5,7 @@ package app.majo.ui.screens.addrecord
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.majo.domain.model.action.Action
-import app.majo.domain.model.action.ActionRecord
+import app.majo.domain.model.record.ActionRecord
 import app.majo.domain.repository.ActionRepository
 import app.majo.domain.repository.RecordRepository
 import kotlinx.coroutines.flow.MutableStateFlow
