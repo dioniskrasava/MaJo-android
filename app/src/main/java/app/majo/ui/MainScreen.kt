@@ -74,8 +74,8 @@ fun MainScreen(
     // Контроллер навигации. Сохраняет стек экранов.
     val navController = rememberNavController()
 
-    // Состояние для отслеживания выбранной вкладки (Records или Activities)
-    val navItems = listOf(Screen.Records, Screen.Activities)
+    // Состояние для отслеживания выбранной вкладки (Records или Activities или Настройки)
+    val navItems = listOf(Screen.Records, Screen.Activities, Screen.Settings)
 
     // НОВЫЙ КОД: Сохраняем только СТРОКУ маршрута, которая поддерживается rememberSaveable.
     var selectedRoute by rememberSaveable { mutableStateOf(Screen.Records.route) } // Тип String выводится автоматически.
@@ -144,9 +144,7 @@ fun MainScreen(
                     factory = RecordListViewModelFactory(actionRepository, recordRepository)
                 )
                 RecordListScreen(
-                    viewModel = vm,
-                    // Передаем функцию для перехода на экран настроек
-                    onNavigateToSettings = { navController.navigate("settings") }
+                    viewModel = vm
                 )
             }
 

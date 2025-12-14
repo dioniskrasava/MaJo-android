@@ -2,6 +2,7 @@ package app.majo.ui.util
 
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.List
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.ui.graphics.vector.ImageVector
 
@@ -19,7 +20,7 @@ sealed class Screen(val route: String, val title: String, val icon: ImageVector)
     data object AddActivity : Screen("addActivity", "Новый тип", Icons.Filled.Star)
 
     // Экран настроек (если он есть)
-    data object Settings : Screen("settings", "Настройки", Icons.Filled.Star)
+    data object Settings : Screen("settings", "Настройки", Icons.Filled.Settings)
 
     // Маршрут для редактирования (с аргументом)
     fun withArgs(vararg args: String): String {

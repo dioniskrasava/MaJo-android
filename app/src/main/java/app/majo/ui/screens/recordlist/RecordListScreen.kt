@@ -27,8 +27,7 @@ import java.util.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecordListScreen(
-    viewModel: RecordListViewModel,
-    onNavigateToSettings: () -> Unit
+    viewModel: RecordListViewModel
 ) {
     val recordsMap by viewModel.recordsWithActivities.collectAsState()
     val currentDayStart by viewModel.currentDayStartMs.collectAsState()
@@ -42,11 +41,6 @@ fun RecordListScreen(
         topBar = {
             TopAppBar(
                 title = { Text(text = "Журнал") },
-                actions = {
-                    IconButton(onClick = onNavigateToSettings) {
-                        Icon(Icons.Filled.Settings, contentDescription = "Настройки")
-                    }
-                }
             )
         }
     ) { innerPadding ->
