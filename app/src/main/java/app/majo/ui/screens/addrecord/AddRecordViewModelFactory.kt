@@ -5,6 +5,11 @@ import androidx.lifecycle.ViewModelProvider
 import app.majo.domain.repository.ActionRepository
 import app.majo.domain.repository.RecordRepository
 
+/**
+ * Фабрика ViewModel — это специальный класс, который помогает создать экземпляр ViewModel,
+ * если у этого ViewModel есть параметры в конструкторе
+ * (например, репозитории, с которыми он должен работать).
+ * */
 class AddRecordViewModelFactory(
     private val actionRepository: ActionRepository,
     private val recordRepository: RecordRepository

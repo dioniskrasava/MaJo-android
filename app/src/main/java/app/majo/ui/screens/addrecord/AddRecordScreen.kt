@@ -37,6 +37,7 @@ import app.majo.domain.model.action.Action
 import app.majo.ui.common.NumberInput
 import app.majo.ui.common.SimpleTopAppBar
 
+
 @Composable
 fun AddRecordScreen(
     viewModel: AddRecordViewModel,
