@@ -34,6 +34,15 @@ class AddRecordViewModel(
     private val _calculatedPoints = MutableStateFlow(0.0)
     val calculatedPoints: StateFlow<Double> = _calculatedPoints.asStateFlow()
 
+    // Поле состояния для времени
+    private val _timestamp = MutableStateFlow(System.currentTimeMillis())
+    val timestamp: StateFlow<Long> = _timestamp
+
+    fun updateTimestamp(ms: Long){
+        _timestamp.value = ms
+    }
+
+
     init {
         // Запускаем загрузку списка активностей
         viewModelScope.launch {
@@ -74,6 +83,7 @@ class AddRecordViewModel(
         _calculatedPoints.value = points
     }
 
+
     fun saveRecord(onSuccess: () -> Unit) {
         val action = _selectedAction.value ?: return // Нечего сохранять без выбранной активности
         val value = _recordValue.value.toDoubleOrNull() ?: return // Нечего сохранять без значения
@@ -85,7 +95,7 @@ class AddRecordViewModel(
             id = 0, // Будет сгенерирован в базе данных
             activityId = action.id,
             value = value,
-            timestamp = System.currentTimeMillis(),
+            timestamp = _timestamp.value,
             totalPoints = _calculatedPoints.value
         )
 

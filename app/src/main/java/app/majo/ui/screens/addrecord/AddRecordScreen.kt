@@ -10,16 +10,24 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.ExposedDropdownMenuBox
 import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -36,8 +44,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import app.majo.domain.model.action.Action
 import app.majo.ui.common.NumberInput
 import app.majo.ui.common.SimpleTopAppBar
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AddRecordScreen(
     viewModel: AddRecordViewModel,
@@ -47,6 +59,12 @@ fun AddRecordScreen(
     val selectedAction by viewModel.selectedAction.collectAsState()
     val recordValue by viewModel.recordValue.collectAsState()
     val calculatedPoints by viewModel.calculatedPoints.collectAsState()
+
+    val timestamp by viewModel.timestamp.collectAsState()
+    var showDatePicker by remember { mutableStateOf(false) }
+
+    // Форматтер для отображения даты
+    val dateFormater = remember { SimpleDateFormat("dd MMMM yyyy", Locale("ru")) }
 
     Scaffold(
         topBar = {
@@ -112,6 +130,36 @@ fun AddRecordScreen(
             ) {
                 Text("Сохранить запись")
             }
+
+            // Выбор даты
+            OutlinedTextField(
+                value = dateFormater.format(Date(timestamp)),
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Дата записи") },
+                trailingIcon = {
+                    IconButton(onClick = { showDatePicker = true }) {
+                        Icon(Icons.Default.DateRange, contentDescription = "Выбрать дату")
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+        }
+    }
+
+
+    if (showDatePicker) {
+        val datePickerState = rememberDatePickerState(initialSelectedDateMillis = timestamp)
+        DatePickerDialog(
+            onDismissRequest = { showDatePicker = false },
+            confirmButton = {
+                TextButton(onClick = {
+                    datePickerState.selectedDateMillis?.let { viewModel.updateTimestamp(it) }
+                    showDatePicker = false
+                }) { Text("ОК") }
+            }
+        ) {
+            DatePicker(state = datePickerState)
         }
     }
 }
