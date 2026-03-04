@@ -18,6 +18,8 @@ import androidx.compose.material3.*
 import androidx.compose.material3.BottomAppBar // <-- Убедись, что импорт есть
 import androidx.compose.material3.NavigationBarItem // <-- Убедись, что импорт есть
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -26,9 +28,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 
 import app.majo.domain.repository.ActionRepository
 import app.majo.domain.repository.RecordRepository // <-- Добавлен импорт
@@ -52,6 +56,7 @@ import app.majo.ui.util.Screen
 
 import app.majo.ui.screens.recordlist.RecordListViewModel // <-- ДОБАВИТЬ
 import app.majo.ui.screens.recordlist.RecordListViewModelFactory // <-- ДОБАВИТЬ
+import app.majo.ui.shared.SharedRecordsViewModel
 
 /**
  * Главный экран-оболочка (Application Shell) приложения.
@@ -67,9 +72,10 @@ import app.majo.ui.screens.recordlist.RecordListViewModelFactory // <-- ДОБА
  */
 @Composable
 fun MainScreen(
-    actionRepository: ActionRepository, // <-- Изменено
-    recordRepository: RecordRepository, // <-- NEW: Добавлен новый репозиторий
-    settingsViewModel: SettingsViewModel
+    actionRepository: ActionRepository,
+    recordRepository: RecordRepository,
+    settingsViewModel: SettingsViewModel,
+    sharedRecordsViewModel: SharedRecordsViewModel
 ) {
     // Контроллер навигации. Сохраняет стек экранов.
     val navController = rememberNavController()
@@ -80,6 +86,7 @@ fun MainScreen(
     // НОВЫЙ КОД: Сохраняем только СТРОКУ маршрута, которая поддерживается rememberSaveable.
     var selectedRoute by rememberSaveable { mutableStateOf(Screen.Records.route) } // Тип String выводится автоматически.
 
+    val currentDayStart by sharedRecordsViewModel.currentDayStartMs.collectAsState()
 
 
     Scaffold(
@@ -87,7 +94,7 @@ fun MainScreen(
         floatingActionButton = {
             FloatingActionButton(
                 onClick = {
-                    navController.navigate(Screen.AddRecord.route) // <-- NEW: Переход к новому экрану
+                    navController.navigate("add_record?selectedDate=$currentDayStart")
                 },
                 containerColor = MaterialTheme.colorScheme.primaryContainer,
                 elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
@@ -144,7 +151,8 @@ fun MainScreen(
                     factory = RecordListViewModelFactory(actionRepository, recordRepository)
                 )
                 RecordListScreen(
-                    viewModel = vm
+                    viewModel = vm,
+                    sharedViewModel = sharedRecordsViewModel
                 )
             }
 
@@ -204,15 +212,32 @@ fun MainScreen(
 
 
 
-            composable(Screen.AddRecord.route) {
-                val vm: AddRecordViewModel = viewModel(
-                    factory = AddRecordViewModelFactory(actionRepository, recordRepository) // <-- Передаем оба репозитория
+            // Экран добавления записи
+            composable(
+                route = "add_record?selectedDate={selectedDate}", // Обновленный маршрут
+                arguments = listOf(
+                    navArgument("selectedDate") {
+                        type = NavType.LongType
+                        defaultValue = -1L
+                    }
                 )
+            ) { backStackEntry ->
+                val selectedDate = backStackEntry.arguments?.getLong("selectedDate") ?: -1L
+
+                val vm: AddRecordViewModel = viewModel(
+                    factory = AddRecordViewModelFactory(actionRepository, recordRepository)
+                )
+
+                // Передаем дату в ViewModel при открытии экрана
+                LaunchedEffect(selectedDate) {
+                    if (selectedDate != -1L) {
+                        vm.updateTimestamp(selectedDate)
+                    }
+                }
+
                 AddRecordScreen(
                     viewModel = vm,
-                    onNavigateBack = {
-                        navController.popBackStack()
-                    }
+                    onNavigateBack = { navController.popBackStack() }
                 )
             }
         }

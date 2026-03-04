@@ -21,13 +21,17 @@ import androidx.compose.ui.unit.dp
 import app.majo.domain.model.action.Action
 import app.majo.domain.model.record.ActionRecord
 import app.majo.ui.components.getActionIcon
+import app.majo.ui.shared.SharedRecordsViewModel
+import app.majo.ui.util.atStartOfDay
 import java.text.SimpleDateFormat
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecordListScreen(
-    viewModel: RecordListViewModel
+    viewModel: RecordListViewModel,
+    sharedViewModel: SharedRecordsViewModel
 ) {
     val recordsMap by viewModel.recordsWithActivities.collectAsState()
     val currentDayStart by viewModel.currentDayStartMs.collectAsState()
@@ -35,6 +39,13 @@ fun RecordListScreen(
     // Считаем общие очки за выбранный день
     val dayTotalPoints = remember(recordsMap) {
         recordsMap.keys.sumOf { it.totalPoints }
+    }
+
+    LaunchedEffect(Unit) {
+        val sharedDate = sharedViewModel.currentDayStartMs.value
+        if (viewModel.currentDayStartMs.value != sharedDate) {
+            viewModel.setDay(sharedDate)  // добавим этот метод
+        }
     }
 
     Scaffold(
@@ -52,8 +63,19 @@ fun RecordListScreen(
             // 1. Навигация по датам
             DateControlBar(
                 currentDayStart = currentDayStart,
-                onPrevClick = { viewModel.goToPreviousDay() },
-                onNextClick = { viewModel.goToNextDay() }
+                onPrevClick = {
+                    val newDate = currentDayStart - TimeUnit.DAYS.toMillis(1)
+                    viewModel.goToPreviousDay()               // обновляем VM
+                    sharedViewModel.updateCurrentDayStartMs(newDate) // обновляем shared
+                },
+                onNextClick = {
+                    val now = System.currentTimeMillis().atStartOfDay()
+                    if (currentDayStart < now) {
+                        val newDate = currentDayStart + TimeUnit.DAYS.toMillis(1)
+                        viewModel.goToNextDay()
+                        sharedViewModel.updateCurrentDayStartMs(newDate)
+                    }
+                }
             )
 
             // 2. Карточка с итогом за день

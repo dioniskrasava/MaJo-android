@@ -19,6 +19,8 @@ import app.majo.data.local.datastore.SettingsDataStore // Добавляем и�
 import app.majo.data.repository.RecordRepositoryImpl // <-- Добавлен импорт
 import app.majo.domain.repository.ActionRepository // Добавлен импорт для явного указания типа
 import app.majo.domain.repository.RecordRepository // <-- Добавлен импорт для явного указания типа
+import app.majo.ui.shared.SharedRecordsViewModel
+
 // ...
 
 /**
@@ -72,6 +74,8 @@ class MainActivity : ComponentActivity() {
                 factory = SettingsViewModelFactory(settingsDataStore)
             )
 
+            val sharedRecordsViewModel: SharedRecordsViewModel = viewModel() // для передачи даты выбранного дня
+
             // 2. Применение Темы
             // MaJoTheme использует settingsViewModel для реактивного переключения темы.
             MaJoTheme(settingsViewModel = settingsViewModel) {
@@ -81,7 +85,8 @@ class MainActivity : ComponentActivity() {
                 MainScreen(
                     actionRepository = activityRepo, // <-- Имя параметра изменено для ясности
                     recordRepository = recordRepo, // <-- NEW: Передаем репозиторий записей
-                    settingsViewModel = settingsViewModel // Передача общего VM в NavHost для SettingsScreen
+                    settingsViewModel = settingsViewModel, // Передача общего VM в NavHost для SettingsScreen
+                    sharedRecordsViewModel = sharedRecordsViewModel
                 )
             }
         }

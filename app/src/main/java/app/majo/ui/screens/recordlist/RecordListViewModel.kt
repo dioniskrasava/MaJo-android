@@ -8,6 +8,7 @@ import app.majo.domain.model.action.Action
 import app.majo.domain.model.record.ActionRecord
 import app.majo.domain.repository.ActionRepository
 import app.majo.domain.repository.RecordRepository
+import app.majo.ui.util.atStartOfDay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -18,16 +19,6 @@ import kotlinx.coroutines.flow.stateIn
 import java.util.Calendar
 import java.util.concurrent.TimeUnit
 
-// Вспомогательная функция, чтобы обнулить время (начало дня)
-fun Long.atStartOfDay(): Long {
-    val calendar = Calendar.getInstance()
-    calendar.timeInMillis = this
-    calendar.set(Calendar.HOUR_OF_DAY, 0)
-    calendar.set(Calendar.MINUTE, 0)
-    calendar.set(Calendar.SECOND, 0)
-    calendar.set(Calendar.MILLISECOND, 0)
-    return calendar.timeInMillis
-}
 
 class RecordListViewModel(
     private val actionRepository: ActionRepository,
@@ -74,5 +65,9 @@ class RecordListViewModel(
         if (_currentDayStartMs.value < System.currentTimeMillis().atStartOfDay()) {
             _currentDayStartMs.value += TimeUnit.DAYS.toMillis(1)
         }
+    }
+
+    fun setDay(dayStart: Long) {
+        _currentDayStartMs.value = dayStart
     }
 }
