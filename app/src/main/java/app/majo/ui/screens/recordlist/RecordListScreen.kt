@@ -166,7 +166,7 @@ fun DaySummaryCard(totalPoints: Double) {
             .fillMaxWidth()
             .padding(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primaryContainer
+            containerColor = MaterialTheme.colorScheme.primary
         )
     ) {
         Column(
@@ -183,7 +183,7 @@ fun DaySummaryCard(totalPoints: Double) {
                 text = String.format("%.1f", totalPoints),
                 style = MaterialTheme.typography.displayMedium,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+                color = MaterialTheme.colorScheme.onPrimary
             )
             Text(
                 text = "очков",

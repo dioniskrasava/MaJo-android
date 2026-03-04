@@ -96,7 +96,7 @@ fun MainScreen(
                 onClick = {
                     navController.navigate("add_record?selectedDate=$currentDayStart")
                 },
-                containerColor = MaterialTheme.colorScheme.primaryContainer,
+                containerColor = MaterialTheme.colorScheme.primary,
                 elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
                 shape = CircleShape,
                 modifier = Modifier
