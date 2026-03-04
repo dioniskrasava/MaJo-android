@@ -64,7 +64,7 @@ class MainActivity : ComponentActivity() {
             // Создаем реализацию репозитория, используя DAO
             val activityRepo = remember { ActionRepositoryImpl(actionDao) }
 
-            val recordRepo: RecordRepository = remember { RecordRepositoryImpl(recordDao) } // <-- NEW: Создаем репозиторий для записей
+            val recordRepo: RecordRepository = remember { RecordRepositoryImpl(recordDao) }
 
             // Создаем DataStore
             val settingsDataStore = remember { SettingsDataStore(context) }
@@ -83,8 +83,8 @@ class MainActivity : ComponentActivity() {
                 // 3. Корневой Экран
                 // MainScreen получает все необходимые зависимости для дальнейшей передачи в NavHost.
                 MainScreen(
-                    actionRepository = activityRepo, // <-- Имя параметра изменено для ясности
-                    recordRepository = recordRepo, // <-- NEW: Передаем репозиторий записей
+                    actionRepository = activityRepo, 
+                    recordRepository = recordRepo, 
                     settingsViewModel = settingsViewModel, // Передача общего VM в NavHost для SettingsScreen
                     sharedRecordsViewModel = sharedRecordsViewModel
                 )
