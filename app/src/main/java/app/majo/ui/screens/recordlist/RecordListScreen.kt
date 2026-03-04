@@ -1,10 +1,12 @@
 package app.majo.ui.screens.recordlist
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
@@ -129,32 +131,43 @@ fun DateControlBar(
         diff in 0 until 86400000 // 24 часа
     }
 
-    Row(
+
+
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.SpaceBetween
+        shape = RoundedCornerShape(8.dp),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline), // граница
+        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)                     // фон
     ) {
-        IconButton(onClick = onPrevClick) {
-            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Предыдущий день")
-        }
-
-        Text(
-            text = if (isToday) "Сегодня" else dateFormatter.format(Date(currentDayStart)),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
-        )
-
-        IconButton(
-            onClick = onNextClick,
-            enabled = !isToday // Не даем уйти в будущее, если логика это запрещает
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            horizontalArrangement = Arrangement.SpaceBetween
         ) {
-            Icon(
-                Icons.AutoMirrored.Filled.ArrowForward,
-                contentDescription = "Следующий день",
-                tint = if (isToday) Color.Gray else MaterialTheme.colorScheme.onSurface
+            IconButton(onClick = onPrevClick) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Предыдущий день")
+            }
+
+            Text(
+                text = if (isToday) "Сегодня" else dateFormatter.format(Date(currentDayStart)),
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
             )
+
+            IconButton(
+                onClick = onNextClick,
+                enabled = !isToday // Не даем уйти в будущее, если логика это запрещает
+            ) {
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowForward,
+                    contentDescription = "Следующий день",
+                    tint = if (isToday) Color.Gray else MaterialTheme.colorScheme.onSurface
+                )
+            }
         }
     }
 }
