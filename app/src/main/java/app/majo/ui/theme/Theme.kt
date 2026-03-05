@@ -51,12 +51,12 @@ private val DarkColorScheme = darkColorScheme(
  * Цветовая схема для Светлой темы (Light Theme).
  * Использует цвета с суффиксом 40 (например, Purple40).
  */
-private val LightColorScheme = lightColorScheme(
+/*private val LightColorScheme = lightColorScheme(
     primary = Purple40,
     secondary = PurpleGrey40,
     tertiary = Pink40
     // ... другие цвета
-)
+)*/
 
 
 // --- 3. ГЛАВНАЯ ФУНКЦИЯ ТЕМЫ ---
@@ -120,21 +120,11 @@ fun createColorScheme(
     isDark: Boolean,
     accentColorName: String
 ): ColorScheme {
-    val primaryColor = getColorByName(accentColorName, isLight = !isDark)
-
-    // В реальном приложении нужно вычислить или задать остальные цвета
-    // на основе primary. Здесь для простоты используем существующие PurpleGrey.
-    return if (isDark) {
-        darkColorScheme(
-            primary = primaryColor,
-            secondary = PurpleGrey80,
-            tertiary = Pink80
-        )
-    } else {
-        lightColorScheme(
-            primary = primaryColor,
-            secondary = PurpleGrey40,
-            tertiary = Pink40
-        )
+    return when (accentColorName) {
+        "Purple" -> if (isDark) PurpleDark else PurpleLight
+        "Blue"   -> if (isDark) BlueDark else BlueLight
+        "Green"  -> if (isDark) GreenDark else GreenLight
+        "Red"    -> if (isDark) RedDark else RedLight
+        else     -> if (isDark) PurpleDark else PurpleLight
     }
 }

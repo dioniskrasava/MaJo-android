@@ -118,6 +118,7 @@ fun RecordListScreen(
     }
 }
 
+/** ДАТА ЭКРАНА ЗАПИСЕЙ*/
 @Composable
 fun DateControlBar(
     currentDayStart: Long,
@@ -140,7 +141,7 @@ fun DateControlBar(
             .padding(horizontal = 16.dp, vertical = 8.dp),
         shape = RoundedCornerShape(8.dp),
         border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline), // граница
-        color = MaterialTheme.colorScheme.primary.copy(alpha = 0.5f)                     // фон
+        color = MaterialTheme.colorScheme.secondary                     // фон
     ) {
         Row(
             modifier = Modifier
@@ -180,7 +181,7 @@ fun DaySummaryCard(totalPoints: Double) {
             .fillMaxWidth()
             .padding(16.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.primary
+            containerColor = MaterialTheme.colorScheme.tertiary
         )
     ) {
         Column(
@@ -220,7 +221,7 @@ fun RecordItem(
             .padding(horizontal = 16.dp, vertical = 4.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = lerp(MaterialTheme.colorScheme.primary, Color.White, 0.8f)
+            containerColor = MaterialTheme.colorScheme.surfaceVariant
         )
     ) {
         Row(
