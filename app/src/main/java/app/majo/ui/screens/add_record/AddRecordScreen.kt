@@ -2,6 +2,8 @@
 
 package app.majo.ui.screens.add_record
 
+import android.app.TimePickerDialog
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -23,6 +25,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -35,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -42,6 +46,7 @@ import app.majo.domain.model.action.Action
 import app.majo.ui.common.NumberInput
 import app.majo.ui.common.SimpleTopAppBar
 import java.text.SimpleDateFormat
+import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 
@@ -62,6 +67,24 @@ fun AddRecordScreen(
 
     // Форматтер для отображения даты
     val dateFormater = remember { SimpleDateFormat("dd MMMM yyyy", Locale("ru")) }
+
+    // ----------------------*----- добавляем тайм-пикер
+    val context = LocalContext.current
+
+    // Форматировщик для отображения выбранного времени
+    val timeFormatter = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
+
+    // Подготовка данных для диалога
+    val calendar = Calendar.getInstance().apply { timeInMillis = timestamp }
+    val timePickerDialog = TimePickerDialog(
+        context,
+        { _, hourOfDay, minute ->
+            viewModel.updateTime(hourOfDay, minute)
+        },
+        calendar.get(Calendar.HOUR_OF_DAY),
+        calendar.get(Calendar.MINUTE),
+        true // 24-часовой формат
+    )
 
     Scaffold(
         topBar = {
@@ -140,6 +163,23 @@ fun AddRecordScreen(
                     }
                 },
                 modifier = Modifier.fillMaxWidth()
+            )
+
+            // Поле отображения и выбора времени
+            OutlinedTextField(
+                value = timeFormatter.format(Date(timestamp)),
+                onValueChange = { },
+                label = { Text("Время записи") },
+                readOnly = true, // Запрещаем ввод с клавиатуры
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { timePickerDialog.show() }, // Открываем диалог по клику
+                enabled = false, // Чтобы поле выглядело кликабельным, но не фокусировалось
+                colors = OutlinedTextFieldDefaults.colors(
+                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                    disabledBorderColor = MaterialTheme.colorScheme.outline,
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
+                )
             )
         }
     }

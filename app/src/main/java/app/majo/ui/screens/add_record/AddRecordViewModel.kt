@@ -1,5 +1,3 @@
-// Файл: /home/ivan/AndroidStudioProjects/MaJo-android/app/src/main/java/app/majo/ui/screens/addrecord/AddRecordViewModel.kt
-
 package app.majo.ui.screens.add_record
 
 import androidx.lifecycle.ViewModel
@@ -12,6 +10,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.util.Calendar
 
 class AddRecordViewModel(
     private val actionRepository: ActionRepository,
@@ -37,8 +36,41 @@ class AddRecordViewModel(
     private val _timestamp = MutableStateFlow(System.currentTimeMillis())
     val timestamp: StateFlow<Long> = _timestamp
 
-    fun updateTimestamp(ms: Long){
-        _timestamp.value = ms
+    fun updateTimestamp(selectedDateMs: Long) {
+        val calendar = Calendar.getInstance()
+        val now = Calendar.getInstance()
+
+        // Устанавливаем календарь на выбранную дату
+        calendar.timeInMillis = selectedDateMs
+
+        // Проверяем, совпадает ли выбранный день с сегодняшним
+        val isToday = calendar.get(Calendar.YEAR) == now.get(Calendar.YEAR) &&
+                calendar.get(Calendar.DAY_OF_YEAR) == now.get(Calendar.DAY_OF_YEAR)
+
+        if (isToday) {
+            // Если сегодня — ставим текущие часы и минуты
+            calendar.set(Calendar.HOUR_OF_DAY, now.get(Calendar.HOUR_OF_DAY))
+            calendar.set(Calendar.MINUTE, now.get(Calendar.MINUTE))
+        } else {
+            // Если другой день — по умолчанию 00:00
+            calendar.set(Calendar.HOUR_OF_DAY, 0)
+            calendar.set(Calendar.MINUTE, 0)
+        }
+
+        // Сбрасываем секунды для чистоты данных
+        calendar.set(Calendar.SECOND, 0)
+        calendar.set(Calendar.MILLISECOND, 0)
+
+        _timestamp.value = calendar.timeInMillis
+    }
+
+    // Метод для ручного изменения времени пользователем
+    fun updateTime(hour: Int, minute: Int) {
+        val calendar = Calendar.getInstance()
+        calendar.timeInMillis = _timestamp.value
+        calendar.set(Calendar.HOUR_OF_DAY, hour)
+        calendar.set(Calendar.MINUTE, minute)
+        _timestamp.value = calendar.timeInMillis
     }
 
 
