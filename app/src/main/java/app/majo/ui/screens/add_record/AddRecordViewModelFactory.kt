@@ -1,4 +1,4 @@
-package app.majo.ui.screens.addrecord
+package app.majo.ui.screens.add_record
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

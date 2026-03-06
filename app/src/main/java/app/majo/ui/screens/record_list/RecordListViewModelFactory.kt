@@ -1,6 +1,6 @@
 // Файл: /home/ivan/AndroidStudioProjects/MaJo-android/app/src/main/java/app/majo/ui/screens/recordlist/RecordListViewModelFactory.kt
 
-package app.majo.ui.screens.recordlist
+package app.majo.ui.screens.record_list
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider

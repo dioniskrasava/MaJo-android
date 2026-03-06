@@ -1,6 +1,6 @@
 // Файл: /home/ivan/AndroidStudioProjects/MaJo-android/app/src/main/java/app/majo/ui/screens/addrecord/AddRecordViewModel.kt
 
-package app.majo.ui.screens.addrecord
+package app.majo.ui.screens.add_record
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -12,7 +12,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.util.concurrent.TimeUnit
 
 class AddRecordViewModel(
     private val actionRepository: ActionRepository,

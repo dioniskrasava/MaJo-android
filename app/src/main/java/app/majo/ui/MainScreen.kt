@@ -1,20 +1,10 @@
 package app.majo.ui
 
-import android.widget.Toast
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.PlaylistAdd
 import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Create
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.PlaylistAdd
-import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.material3.BottomAppBar 
 import androidx.compose.material3.NavigationBarItem
@@ -26,7 +16,6 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
@@ -44,13 +33,13 @@ import app.majo.ui.screens.add_action.AddActionViewModelFactory
 import app.majo.ui.screens.add_action.AddActivityScreen
 import app.majo.ui.screens.settings.SettingsScreen
 import app.majo.ui.screens.settings.SettingsViewModel
-import app.majo.ui.screens.addrecord.AddRecordViewModel 
-import app.majo.ui.screens.addrecord.AddRecordViewModelFactory 
-import app.majo.ui.screens.addrecord.AddRecordScreen
-import app.majo.ui.screens.recordlist.RecordListScreen
+import app.majo.ui.screens.add_record.AddRecordViewModel
+import app.majo.ui.screens.add_record.AddRecordViewModelFactory
+import app.majo.ui.screens.add_record.AddRecordScreen
+import app.majo.ui.screens.record_list.RecordListScreen
 import app.majo.ui.util.Screen
-import app.majo.ui.screens.recordlist.RecordListViewModel 
-import app.majo.ui.screens.recordlist.RecordListViewModelFactory 
+import app.majo.ui.screens.record_list.RecordListViewModel
+import app.majo.ui.screens.record_list.RecordListViewModelFactory
 import app.majo.ui.shared.SharedRecordsViewModel
 
 /**
