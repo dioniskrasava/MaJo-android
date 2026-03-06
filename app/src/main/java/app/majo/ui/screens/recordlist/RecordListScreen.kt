@@ -192,7 +192,8 @@ fun DaySummaryCard(totalPoints: Double) {
         ) {
             Text(
                 text = "Итого за день",
-                style = MaterialTheme.typography.labelMedium
+                style = MaterialTheme.typography.labelMedium,
+                color = MaterialTheme.colorScheme.onPrimary
             )
             Text(
                 text = String.format("%.1f", totalPoints),
@@ -202,7 +203,8 @@ fun DaySummaryCard(totalPoints: Double) {
             )
             Text(
                 text = "очков",
-                style = MaterialTheme.typography.bodyMedium
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onPrimary
             )
         }
     }

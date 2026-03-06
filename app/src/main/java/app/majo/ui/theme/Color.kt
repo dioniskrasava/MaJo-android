@@ -16,20 +16,20 @@ import androidx.compose.material3.lightColorScheme
  */
 
 // --- Цвета для Темной темы (Dark Theme - 80) ---
-val Purple80 = Color(0xFFD0BCFF)
+val Purple80 = Color(0xFF6C6481)
 val PurpleGrey80 = Color(0xFFD2C5EF)
 val Pink80 = Color(0xFFEFB8C8)
 
 // --- Цвета для Светлой темы (Light Theme - 40) ---
-val Purple40 = Color(0xFF6650a4)
-val PurpleGrey40 = Color(0xFF9886C9)
+val Purple40 = Color(0xFF606379)
+val PurpleGrey40 = Color(0xFF28194B)
 val Pink40 = Color(0xFF64527D)
 
 
 
 // Новые цвета для примера:
 val Blue500 = Color(0xFF2196F3)
-val Blue200 = Color(0xFF90CAF9)
+val Blue200 = Color(0xFFA3F990)
 
 val Green500 = Color(0xFF4CAF50)
 val Green200 = Color(0xFFA5D6A7)
@@ -44,29 +44,29 @@ val Red200 = Color(0xFFD6A5A5)
 
 // Цвета для фиолетовой темы
 val PurpleLight = lightColorScheme(
-    primary = Purple40,                                     //     ОСНОВНОЙ ЦВЕТ
+    primary = Color(0xFF4E21F3),                                     //     ОСНОВНОЙ ЦВЕТ
     onPrimary = Color.White,                                //     (НА ОСНОВНОМ)    цвет текста/иконок
-    primaryContainer = Purple80.copy(alpha = 0.5f),         //     КОНТЕЙНЕР ОСНОВНОГО ЦВЕТА
-    onPrimaryContainer = Purple40,                          //     На ____
-    secondary = PurpleGrey40,                               //     ДОПОЛНИТЕЛЬНЫЙ ЦВЕТ (ВТОРИЧНЫЙ)
+    primaryContainer = Color(0xFF2196F3),         //     КОНТЕЙНЕР ОСНОВНОГО ЦВЕТА
+    onPrimaryContainer = Color(0xFF6021F3),                          //     На ____
+    secondary = Color(0xFF351391),                                //     ДОПОЛНИТЕЛЬНЫЙ ЦВЕТ (ВТОРИЧНЫЙ)
     onSecondary = Color.White,                              //     НА дополнительном
-    tertiary = Pink40,                                      //     ТРЕТИЧНЫЙ ЦВЕТ
-    background = Color(0xFFF8F1FD),                  //     ФОНОВЫЙ ЦВЕТ
-    surface = Color(0xFFFFFBFE),                     //     ЦВЕТ ПОВЕРХНОСТИ (карточки, меню)
-    surfaceVariant = PurpleGrey80,                          //     ВАРИАНТ ПОВЕРХНОСТИ
+    tertiary = Color(0xFF4E21C9),                                      //     ТРЕТИЧНЫЙ ЦВЕТ
+    background = Color(0xFFFDFBFF),                  //     ФОНОВЫЙ ЦВЕТ
+    surface = Color(0xFFFCFBFF),                     //     ЦВЕТ ПОВЕРХНОСТИ (карточки, меню)
+    surfaceVariant = Color(0xFFCBC2E7),                          //     ВАРИАНТ ПОВЕРХНОСТИ
     error = Red500,                                         //     ЦВЕТ ОШИБКИ
                                                             //     onError  -  НА ошибке
     // ... остальные цвета
 )
 
 val PurpleDark = darkColorScheme(
-    primary = Purple80,
-    onPrimary = Purple40,
-    primaryContainer = Purple40.copy(alpha = 0.5f),
-    onPrimaryContainer = Purple80,
-    secondary = PurpleGrey80,
-    onSecondary = PurpleGrey40,
-    tertiary = Pink80,
+    primary = Color(0xFF3819A9),
+    onPrimary = Color(0xFFFFFFFF),
+    primaryContainer = Color(0xFF4E21F3),
+    onPrimaryContainer = Color(0xFFFFFFFF),
+    secondary = Color(0xFF251570),
+    onSecondary = Color(0xFFFFFFFF),
+    tertiary = Color(0xFF372683),
     background = Color(0xFF1C1B1F),
     surface = Color(0xFF1C1B1F),
     surfaceVariant = PurpleGrey40,
@@ -76,16 +76,16 @@ val PurpleDark = darkColorScheme(
 
 // Цвета для синей темы
 val BlueLight = lightColorScheme(
-    primary = Blue500,
+    primary = Color(0xFF2196F3),
     onPrimary = Color.White,
-    primaryContainer = Blue200.copy(alpha = 0.5f),
-    onPrimaryContainer = Blue500,
-    secondary = Color(0xFF03A9F4), // какой-то синий оттенок
-    onSecondary = Color.White,                              //     НА дополнительном
-    tertiary = Pink40,                                      //     ТРЕТИЧНЫЙ ЦВЕТ
-    background = Color(0xFFFFFBFE),                  //     ФОНОВЫЙ ЦВЕТ
-    surface = Color(0xFFFFFBFE),                     //     ЦВЕТ ПОВЕРХНОСТИ (карточки, меню)
-    surfaceVariant = PurpleGrey80,                          //     ВАРИАНТ ПОВЕРХНОСТИ
+    primaryContainer = Color(0xFF2196F3),
+    onPrimaryContainer = Color(0xFF2196F3),
+    secondary = Color(0xFF135891),
+    onSecondary = Color.White,
+    tertiary = Color(0xFF1169AF),
+    background = Color(0xFFFFFBFE),
+    surface = Color(0xFFFFFBFE),
+    surfaceVariant = Color(0xFFB3D5F3),
     error = Red500,
     // ...
 )
@@ -99,16 +99,16 @@ val BlueDark = darkColorScheme(
 )
 
 val GreenLight = lightColorScheme(
-    primary = Purple40,
+    primary = Color(0xFF28F321),
     onPrimary = Color.White,
-    primaryContainer = Purple80.copy(alpha = 0.5f),
-    onPrimaryContainer = Purple40,
-    secondary = PurpleGrey40,
+    primaryContainer = Color(0xFF2196F3),
+    onPrimaryContainer = Color(0xFF59F321),
+    secondary = Color(0xFF269113),
     onSecondary = Color.White,
-    tertiary = Pink40,
-    background = Color(0xFFFFFBFE),
-    surface = Color(0xFFFFFBFE),
-    surfaceVariant = PurpleGrey80.copy(alpha = 0.3f),
+    tertiary = Color(0xFF48AF11),
+    background = Color(0xFFFCFFFB),
+    surface = Color(0xFFFDFFFB),
+    surfaceVariant = Color(0xFFC4F3B3),
     error = Red500,
     // ... остальные цвета
 )
@@ -129,16 +129,16 @@ val GreenDark = darkColorScheme(
 )
 
 val RedLight = lightColorScheme(
-    primary = Purple40,
+    primary = Color(0xFF2196F3),
     onPrimary = Color.White,
-    primaryContainer = Purple80.copy(alpha = 0.5f),
-    onPrimaryContainer = Purple40,
-    secondary = PurpleGrey40,
+    primaryContainer = Color(0xFF2196F3),
+    onPrimaryContainer = Color(0xFF2196F3),
+    secondary = Color(0xFF135891),
     onSecondary = Color.White,
-    tertiary = Pink40,
+    tertiary = Color(0xFF1169AF),
     background = Color(0xFFFFFBFE),
     surface = Color(0xFFFFFBFE),
-    surfaceVariant = PurpleGrey80.copy(alpha = 0.3f),
+    surfaceVariant = Color(0xFFB3D5F3),
     error = Red500,
     // ... остальные цвета
 )
