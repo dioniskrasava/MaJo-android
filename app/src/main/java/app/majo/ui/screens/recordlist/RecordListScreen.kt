@@ -140,7 +140,7 @@ fun DateControlBar(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         shape = RoundedCornerShape(8.dp),
-        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline), // граница
+        //border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline), // граница
         color = MaterialTheme.colorScheme.secondary                     // фон
     ) {
         Row(

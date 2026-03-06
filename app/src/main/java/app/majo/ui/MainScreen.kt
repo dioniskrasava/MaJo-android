@@ -1,6 +1,7 @@
 package app.majo.ui
 
 import android.widget.Toast
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.offset
@@ -102,7 +103,12 @@ fun MainScreen(
 
         // 2. НИЖНИЙ БАР (BottomAppBar)
         bottomBar = {
-            BottomAppBar {
+            BottomAppBar(
+                // Устанавливаем цвет фона всей панели
+                containerColor = MaterialTheme.colorScheme.primary,
+                // (Опционально) Цвет контента, если нужно перекрасить всё сразу
+                contentColor = MaterialTheme.colorScheme.onPrimary
+            ) {
                 navItems.forEach { screen ->
                     // ИЗМЕНЕНИЕ 1: Сравниваем выбранный маршрут с маршрутом текущего экрана
                     val isSelected = selectedRoute == screen.route
