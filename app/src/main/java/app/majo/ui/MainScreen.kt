@@ -139,7 +139,10 @@ fun MainScreen(
                 )
                 RecordListScreen(
                     viewModel = vm,
-                    sharedViewModel = sharedRecordsViewModel
+                    sharedViewModel = sharedRecordsViewModel,
+                    onRecordClick = { recordId ->  // новый колбэк
+                        navController.navigate("edit_record/$recordId")
+                    }
                 )
             }
 
@@ -158,7 +161,6 @@ fun MainScreen(
                     onItemClick = { id ->
                         navController.navigate("editActivity/$id")
                     },
-                    // ВОТ ЭТА СТРОКА:
                     onNavigateToAddActivity = { navController.navigate("addActivity") }
                 )
             }
@@ -230,6 +232,27 @@ fun MainScreen(
                     onNavigateBack = { navController.popBackStack() }
                 )
             }
+
+
+            // маршрут для редактирования записи
+            composable(
+                route = "edit_record/{recordId}",
+                arguments = listOf(navArgument("recordId") { type = NavType.LongType })
+            ) { backStackEntry ->
+                val recordId = backStackEntry.arguments?.getLong("recordId") ?: return@composable
+                val vm: AddRecordViewModel = viewModel(
+                    factory = AddRecordViewModelFactory(actionRepository, recordRepository)
+                )
+                LaunchedEffect(recordId) {
+                    vm.loadRecord(recordId)
+                }
+                AddRecordScreen(
+                    viewModel = vm,
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+
+
         }
     }
 }

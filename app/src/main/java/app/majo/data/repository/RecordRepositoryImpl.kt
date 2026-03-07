@@ -22,8 +22,16 @@ class RecordRepositoryImpl(
             list.map { it.toDomain() }
         }
 
+    override suspend fun getRecordById(id: Long): ActionRecord? =
+        dao.getById(id)?.toDomain()
+
+
     override suspend fun insert(record: ActionRecord) {
         dao.insert(record.toEntity())
+    }
+
+    override suspend fun update(record: ActionRecord) {
+        dao.update(record.toEntity())
     }
 
     override suspend fun delete(id: Long) {

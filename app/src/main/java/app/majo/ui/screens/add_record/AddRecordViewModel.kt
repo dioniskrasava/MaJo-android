@@ -36,6 +36,26 @@ class AddRecordViewModel(
     private val _timestamp = MutableStateFlow(System.currentTimeMillis())
     val timestamp: StateFlow<Long> = _timestamp
 
+    // Режим редактирования
+    private val _isEditMode = MutableStateFlow(false)
+    val isEditMode: StateFlow<Boolean> = _isEditMode.asStateFlow()
+
+    private val _editId = MutableStateFlow<Long?>(null)
+    val editId: StateFlow<Long?> = _editId.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            actionRepository.getActions().collect { list ->
+                _activities.value = list
+                // Если режим редактирования, не сбрасываем выбранную активность
+                if (!_isEditMode.value && _selectedAction.value == null && list.isNotEmpty()) {
+                    _selectedAction.value = list.first()
+                    calculatePoints()
+                }
+            }
+        }
+    }
+
     fun updateTimestamp(selectedDateMs: Long) {
         val calendar = Calendar.getInstance()
         val now = Calendar.getInstance()
@@ -84,6 +104,12 @@ class AddRecordViewModel(
                     _selectedAction.value = list.first()
                     calculatePoints()
                 }
+
+                // Если режим редактирования, не сбрасываем выбранную активность
+                if (!_isEditMode.value && _selectedAction.value == null && list.isNotEmpty()) {
+                    _selectedAction.value = list.first()
+                    calculatePoints()
+                }
             }
         }
     }
@@ -114,6 +140,30 @@ class AddRecordViewModel(
         _calculatedPoints.value = points
     }
 
+    // Загрузка записи для редактирования
+    fun loadRecord(recordId: Long) {
+        viewModelScope.launch {
+            val record = recordRepository.getRecordById(recordId) ?: return@launch
+            _isEditMode.value = true
+            _editId.value = recordId
+
+            // Устанавливаем timestamp
+            _timestamp.value = record.timestamp
+
+            // Ищем активность по id
+            val action = activities.value.find { it.id == record.activityId }
+            if (action != null) {
+                _selectedAction.value = action
+            }
+
+            // Устанавливаем значение
+            _recordValue.value = record.value.toString()
+
+            // Пересчёт очков (произойдёт автоматически при изменении value)
+            calculatePoints()
+        }
+    }
+
 
     fun saveRecord(onSuccess: () -> Unit) {
         val action = _selectedAction.value ?: return // Нечего сохранять без выбранной активности
@@ -122,17 +172,45 @@ class AddRecordViewModel(
         // Проверяем, что очков больше нуля
         if (_calculatedPoints.value <= 0.0) return
 
-        val newRecord = ActionRecord(
-            id = 0, // Будет сгенерирован в базе данных
-            activityId = action.id,
-            value = value,
-            timestamp = _timestamp.value,
-            totalPoints = _calculatedPoints.value
-        )
-
-        viewModelScope.launch {
-            recordRepository.insert(newRecord)
-            onSuccess() // Успешное сохранение, можно вернуться назад
+        if (_isEditMode.value) {
+            // Редактирование
+            val updatedRecord = ActionRecord(
+                id = _editId.value ?: return,
+                activityId = action.id,
+                value = value,
+                timestamp = _timestamp.value,
+                totalPoints = _calculatedPoints.value
+            )
+            viewModelScope.launch {
+                recordRepository.update(updatedRecord)
+                onSuccess()
+            }
+        } else {
+            // Новая запись
+            val newRecord = ActionRecord(
+                id = 0,
+                activityId = action.id,
+                value = value,
+                timestamp = _timestamp.value,
+                totalPoints = _calculatedPoints.value
+            )
+            viewModelScope.launch {
+                recordRepository.insert(newRecord)
+                onSuccess()
+            }
         }
     }
+
+
+    // Удаление записи (доступно только в режиме редактирования)
+    fun deleteRecord(onSuccess: () -> Unit) {
+        val id = _editId.value ?: return
+        viewModelScope.launch {
+            recordRepository.delete(id)
+            onSuccess()
+        }
+    }
+
+
+
 }

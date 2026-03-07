@@ -1,5 +1,6 @@
 package app.majo.ui.screens.record_list
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -28,7 +29,8 @@ import java.util.concurrent.TimeUnit
 @Composable
 fun RecordListScreen(
     viewModel: RecordListViewModel,
-    sharedViewModel: SharedRecordsViewModel
+    sharedViewModel: SharedRecordsViewModel,
+    onRecordClick: (Long) -> Unit
 ) {
     val recordsMap by viewModel.recordsWithActivities.collectAsState()
     val currentDayStart by viewModel.currentDayStartMs.collectAsState()
@@ -104,7 +106,7 @@ fun RecordListScreen(
                     items(recordsMap.entries.toList()) { entry ->
                         val record = entry.key
                         val action = entry.value
-                        RecordItem(record = record, action = action)
+                        RecordItem(record = record, action = action, onClick = { onRecordClick(record.id) })
                     }
                 }
             }
@@ -207,14 +209,16 @@ fun DaySummaryCard(totalPoints: Double) {
 @Composable
 fun RecordItem(
     record: ActionRecord,
-    action: Action?
+    action: Action?,
+    onClick: () -> Unit
 ) {
     val timeFormatter = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
 
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp),
+            .padding(horizontal = 16.dp, vertical = 4.dp)
+            .clickable { onClick() },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surfaceVariant

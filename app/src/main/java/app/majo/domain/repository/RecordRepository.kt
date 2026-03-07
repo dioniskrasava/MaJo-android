@@ -38,19 +38,11 @@ interface RecordRepository {
      */
     fun getRecordsForPeriod(start: Long, end: Long): Flow<List<ActionRecord>>
 
-    /**
-     * Добавляет новую запись о выполнении активности.
-     *
-     * Является suspend-функцией, что указывает на выполнение в фоновом потоке.
-     *
-     * @param record Доменная модель [ActionRecord] для вставки.
-     */
+    suspend fun getRecordById(id: Long): ActionRecord?
+
     suspend fun insert(record: ActionRecord)
 
-    /**
-     * Удаляет запись о выполнении активности по ее ID.
-     *
-     * @param id ID записи [ActionRecord], которую нужно удалить.
-     */
+    suspend fun update(record: ActionRecord)
+
     suspend fun delete(id: Long)
 }

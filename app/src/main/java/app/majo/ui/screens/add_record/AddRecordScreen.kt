@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.DateRange
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.DropdownMenuItem
@@ -63,6 +64,8 @@ fun AddRecordScreen(
     val calculatedPoints by viewModel.calculatedPoints.collectAsState()
 
     val timestamp by viewModel.timestamp.collectAsState()
+    val isEditMode by viewModel.isEditMode.collectAsState()
+
     var showDatePicker by remember { mutableStateOf(false) }
 
     // Форматтер для отображения даты
@@ -89,7 +92,7 @@ fun AddRecordScreen(
     Scaffold(
         topBar = {
             SimpleTopAppBar(
-                title = "Добавить запись",
+                title = if (isEditMode) "Редактировать запись" else "Добавить запись",
                 onNavigateBack = onNavigateBack
             )
         }
@@ -140,7 +143,7 @@ fun AddRecordScreen(
 
             Spacer(modifier = Modifier.height(32.dp))
 
-            // 4. Кнопка Сохранить
+            // 4. Кнопка Сохранить/Обновить
             Button(
                 onClick = {
                     viewModel.saveRecord(onSuccess = onNavigateBack)
@@ -148,8 +151,27 @@ fun AddRecordScreen(
                 enabled = selectedAction != null && calculatedPoints > 0.0,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Сохранить запись")
+                Text(if (isEditMode) "Обновить запись" else "Сохранить запись")
             }
+
+            // Кнопка удаления (только в режиме редактирования)
+            if (isEditMode) {
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(
+                    onClick = {
+                        viewModel.deleteRecord(onSuccess = onNavigateBack)
+                    },
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.error
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Удалить запись")
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
 
             // Выбор даты
             OutlinedTextField(
@@ -243,6 +265,3 @@ private fun ActivityDropdown(
         }
     }
 }
-
-// ПРИМЕЧАНИЕ: Предполагаем, что NumberInput и SimpleTopAppBar уже есть в проекте.
-// Если нет, их нужно будет реализовать в app.majo.ui.common.
