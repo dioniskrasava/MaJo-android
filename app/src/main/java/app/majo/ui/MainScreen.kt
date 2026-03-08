@@ -204,8 +204,8 @@ fun MainScreen(
                 SettingsScreen(
                     onBack = { navController.popBackStack() },
                     viewModel = settingsViewModel,
-                    onLanguageChange = { code ->
-                        context.findActivity().recreate()
+                    onLanguageChange = {
+                        context.findActivity().recreate()   // перезапуск после сохранения языка
                     }
                 )
             }

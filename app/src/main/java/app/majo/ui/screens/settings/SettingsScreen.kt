@@ -30,10 +30,25 @@ import app.majo.R
 fun SettingsScreen(
     onBack: () -> Unit,
     viewModel: SettingsViewModel,
-    onLanguageChange: (String) -> Unit
+    onLanguageChange: () -> Unit
 ) {
     // Подписываемся на реактивный поток состояния ViewModel
     val state by viewModel.state.collectAsState()
+
+
+    // Запоминаем язык при первом входе на экран
+    val initialLanguageCode = remember { state.currentLanguageCode }
+    val isFirstRender = remember { mutableStateOf(true) }
+
+
+    // Следим за изменением языка
+    LaunchedEffect(state.currentLanguageCode) {
+        if (!isFirstRender.value && state.currentLanguageCode != initialLanguageCode) {
+            onLanguageChange()  // пересоздаём Activity только после реального изменения
+        }
+        isFirstRender.value = false
+    }
+
 
     Scaffold(
         topBar = {
@@ -66,11 +81,14 @@ fun SettingsScreen(
                     "en" -> english
                     else -> russian
                 },
-                items = listOf(russian, english),
+                items = listOf(
+                    stringResource(R.string.russian),
+                    stringResource(R.string.english)
+                ),
                 onSelect = { selectedLang ->
                     val code = if (selectedLang == russian) "ru" else "en"
                     viewModel.onEvent(SettingsEvent.LanguageChanged(selectedLang))
-                    onLanguageChange(code)
+                    //onLanguageChange(code)
                 }
             )
 
