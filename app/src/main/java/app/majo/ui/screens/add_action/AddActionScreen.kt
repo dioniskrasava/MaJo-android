@@ -11,6 +11,7 @@ import androidx.compose.ui.unit.dp
 import app.majo.domain.model.action.ActionCategory
 import app.majo.domain.model.action.ActionType
 import app.majo.domain.model.action.UnitType
+import app.majo.ui.common.SimpleTopAppBar
 
 /**
  * Стандартная высота в dp для вертикального отступа между элементами формы.
@@ -33,6 +34,7 @@ const val HEIGHT_SPACER = 12 // высота между элементами
 @Composable
 fun AddActivityScreen(
     viewModel: AddActionViewModel,
+    onNavigateBack: () -> Unit,
     actionId: Long? = null,
     onSaved: () -> Unit
 ) {
@@ -57,13 +59,9 @@ fun AddActivityScreen(
 
     Scaffold(
         topBar = {
-            TopAppBar(
-                title = {
-                    Text(
-                        if (state.isEditMode) "Редактировать активность"
-                        else "Добавить активность"
-                    )
-                }
+            SimpleTopAppBar(
+                title = if (state.isEditMode) "Редактировать активность" else "Добавить активность",
+                onNavigateBack = onNavigateBack
             )
         }
     ) { padding ->

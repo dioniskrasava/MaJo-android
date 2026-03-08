@@ -173,6 +173,7 @@ fun MainScreen(
                 )
                 AddActivityScreen(
                     viewModel = vm,
+                    onNavigateBack = { navController.popBackStack() },
                     actionId = null, // Сигнал для ViewModel, что это режим создания
                     onSaved = { navController.popBackStack() } // Закрываем экран после сохранения
                 )
@@ -187,6 +188,7 @@ fun MainScreen(
                 )
                 AddActivityScreen(
                     viewModel = vm,
+                    onNavigateBack = { navController.popBackStack() },
                     actionId = id, // Сигнал для ViewModel, что это режим редактирования
                     onSaved = { navController.popBackStack() } // Закрываем экран после сохранения/удаления
                 )
