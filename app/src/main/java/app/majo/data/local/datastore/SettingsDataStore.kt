@@ -8,6 +8,7 @@ import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import app.majo.ui.screens.settings.SettingsState
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
 
 // 1. Создаем DataStore. Используем делегат by preferencesDataStore.
@@ -53,4 +54,9 @@ class SettingsDataStore(private val context: Context) {
             settings[PreferencesKeys.ACCENT_COLOR] = color
         }
     }
+
+    //
+    suspend fun getLanguageCode(): String = context.dataStore.data.map { preferences ->
+        preferences[PreferencesKeys.LANGUAGE_CODE] ?: "ru"
+    }.first()
 }

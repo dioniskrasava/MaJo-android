@@ -14,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.majo.domain.model.action.Action
@@ -24,6 +25,7 @@ import app.majo.ui.util.atStartOfDay
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+import app.majo.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -50,7 +52,7 @@ fun RecordListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(text = "Журнал") },
+                title = { Text(stringResource(R.string.journal)) },  // Журнал
             )
         }
     ) { innerPadding ->
@@ -89,7 +91,7 @@ fun RecordListScreen(
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "Нет записей за этот день",
+                        text = stringResource(R.string.no_records_for_day),                 //  "Нет записей за этот день"
                         style = MaterialTheme.typography.bodyLarge,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
@@ -136,7 +138,6 @@ fun DateControlBar(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         shape = RoundedCornerShape(8.dp),
-        //border = BorderStroke(1.dp, MaterialTheme.colorScheme.outline), // граница
         color = MaterialTheme.colorScheme.secondary                     // фон
     ) {
         Row(
@@ -187,7 +188,7 @@ fun DaySummaryCard(totalPoints: Double) {
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                text = "Итого за день",
+                text = stringResource(R.string.total_for_day),   // "Итого за день"
                 style = MaterialTheme.typography.labelMedium,
                 color = MaterialTheme.colorScheme.onPrimary
             )
@@ -198,7 +199,7 @@ fun DaySummaryCard(totalPoints: Double) {
                 color = MaterialTheme.colorScheme.onPrimary
             )
             Text(
-                text = "очков",
+                text = stringResource(R.string.points),   // "очков"
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onPrimary
             )

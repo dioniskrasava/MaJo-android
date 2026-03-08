@@ -16,7 +16,10 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.core.app.ActivityCompat.recreate
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -25,6 +28,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import app.majo.domain.repository.ActionRepository
 import app.majo.domain.repository.RecordRepository
+import app.majo.findActivity
 import app.majo.ui.screens.action_list.ActionListScreen
 import app.majo.ui.screens.action_list.ActionListViewModel
 import app.majo.ui.screens.action_list.ActionListViewModelFactory
@@ -102,8 +106,8 @@ fun MainScreen(
                     // ИЗМЕНЕНИЕ 1: Сравниваем выбранный маршрут с маршрутом текущего экрана
                     val isSelected = selectedRoute == screen.route
                     NavigationBarItem(
-                        icon = { Icon(screen.icon, contentDescription = screen.title) },
-                        label = { Text(screen.title) },
+                        icon = { Icon(screen.icon, contentDescription = null) },
+                        label = { Text(stringResource(screen.titleRes)) },
                         selected = isSelected,
                         onClick = {
                             // ИЗМЕНЕНИЕ 2: Сохраняем только строку маршрута
@@ -196,11 +200,13 @@ fun MainScreen(
 
             // МАРШРУТ 5: Экран настроек
             composable("settings") {
-                // ВАЖНО: Убедитесь, что импорт SettingsScreen присутствует
+                val context = LocalContext.current
                 SettingsScreen(
                     onBack = { navController.popBackStack() },
-                    // settingsViewModel передается в MainScreen как аргумент
-                    viewModel = settingsViewModel
+                    viewModel = settingsViewModel,
+                    onLanguageChange = { code ->
+                        context.findActivity().recreate()
+                    }
                 )
             }
 

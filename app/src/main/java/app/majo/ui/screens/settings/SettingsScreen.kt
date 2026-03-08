@@ -8,9 +8,11 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.majo.ui.screens.add_action.DropdownField // Вспомогательный компонент для выбора
+import app.majo.R
 
 /**
  * Экран настроек приложения.
@@ -27,7 +29,8 @@ import app.majo.ui.screens.add_action.DropdownField // Вспомогатель�
 @Composable
 fun SettingsScreen(
     onBack: () -> Unit,
-    viewModel: SettingsViewModel
+    viewModel: SettingsViewModel,
+    onLanguageChange: (String) -> Unit
 ) {
     // Подписываемся на реактивный поток состояния ViewModel
     val state by viewModel.state.collectAsState()
@@ -52,20 +55,22 @@ fun SettingsScreen(
                 .fillMaxWidth()
         ) {
 
-            // --- 1. Выбор языка ---
+            val russian = stringResource(R.string.russian)
+            val english = stringResource(R.string.english)
+
+            //выбор языка
             DropdownField(
-                label = "Язык приложения",
-                // Логика отображения названия языка на основе кода
+                label = stringResource(R.string.app_language),
                 current = when (state.currentLanguageCode) {
-                    "ru" -> "Русский"
-                    "en" -> "English"
-                    else -> "Русский"
+                    "ru" -> russian
+                    "en" -> english
+                    else -> russian
                 },
-                items = state.availableLanguages,
+                items = listOf(russian, english),
                 onSelect = { selectedLang ->
-                    // Отправляем событие в ViewModel для изменения настройки
+                    val code = if (selectedLang == russian) "ru" else "en"
                     viewModel.onEvent(SettingsEvent.LanguageChanged(selectedLang))
-                    // ! В будущем здесь будет перезагрузка Activity для смены языка
+                    onLanguageChange(code)
                 }
             )
 
