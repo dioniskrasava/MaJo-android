@@ -122,7 +122,43 @@ fun AddRecordScreen(
                 keyboardType = KeyboardType.Number
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+
+
+            // Выбор даты
+            OutlinedTextField(
+                value = dateFormater.format(Date(timestamp)),
+                onValueChange = {},
+                readOnly = true,
+                label = { Text("Дата записи") },
+                trailingIcon = {
+                    IconButton(onClick = { showDatePicker = true }) {
+                        Icon(Icons.Default.DateRange, contentDescription = "Выбрать дату")
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Поле отображения и выбора времени
+            OutlinedTextField(
+                value = timeFormatter.format(Date(timestamp)),
+                onValueChange = { },
+                label = { Text("Время записи") },
+                readOnly = true, // Запрещаем ввод с клавиатуры
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { timePickerDialog.show() }, // Открываем диалог по клику
+                enabled = false, // Чтобы поле выглядело кликабельным, но не фокусировалось
+                colors = OutlinedTextFieldDefaults.colors(
+                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
+                    disabledBorderColor = MaterialTheme.colorScheme.outline,
+                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             // 3. Отображение Рассчитанных очков
             Row(
@@ -141,7 +177,7 @@ fun AddRecordScreen(
                 )
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
             // 4. Кнопка Сохранить/Обновить
             Button(
@@ -169,42 +205,10 @@ fun AddRecordScreen(
                     Text("Удалить запись")
                 }
             }
-
-            Spacer(modifier = Modifier.height(16.dp))
-
-
-            // Выбор даты
-            OutlinedTextField(
-                value = dateFormater.format(Date(timestamp)),
-                onValueChange = {},
-                readOnly = true,
-                label = { Text("Дата записи") },
-                trailingIcon = {
-                    IconButton(onClick = { showDatePicker = true }) {
-                        Icon(Icons.Default.DateRange, contentDescription = "Выбрать дату")
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
-
-            // Поле отображения и выбора времени
-            OutlinedTextField(
-                value = timeFormatter.format(Date(timestamp)),
-                onValueChange = { },
-                label = { Text("Время записи") },
-                readOnly = true, // Запрещаем ввод с клавиатуры
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .clickable { timePickerDialog.show() }, // Открываем диалог по клику
-                enabled = false, // Чтобы поле выглядело кликабельным, но не фокусировалось
-                colors = OutlinedTextFieldDefaults.colors(
-                    disabledTextColor = MaterialTheme.colorScheme.onSurface,
-                    disabledBorderColor = MaterialTheme.colorScheme.outline,
-                    disabledLabelColor = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-            )
         }
     }
+
+
 
 
     if (showDatePicker) {
