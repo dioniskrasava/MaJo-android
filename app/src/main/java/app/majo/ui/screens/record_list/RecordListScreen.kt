@@ -103,8 +103,6 @@ fun RecordListScreen(
                         .weight(1f),
                     contentPadding = PaddingValues(bottom = 80.dp) // Отступ для FAB
                 ) {
-                    // Преобразуем Map в List для LazyColumn.
-                    // Сортировка уже идет из БД по убыванию времени (DESC) [cite: 13]
                     items(recordsMap.entries.toList()) { entry ->
                         val record = entry.key
                         val action = entry.value
@@ -148,11 +146,11 @@ fun DateControlBar(
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             IconButton(onClick = onPrevClick) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Предыдущий день")
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.previous_day))
             }
 
             Text(
-                text = if (isToday) "Сегодня" else dateFormatter.format(Date(currentDayStart)),
+                text = if (isToday) stringResource(R.string.today) else dateFormatter.format(Date(currentDayStart)),
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )
@@ -163,7 +161,7 @@ fun DateControlBar(
             ) {
                 Icon(
                     Icons.AutoMirrored.Filled.ArrowForward,
-                    contentDescription = "Следующий день",
+                    contentDescription = stringResource(R.string.next_day),
                     tint = if (isToday) Color.Gray else MaterialTheme.colorScheme.onSurface
                 )
             }
@@ -243,7 +241,7 @@ fun RecordItem(
                 // Если активность была удалена, показываем заглушку
                 Icon(
                     imageVector = Icons.Default.Delete,
-                    contentDescription = "Удалено",
+                    contentDescription = stringResource(R.string.deleted_activity),
                     tint = MaterialTheme.colorScheme.error,
                     modifier = Modifier.size(32.dp)
                 )
@@ -254,7 +252,7 @@ fun RecordItem(
             // Основная информация
             Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = action?.name ?: "Удаленная активность",
+                    text = action?.name ?: stringResource(R.string.deleted_activity),
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.SemiBold
                 )

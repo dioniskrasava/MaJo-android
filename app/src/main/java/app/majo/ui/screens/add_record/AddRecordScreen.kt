@@ -40,6 +40,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
@@ -50,6 +51,7 @@ import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import app.majo.R
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -92,7 +94,7 @@ fun AddRecordScreen(
     Scaffold(
         topBar = {
             SimpleTopAppBar(
-                title = if (isEditMode) "Редактировать запись" else "Добавить запись",
+                title = if (isEditMode) stringResource(R.string.edit_record_title) else stringResource(R.string.add_record_title),
                 onNavigateBack = onNavigateBack
             )
         }
@@ -118,7 +120,7 @@ fun AddRecordScreen(
             NumberInput( // NumberInput должен существовать или быть реализован
                 value = recordValue,
                 onValueChange = viewModel::updateRecordValue,
-                label = "Значение (${selectedAction?.unit ?: "ед.изм."})",
+                label = stringResource(R.string.value_hint, selectedAction?.unit?.name?.lowercase() ?: ""),
                 keyboardType = KeyboardType.Number
             )
 
@@ -130,7 +132,7 @@ fun AddRecordScreen(
                 value = dateFormater.format(Date(timestamp)),
                 onValueChange = {},
                 readOnly = true,
-                label = { Text("Дата записи") },
+                label = { Text(stringResource(R.string.record_date)) },
                 trailingIcon = {
                     IconButton(onClick = { showDatePicker = true }) {
                         Icon(Icons.Default.DateRange, contentDescription = "Выбрать дату")
@@ -145,7 +147,7 @@ fun AddRecordScreen(
             OutlinedTextField(
                 value = timeFormatter.format(Date(timestamp)),
                 onValueChange = { },
-                label = { Text("Время записи") },
+                label = { Text(stringResource(R.string.record_time)) },
                 readOnly = true, // Запрещаем ввод с клавиатуры
                 modifier = Modifier
                     .fillMaxWidth()
@@ -166,7 +168,7 @@ fun AddRecordScreen(
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Text(
-                    text = "Очки за запись:",
+                    text = stringResource(R.string.points_for_record),
                     style = MaterialTheme.typography.titleLarge
                 )
                 Text(
@@ -187,7 +189,7 @@ fun AddRecordScreen(
                 enabled = selectedAction != null && calculatedPoints > 0.0,
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(if (isEditMode) "Обновить запись" else "Сохранить запись")
+                Text(if (isEditMode) stringResource(R.string.update_record) else stringResource(R.string.save_record))
             }
 
             // Кнопка удаления (только в режиме редактирования)
@@ -202,7 +204,7 @@ fun AddRecordScreen(
                     ),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Удалить запись")
+                    Text(stringResource(R.string.delete_record))
                 }
             }
         }
@@ -244,9 +246,9 @@ private fun ActivityDropdown(
     ) {
         OutlinedTextField(
             readOnly = true,
-            value = selectedAction?.name ?: "Выберите активность",
+            value = selectedAction?.name ?: stringResource(R.string.select_activity),
             onValueChange = { },
-            label = { Text("Активность") },
+            label = { Text(stringResource(R.string.activity)) },
             trailingIcon = {
                 ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded)
             },

@@ -53,7 +53,7 @@ fun SettingsScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Настройки") },
+                title = { Text(stringResource(R.string.settings_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
                         // Используем ArrowBack с поддержкой AutoMirrored для RTL/LTR
@@ -104,7 +104,7 @@ fun SettingsScreen(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Использовать темную тему",
+                    text = stringResource(R.string.dark_theme),
                     style = MaterialTheme.typography.bodyLarge,
                     modifier = Modifier.weight(1f) // Занимает всё доступное место слева
                 )
@@ -120,7 +120,7 @@ fun SettingsScreen(
             Spacer(Modifier.height(32.dp))
 
             DropdownField(
-                label = "Акцентный цвет",
+                label = stringResource(R.string.accent_color),
                 current = state.currentAccentColor,
                 items = state.availableAccentColors,
                 onSelect = { selectedColor ->

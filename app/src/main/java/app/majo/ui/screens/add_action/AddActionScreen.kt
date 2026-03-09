@@ -7,11 +7,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.majo.domain.model.action.ActionCategory
 import app.majo.domain.model.action.ActionType
 import app.majo.domain.model.action.UnitType
 import app.majo.ui.common.SimpleTopAppBar
+import app.majo.R
 
 /**
  * Стандартная высота в dp для вертикального отступа между элементами формы.
@@ -60,7 +62,7 @@ fun AddActivityScreen(
     Scaffold(
         topBar = {
             SimpleTopAppBar(
-                title = if (state.isEditMode) "Редактировать активность" else "Добавить активность",
+                title = if (state.isEditMode) stringResource(R.string.edit_activity_title) else stringResource(R.string.add_activity_title),
                 onNavigateBack = onNavigateBack
             )
         }
@@ -81,14 +83,14 @@ fun AddActivityScreen(
                 value = state.name,
                 onValueChange = { viewModel.onEvent(AddActionEvent.OnNameChange(it)) },
                 modifier = Modifier.fillMaxWidth(),
-                label = { Text("Название") }
+                label = { Text(stringResource(R.string.name)) }
             )
 
             Spacer(Modifier.height(HEIGHT_SPACER.dp))
 
             // Селектор Типа активности
             DropdownField(
-                label = "Тип активности",
+                label = stringResource(R.string.activity_type),
                 current = state.type.name,
                 items = ActionType.values().map { it.name },
                 onSelect = {
@@ -100,7 +102,7 @@ fun AddActivityScreen(
 
             // Селектор Единицы измерения
             DropdownField(
-                label = "Единица измерения",
+                label = stringResource(R.string.unit),
                 current = state.unit.name,
                 items = state.availableUnits.map { it.name },
                 onSelect = {
@@ -115,14 +117,14 @@ fun AddActivityScreen(
                 value = state.pointsPerUnit,
                 onValueChange = { viewModel.onEvent(AddActionEvent.OnPointsChange(it)) },
                 modifier = Modifier.fillMaxWidth(),
-                label = { Text("Очков за единицу") }
+                label = { Text(stringResource(R.string.points_per_unit_label)) }
             )
 
             Spacer(Modifier.height(HEIGHT_SPACER.dp))
 
             // Селектор Категории
             DropdownField(
-                label = "Категория",
+                label = stringResource(R.string.category),
                 current = state.category.name,
                 items = ActionCategory.values().map { it.name },
                 onSelect = {
@@ -138,7 +140,7 @@ fun AddActivityScreen(
                 enabled = !state.isSaving, // Отключаем кнопку во время сохранения
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Сохранить")
+                Text(	stringResource(R.string.save))
             }
 
             // Отображение ошибки
@@ -160,7 +162,7 @@ fun AddActivityScreen(
                     ),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Text("Удалить")
+                    Text(	stringResource(R.string.delete))
                 }
             }
 

@@ -16,6 +16,8 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
+import app.majo.R
 import app.majo.ui.components.ActionCard
 
 
@@ -36,13 +38,13 @@ fun ActionListScreen(
         // NEW: Верхний бар с кнопкой "Добавить Активность"
         topBar = {
             TopAppBar(
-                title = { Text(text = "Типы активностей") },
+                title = { Text(text = stringResource(R.string.activity_types)) },
                 actions = {
                     // Кнопка: Создание новой активности (Добавить тип)
                     IconButton(onClick = onNavigateToAddActivity) {
                         Icon(
                             Icons.AutoMirrored.Filled.PlaylistAdd,
-                            contentDescription = "Добавить новый тип активности"
+                            contentDescription = stringResource(R.string.add_activity)
                         )
                     }
                 }

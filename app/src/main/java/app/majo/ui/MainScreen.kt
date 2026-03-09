@@ -45,6 +45,7 @@ import app.majo.ui.util.Screen
 import app.majo.ui.screens.record_list.RecordListViewModel
 import app.majo.ui.screens.record_list.RecordListViewModelFactory
 import app.majo.ui.shared.SharedRecordsViewModel
+import app.majo.R
 
 /**
  * Главный экран-оболочка (Application Shell) приложения.
@@ -90,7 +91,7 @@ fun MainScreen(
                 modifier = Modifier
                     .size(62.dp)
             ) {
-                Icon(Icons.Filled.Add, "Добавить запись", modifier = Modifier.size(32.dp))
+                Icon(Icons.Filled.Add, stringResource(R.string.add_record_title), modifier = Modifier.size(32.dp))
             }
         },
 
