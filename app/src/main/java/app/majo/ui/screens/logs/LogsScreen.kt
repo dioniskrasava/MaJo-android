@@ -31,8 +31,7 @@ fun LogsScreen(
     onRecordClick: (Long) -> Unit,
     onNavigateBack: () -> Unit
 ) {
-    val logsMap by viewModel.logsWithActions.collectAsState()
-    val dateFormatter = remember { SimpleDateFormat("dd MMM yyyy, HH:mm", Locale.getDefault()) }
+    val flatLogList by viewModel.flatLogList.collectAsState()
 
     Scaffold(
         topBar = {
@@ -42,29 +41,36 @@ fun LogsScreen(
             )
         }
     ) { paddingValues ->
-        if (logsMap.isEmpty()) {
+        if (flatLogList.isEmpty()) {
             Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
+                modifier = Modifier.fillMaxSize().padding(paddingValues),
                 contentAlignment = Alignment.Center
             ) {
                 Text(stringResource(R.string.no_records))
             }
         } else {
             LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(paddingValues),
+                modifier = Modifier.fillMaxSize().padding(paddingValues),
                 contentPadding = PaddingValues(16.dp)
             ) {
-                items(logsMap.entries.toList()) { (record, action) ->
-                    LogsItem(
-                        record = record,
-                        action = action,
-                        onClick = { onRecordClick(record.id) },
-                        dateFormatter = dateFormatter
-                    )
+                items(flatLogList) { item ->
+                    when (item) {
+                        is LogListItem.Header -> {
+                            Text(
+                                text = item.dateText,
+                                style = MaterialTheme.typography.titleMedium,
+                                modifier = Modifier.padding(vertical = 8.dp)
+                            )
+                        }
+                        is LogListItem.Item -> {
+                            LogsItem(
+                                record = item.record,
+                                action = item.action,
+                                onClick = { onRecordClick(item.record.id) }
+                                // dateFormatter убираем — он не используется в LogsItem
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -75,9 +81,11 @@ fun LogsScreen(
 fun LogsItem(
     record: ActionRecord,
     action: Action?,
-    onClick: () -> Unit,
-    dateFormatter: SimpleDateFormat
+    onClick: () -> Unit
 ) {
+
+    val timeFormatter = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -106,7 +114,7 @@ fun LogsItem(
                     style = MaterialTheme.typography.titleMedium
                 )
                 Text(
-                    text = dateFormatter.format(Date(record.timestamp)),
+                    text = timeFormatter.format(Date(record.timestamp)),
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.outline
                 )

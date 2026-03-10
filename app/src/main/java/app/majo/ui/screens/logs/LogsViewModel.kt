@@ -10,23 +10,48 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
+import app.majo.ui.util.atStartOfDay
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
+
+
+sealed class LogListItem {
+    data class Header(val dateText: String) : LogListItem()
+    data class Item(val record: ActionRecord, val action: Action?) : LogListItem()
+}
+
 
 class LogsViewModel(
     private val actionRepository: ActionRepository,
     private val recordRepository: RecordRepository
 ) : ViewModel() {
 
-    val logsWithActions: StateFlow<Map<ActionRecord, Action?>> =
+    val flatLogList: StateFlow<List<LogListItem>> =
         combine(
             recordRepository.getAllRecords(),
             actionRepository.getActions()
         ) { records, actions ->
-            records.associateWith { record ->
-                actions.find { it.id == record.activityId }
-            }
+            val actionMap = actions.associateBy { it.id }
+            records
+                .groupBy { record -> record.timestamp.atStartOfDay() }
+                .toSortedMap(compareByDescending { it })  // дни от новых к старым
+                .flatMap { (dayStart, recordsForDay) ->
+                    listOf(LogListItem.Header(formatDateHeader(dayStart))) +
+                            recordsForDay
+                                .sortedByDescending { it.timestamp } // внутри дня от новых к старым
+                                .map { record -> LogListItem.Item(record, actionMap[record.activityId]) }
+                }
         }.stateIn(
             scope = viewModelScope,
             started = SharingStarted.WhileSubscribed(5000),
-            initialValue = emptyMap()
+            initialValue = emptyList()
         )
+
+
+    // Вспомогательная функция форматирования заголовка
+    private fun formatDateHeader(timestamp: Long): String {
+        val formatter = SimpleDateFormat("d MMMM", Locale("ru"))
+        return formatter.format(Date(timestamp))
+    }
 }
