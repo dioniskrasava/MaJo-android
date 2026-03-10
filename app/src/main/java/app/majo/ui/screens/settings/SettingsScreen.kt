@@ -91,6 +91,38 @@ fun SettingsScreen(
 
             Spacer(Modifier.height(32.dp))
 
+
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    // Улучшенный UX: клик по всей строке переключает тему
+                    .padding(vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.theme_label_on_settings_screen),
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.weight(1f) // Занимает всё доступное место слева
+                )
+
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+
+            // Аналогично для цвета
+            DropdownField(
+                label = stringResource(R.string.accent_color),
+                current = state.currentAccentColor,
+                items = state.availableAccentColors,
+                getDisplayText = { it },
+                onSelect = { selectedColor ->
+                    viewModel.onEvent(SettingsEvent.AccentColorChanged(selectedColor))
+                }
+            )
+
+            Spacer(Modifier.height(16.dp))
+
             // --- 2. Переключатель Темной темы ---
             Row(
                 modifier = Modifier
@@ -114,20 +146,9 @@ fun SettingsScreen(
                 )
             }
 
-            Spacer(Modifier.height(32.dp))
-
-            // Аналогично для цвета
-            DropdownField(
-                label = stringResource(R.string.accent_color),
-                current = state.currentAccentColor,
-                items = state.availableAccentColors,
-                getDisplayText = { it },
-                onSelect = { selectedColor ->
-                    viewModel.onEvent(SettingsEvent.AccentColorChanged(selectedColor))
-                }
-            )
-
             Spacer(Modifier.height(16.dp))
+
+            // Переключатель пользовательских цветов
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
