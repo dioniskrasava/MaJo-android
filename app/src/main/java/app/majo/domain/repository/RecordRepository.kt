@@ -45,4 +45,6 @@ interface RecordRepository {
     suspend fun update(record: ActionRecord)
 
     suspend fun delete(id: Long)
+
+    fun getAllRecords(): Flow<List<ActionRecord>>
 }

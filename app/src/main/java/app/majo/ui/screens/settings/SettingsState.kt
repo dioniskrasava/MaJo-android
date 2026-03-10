@@ -21,8 +21,6 @@ data class SettingsState(
     // Флаг для переключателя (например, "Темная тема")
     val isDarkMode: Boolean = false,
 
-    // Список доступных языков для отображения в выпадающем списке
-    val availableLanguages: List<String> = listOf("Русский", "English"),
 
     // Доступные акцентные цвета
     val availableAccentColors: List<String> = listOf("Purple", "Blue", "Green", "Red"),

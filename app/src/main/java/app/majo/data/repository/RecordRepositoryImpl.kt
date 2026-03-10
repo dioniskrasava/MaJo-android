@@ -37,4 +37,7 @@ class RecordRepositoryImpl(
     override suspend fun delete(id: Long) {
         dao.delete(id)
     }
+
+    override fun getAllRecords(): Flow<List<ActionRecord>> =
+        dao.getAllRecords().map { list -> list.map { it.toDomain() } }
 }

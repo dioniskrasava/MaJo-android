@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.majo.domain.model.action.*
 import app.majo.R
+import app.majo.ui.util.toLocalizedString
 
 /**
  * Отображает карточку одной активности в списке.
@@ -83,7 +84,7 @@ fun ActionCard(
 
                 // Тип и юнит (например: DISTANCE • KM)
                 Text(
-                    text = "${action.type.name} • ${action.unit.name}",
+                    text =  "${action.type.toLocalizedString()} • ${action.unit.toLocalizedString()}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -137,7 +138,7 @@ fun CategoryChip(category: ActionCategory) {
             .padding(horizontal = 8.dp, vertical = 4.dp)
     ) {
         Text(
-            text = category.name,
+            text = category.toLocalizedString(),
             color = color,
             style = MaterialTheme.typography.labelSmall // Небольшой, но заметный шрифт
         )

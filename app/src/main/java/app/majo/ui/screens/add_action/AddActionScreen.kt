@@ -14,6 +14,7 @@ import app.majo.domain.model.action.ActionType
 import app.majo.domain.model.action.UnitType
 import app.majo.ui.common.SimpleTopAppBar
 import app.majo.R
+import app.majo.ui.util.toLocalizedString
 
 /**
  * Стандартная высота в dp для вертикального отступа между элементами формы.
@@ -88,26 +89,25 @@ fun AddActivityScreen(
 
             Spacer(Modifier.height(HEIGHT_SPACER.dp))
 
-            // Селектор Типа активности
+            // Тип активности
             DropdownField(
                 label = stringResource(R.string.activity_type),
-                current = state.type.name,
-                items = ActionType.values().map { it.name },
-                onSelect = {
-                    viewModel.onEvent(AddActionEvent.OnTypeChange(ActionType.valueOf(it)))
-                }
+                current = state.type,
+                items = ActionType.values().toList(),
+                getDisplayText = { it.toLocalizedString() },
+                onSelect = { viewModel.onEvent(AddActionEvent.OnTypeChange(it)) }
             )
+
 
             Spacer(Modifier.height(HEIGHT_SPACER.dp))
 
-            // Селектор Единицы измерения
+            // Единица измерения
             DropdownField(
                 label = stringResource(R.string.unit),
-                current = state.unit.name,
-                items = state.availableUnits.map { it.name },
-                onSelect = {
-                    viewModel.onEvent(AddActionEvent.OnUnitChange(UnitType.valueOf(it)))
-                }
+                current = state.unit,
+                items = state.availableUnits,
+                getDisplayText = { it.toLocalizedString() },
+                onSelect = { viewModel.onEvent(AddActionEvent.OnUnitChange(it)) }
             )
 
             Spacer(Modifier.height(HEIGHT_SPACER.dp))
@@ -122,14 +122,13 @@ fun AddActivityScreen(
 
             Spacer(Modifier.height(HEIGHT_SPACER.dp))
 
-            // Селектор Категории
+            // Категория
             DropdownField(
                 label = stringResource(R.string.category),
-                current = state.category.name,
-                items = ActionCategory.values().map { it.name },
-                onSelect = {
-                    viewModel.onEvent(AddActionEvent.OnCategoryChange(ActionCategory.valueOf(it)))
-                }
+                current = state.category,
+                items = ActionCategory.values().toList(),
+                getDisplayText = { it.toLocalizedString() },
+                onSelect = { viewModel.onEvent(AddActionEvent.OnCategoryChange(it)) }
             )
 
             Spacer(Modifier.height(HEIGHT_SPACER.dp))
@@ -184,24 +183,27 @@ fun AddActivityScreen(
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun DropdownField(
+fun <T> DropdownField(
     label: String,
-    current: String,
-    items: List<String>,
-    onSelect: (String) -> Unit
+    current: T,
+    items: List<T>,
+    getDisplayText: @Composable (T) -> String,
+    onSelect: (T) -> Unit,
+    modifier: Modifier = Modifier
 ) {
-    // Внутреннее состояние для управления открытием/закрытием меню
     var expanded by remember { mutableStateOf(false) }
 
     ExposedDropdownMenuBox(
         expanded = expanded,
-        onExpandedChange = { expanded = !expanded }
+        onExpandedChange = { expanded = !expanded },
+        modifier = modifier
     ) {
         OutlinedTextField(
-            value = current,
-            onValueChange = {}, // Невозможно изменить вручную, только через меню
+            value = getDisplayText(current),
+            onValueChange = {},
             readOnly = true,
             label = { Text(label) },
+            trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
             modifier = Modifier
                 .menuAnchor()
                 .fillMaxWidth()
@@ -213,10 +215,10 @@ fun DropdownField(
         ) {
             items.forEach { item ->
                 DropdownMenuItem(
-                    text = { Text(item) },
+                    text = { Text(getDisplayText(item)) },
                     onClick = {
-                        expanded = false // Закрываем меню после выбора
-                        onSelect(item)  // Передаем выбранное значение во внешний колбэк
+                        expanded = false
+                        onSelect(item)
                     }
                 )
             }

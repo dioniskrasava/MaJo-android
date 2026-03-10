@@ -59,4 +59,28 @@
     <string name="blue">Blue</string>
     <string name="green">Green</string>
     <string name="red">Red</string>
+
+    <!-- ActionType -->
+    <string name="action_type_distance">Расстояние</string>
+    <string name="action_type_time">Время</string>
+    <string name="action_type_count">Количество</string>
+    <string name="action_type_binary">Да/Нет</string>
+
+    <!-- ActionCategory -->
+    <string name="action_category_fitness">Фитнес</string>
+    <string name="action_category_productivity">Продуктивность</string>
+    <string name="action_category_health">Здоровье</string>
+    <string name="action_category_education">Образование</string>
+    <string name="action_category_other">Другое</string>
+
+    <!-- UnitType -->
+    <string name="unit_type_none">Нет</string>
+    <string name="unit_type_km">км</string>
+    <string name="unit_type_meter">м</string>
+    <string name="unit_type_minute">мин</string>
+    <string name="unit_type_hour">ч</string>
+    <string name="unit_type_repetition">повтор</string>
+
+    <string name="logs_title">Логи</string>
+    <string name="no_records">нет записей</string>
 </resources>

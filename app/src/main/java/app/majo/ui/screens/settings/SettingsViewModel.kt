@@ -20,7 +20,7 @@ sealed class SettingsEvent {
      * Событие: Пользователь выбрал новый язык в выпадающем списке.
      * @property newLanguage Строковое название выбранного языка (например, "Русский").
      */
-    data class LanguageChanged(val newLanguage: String) : SettingsEvent()
+    data class LanguageChanged(val languageCode: String) : SettingsEvent()
 
     /**
      * Событие: Пользователь переключил состояние темной темы.
@@ -74,14 +74,9 @@ class SettingsViewModel(
     fun onEvent(event: SettingsEvent) {
         when (event) {
             is SettingsEvent.LanguageChanged -> {
-                // Обновляем состояние: меняем код языка
-                val newCode = mapLanguageToCode(event.newLanguage)
                 viewModelScope.launch {
-                    // 1. Сначала записываем в DataStore (асинхронно)
-                    dataStore.setLanguageCode(newCode)
+                    dataStore.setLanguageCode(event.languageCode)
                 }
-                // 2. DataStore Flow обновит _state автоматически,
-                //    поэтому ручное _state.update() здесь не нужно!
             }
             is SettingsEvent.DarkModeToggled -> {
                 viewModelScope.launch {

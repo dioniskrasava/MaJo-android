@@ -70,25 +70,22 @@ fun SettingsScreen(
                 .fillMaxWidth()
         ) {
 
-            val russian = stringResource(R.string.russian)
-            val english = stringResource(R.string.english)
+            val languageCodes = listOf("ru", "en")
 
             //выбор языка
             DropdownField(
                 label = stringResource(R.string.app_language),
-                current = when (state.currentLanguageCode) {
-                    "ru" -> russian
-                    "en" -> english
-                    else -> russian
+                current = state.currentLanguageCode,
+                items = languageCodes,
+                getDisplayText = { code ->
+                    when (code) {
+                        "ru" -> stringResource(R.string.russian)
+                        "en" -> stringResource(R.string.english)
+                        else -> stringResource(R.string.russian)
+                    }
                 },
-                items = listOf(
-                    stringResource(R.string.russian),
-                    stringResource(R.string.english)
-                ),
-                onSelect = { selectedLang ->
-                    val code = if (selectedLang == russian) "ru" else "en"
-                    viewModel.onEvent(SettingsEvent.LanguageChanged(selectedLang))
-                    //onLanguageChange(code)
+                onSelect = { code ->
+                    viewModel.onEvent(SettingsEvent.LanguageChanged(code))
                 }
             )
 
@@ -119,10 +116,12 @@ fun SettingsScreen(
 
             Spacer(Modifier.height(32.dp))
 
+            // Аналогично для цвета
             DropdownField(
                 label = stringResource(R.string.accent_color),
                 current = state.currentAccentColor,
                 items = state.availableAccentColors,
+                getDisplayText = { it },
                 onSelect = { selectedColor ->
                     viewModel.onEvent(SettingsEvent.AccentColorChanged(selectedColor))
                 }

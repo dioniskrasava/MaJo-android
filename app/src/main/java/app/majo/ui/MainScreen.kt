@@ -46,6 +46,9 @@ import app.majo.ui.screens.record_list.RecordListViewModel
 import app.majo.ui.screens.record_list.RecordListViewModelFactory
 import app.majo.ui.shared.SharedRecordsViewModel
 import app.majo.R
+import app.majo.ui.screens.logs.LogsScreen
+import app.majo.ui.screens.logs.LogsViewModel
+import app.majo.ui.screens.logs.LogsViewModelFactory
 
 /**
  * Главный экран-оболочка (Application Shell) приложения.
@@ -145,8 +148,11 @@ fun MainScreen(
                 RecordListScreen(
                     viewModel = vm,
                     sharedViewModel = sharedRecordsViewModel,
-                    onRecordClick = { recordId ->  // новый колбэк
+                    onRecordClick = { recordId ->
                         navController.navigate("edit_record/$recordId")
+                    },
+                    onLogsClick = {
+                        navController.navigate(Screen.Logs.route)
                     }
                 )
             }
@@ -257,6 +263,19 @@ fun MainScreen(
                 }
                 AddRecordScreen(
                     viewModel = vm,
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+
+            composable(Screen.Logs.route) {
+                val vm: LogsViewModel = viewModel(
+                    factory = LogsViewModelFactory(actionRepository, recordRepository)
+                )
+                LogsScreen(
+                    viewModel = vm,
+                    onRecordClick = { recordId ->
+                        navController.navigate("edit_record/$recordId")
+                    },
                     onNavigateBack = { navController.popBackStack() }
                 )
             }

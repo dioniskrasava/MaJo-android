@@ -15,6 +15,7 @@ sealed class Screen(val route: String, @StringRes val titleRes: Int, val icon: I
     data object AddRecord : Screen("addRecord", R.string.add_record_title, Icons.Filled.List)
     data object AddActivity : Screen("addActivity", R.string.add_activity_title, Icons.Filled.Star)
     data object Settings : Screen("settings", R.string.settings_title, Icons.Filled.Settings)
+    data object Logs : Screen("logs", R.string.logs_title, Icons.Filled.List)
 
     // Маршрут для редактирования (с аргументом)
     fun withArgs(vararg args: String): String = buildString {

@@ -44,4 +44,29 @@
     <string name="blue">Blue</string>
     <string name="green">Green</string>
     <string name="red">Red</string>
+
+    <!-- ActionType -->
+    <string name="action_type_distance">Distance</string>
+    <string name="action_type_time">Time</string>
+    <string name="action_type_count">Count</string>
+    <string name="action_type_binary">Binary</string>
+
+    <!-- ActionCategory -->
+    <string name="action_category_fitness">Fitness</string>
+    <string name="action_category_productivity">Productivity</string>
+    <string name="action_category_health">Health</string>
+    <string name="action_category_education">Education</string>
+    <string name="action_category_other">Other</string>
+
+    <!-- UnitType -->
+    <string name="unit_type_none">None</string>
+    <string name="unit_type_km">km</string>
+    <string name="unit_type_meter">m</string>
+    <string name="unit_type_minute">min</string>
+    <string name="unit_type_hour">h</string>
+    <string name="unit_type_repetition">repetition</string>
+
+    <string name="logs_title">Logs</string>
+    <string name="no_records">нет записей</string>
+
 </resources>

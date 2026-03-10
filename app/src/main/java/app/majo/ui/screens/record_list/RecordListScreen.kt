@@ -9,6 +9,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Delete
+import androidx.compose.material.icons.filled.MoreVert
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -26,16 +27,20 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 import app.majo.R
+import app.majo.ui.util.toLocalizedString
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecordListScreen(
     viewModel: RecordListViewModel,
     sharedViewModel: SharedRecordsViewModel,
-    onRecordClick: (Long) -> Unit
+    onRecordClick: (Long) -> Unit,
+    onLogsClick: () -> Unit
 ) {
     val recordsMap by viewModel.recordsWithActivities.collectAsState()
     val currentDayStart by viewModel.currentDayStartMs.collectAsState()
+
+    var menuExpanded by remember { mutableStateOf(false) }
 
     // Считаем общие очки за выбранный день
     val dayTotalPoints = remember(recordsMap) {
@@ -52,7 +57,24 @@ fun RecordListScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text(stringResource(R.string.journal)) },  // Журнал
+                title = { Text(stringResource(R.string.journal)) },
+                actions = {
+                    IconButton(onClick = { menuExpanded = true }) {
+                        Icon(Icons.Default.MoreVert, contentDescription = "Меню")
+                    }
+                    DropdownMenu(
+                        expanded = menuExpanded,
+                        onDismissRequest = { menuExpanded = false }
+                    ) {
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.logs_title)) },
+                            onClick = {
+                                menuExpanded = false
+                                onLogsClick()
+                            }
+                        )
+                    }
+                }
             )
         }
     ) { innerPadding ->
@@ -278,7 +300,7 @@ fun RecordItem(
                         String.format("%.1f", record.value)
                     }
                     Text(
-                        text = "$valueText ${action.unit.name.lowercase()}",
+                        text = "$valueText ${action.unit.toLocalizedString().lowercase()}",
                         style = MaterialTheme.typography.bodySmall,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
