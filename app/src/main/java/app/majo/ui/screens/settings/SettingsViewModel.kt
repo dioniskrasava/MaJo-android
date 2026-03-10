@@ -113,4 +113,11 @@ class SettingsViewModel(
             else -> "ru"
         }
     }
+
+
+    fun setCardAlpha(alpha: Float) {
+        viewModelScope.launch {
+            dataStore.setCardAlpha(alpha)
+        }
+    }
 }

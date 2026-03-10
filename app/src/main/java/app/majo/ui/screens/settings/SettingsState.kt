@@ -28,5 +28,7 @@ data class SettingsState(
     // Текущий (актуальный) акцентный цвет
     val currentAccentColor: String = "Purple",
 
-    val useActionColors: Boolean = true
+    val useActionColors: Boolean = true,
+
+    val cardAlpha: Float = 0.4f
 )

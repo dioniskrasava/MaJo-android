@@ -141,6 +141,7 @@ fun RecordListScreen(
                             record = record,
                             action = action,
                             useColors = settingsState.useActionColors,   // передаём флаг
+                            cardAlpha = settingsState.cardAlpha,
                             onClick = { onRecordClick(record.id) }
                         )
                     }
@@ -246,6 +247,7 @@ fun RecordItem(
     record: ActionRecord,
     action: Action?,
     useColors: Boolean,
+    cardAlpha: Float,
     onClick: () -> Unit
 ) {
     val configuration = LocalConfiguration.current
@@ -257,7 +259,7 @@ fun RecordItem(
     }
 
     val backgroundColor = if (useColors && action != null) {
-        getColorByName(action.color, isLight).copy(alpha = 0.4f)
+        getColorByName(action.color, isLight).copy(alpha = cardAlpha)
     } else {
         MaterialTheme.colorScheme.surfaceVariant
     }

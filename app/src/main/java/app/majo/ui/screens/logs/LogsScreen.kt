@@ -74,6 +74,7 @@ fun LogsScreen(
                                 record = item.record,
                                 action = item.action,
                                 useColors = settingsState.useActionColors,
+                                cardAlpha = settingsState.cardAlpha,
                                 onClick = { onRecordClick(item.record.id) }
                                 // dateFormatter убираем — он не используется в LogsItem
                             )
@@ -90,6 +91,7 @@ fun LogsItem(
     record: ActionRecord,
     action: Action?,
     useColors: Boolean,
+    cardAlpha: Float,
     onClick: () -> Unit
 ) {
     val configuration = LocalConfiguration.current
@@ -101,7 +103,7 @@ fun LogsItem(
     }
 
     val backgroundColor = if (useColors && action != null) {
-        getColorByName(action.color, isLight).copy(alpha = 0.4f)
+        getColorByName(action.color, isLight).copy(alpha = cardAlpha)
     } else {
         MaterialTheme.colorScheme.surfaceVariant
     }

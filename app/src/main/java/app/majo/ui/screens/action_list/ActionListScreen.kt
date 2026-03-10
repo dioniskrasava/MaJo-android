@@ -67,6 +67,7 @@ fun ActionListScreen(
                 ActionCard(
                     action = action,
                     useColors = settingsState.useActionColors,
+                    cardAlpha = settingsState.cardAlpha,
                     onClick = { onItemClick(action.id) }
                 )
             }
