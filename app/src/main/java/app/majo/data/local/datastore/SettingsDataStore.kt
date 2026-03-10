@@ -19,6 +19,7 @@ object PreferencesKeys {
     val IS_DARK_MODE = booleanPreferencesKey("is_dark_mode")
     val LANGUAGE_CODE = stringPreferencesKey("language_code")
     val ACCENT_COLOR = stringPreferencesKey("accent_color")
+    val USE_ACTION_COLORS = booleanPreferencesKey("use_action_colors")
 }
 
 class SettingsDataStore(private val context: Context) {
@@ -26,11 +27,11 @@ class SettingsDataStore(private val context: Context) {
     // 3. Чтение настроек: возвращаем Flow<SettingsState>
     val settingsFlow = context.dataStore.data
         .map { preferences ->
-            // Получаем значения или используем дефолтные из SettingsState
             SettingsState(
                 isDarkMode = preferences[PreferencesKeys.IS_DARK_MODE] ?: false,
                 currentLanguageCode = preferences[PreferencesKeys.LANGUAGE_CODE] ?: "ru",
-                currentAccentColor = preferences[PreferencesKeys.ACCENT_COLOR] ?: "Purple"
+                currentAccentColor = preferences[PreferencesKeys.ACCENT_COLOR] ?: "Purple",
+                useActionColors = preferences[PreferencesKeys.USE_ACTION_COLORS] ?: true   // по умолчанию true
             )
         }
 
@@ -59,4 +60,10 @@ class SettingsDataStore(private val context: Context) {
     suspend fun getLanguageCode(): String = context.dataStore.data.map { preferences ->
         preferences[PreferencesKeys.LANGUAGE_CODE] ?: "ru"
     }.first()
+
+    suspend fun setUseActionColors(use: Boolean) {
+        context.dataStore.edit { settings ->
+            settings[PreferencesKeys.USE_ACTION_COLORS] = use
+        }
+    }
 }

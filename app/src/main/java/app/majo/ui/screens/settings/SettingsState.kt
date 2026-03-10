@@ -26,5 +26,7 @@ data class SettingsState(
     val availableAccentColors: List<String> = listOf("Purple", "Blue", "Green", "Red"),
 
     // Текущий (актуальный) акцентный цвет
-    val currentAccentColor: String = "Purple"
+    val currentAccentColor: String = "Purple",
+
+    val useActionColors: Boolean = true
 )

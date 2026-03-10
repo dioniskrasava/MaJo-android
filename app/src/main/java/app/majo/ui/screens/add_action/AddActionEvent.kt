@@ -60,4 +60,6 @@ sealed interface AddActionEvent {
      * и очистки флага успешности.
      */
     object OnSavedHandled : AddActionEvent
+
+    data class OnColorChange(val color: String) : AddActionEvent
 }

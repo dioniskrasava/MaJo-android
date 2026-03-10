@@ -32,7 +32,8 @@ fun ActionEntity.toDomain(): Action = Action(
     pointsPerUnit = pointsPerUnit,
     category = ActionCategory.valueOf(category),
     isActive = isActive,
-    createdAt = createdAt
+    createdAt = createdAt,
+    color = color
 )
 
 /**
@@ -51,5 +52,6 @@ fun Action.toEntity(): ActionEntity = ActionEntity(
     pointsPerUnit = pointsPerUnit,
     category = category.name,
     isActive = isActive,
-    createdAt = createdAt
+    createdAt = createdAt,
+    color = color
 )

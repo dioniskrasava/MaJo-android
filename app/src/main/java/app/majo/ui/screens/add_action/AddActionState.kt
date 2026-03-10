@@ -4,6 +4,7 @@ import app.majo.domain.model.action.ActionCategory
 import app.majo.domain.model.action.ActionType
 import app.majo.domain.model.action.UnitType
 import app.majo.domain.model.ActionTypeUnitMapper
+import app.majo.domain.model.action.ActionColors
 
 /**
  * Состояние экрана создания и редактирования активности.
@@ -37,5 +38,7 @@ data class AddActionState(
     val isSaved: Boolean = false,
     val error: String? = null,
     val isEditMode: Boolean = false,
-    val editId: Long? = null
+    val editId: Long? = null,
+    val color: String = ActionColors.availableColors.first(),   // выбранный цвет
+    val availableColors: List<String> = ActionColors.availableColors   // список всех цветов
 )

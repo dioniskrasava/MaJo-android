@@ -2,6 +2,8 @@ package app.majo.data.local.database
 
 import android.content.Context
 import androidx.room.Room
+import androidx.room.migration.Migration
+import androidx.sqlite.db.SupportSQLiteDatabase
 
 /**
  * Объект-синглтон, отвечающий за создание и предоставление единственного
@@ -22,6 +24,13 @@ object AppDatabaseInstance {
     @Volatile
     private var INSTANCE: AppDatabase? = null
 
+
+    val MIGRATION_2_3 = object : Migration(2, 3) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL("ALTER TABLE actions ADD COLUMN color TEXT NOT NULL DEFAULT 'Purple'")
+        }
+    }
+
     /**
      * Предоставляет синглтон-экземпляр [AppDatabase].
      *
@@ -34,17 +43,14 @@ object AppDatabaseInstance {
      * @return Единственный экземпляр [AppDatabase].
      */
     fun getDatabase(context: Context): AppDatabase {
-        // Проверяем, существует ли экземпляр, и возвращаем его, если да.
         return INSTANCE ?: synchronized(this) {
-            // Если экземпляра нет, создаем его (только внутри синхронизированного блока)
             Room.databaseBuilder(
                 context.applicationContext,
                 AppDatabase::class.java,
-                "majo_database" // Имя файла базы данных.
+                "majo_database"
             )
-                // .fallbackToDestructiveMigration() // Полезная опция для разработки: при изменении версии сносит старую БД.
+                .addMigrations(MIGRATION_2_3)   // добавлено
                 .build().also { db ->
-                    // Сохраняем созданный экземпляр
                     INSTANCE = db
                 }
         }

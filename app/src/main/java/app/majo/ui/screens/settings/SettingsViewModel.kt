@@ -30,6 +30,8 @@ sealed class SettingsEvent {
 
     // Акцентный цвет для приложения
     data class AccentColorChanged(val newColor: String) : SettingsEvent()
+
+    data class UseActionColorsToggled(val use: Boolean) : SettingsEvent()
 }
 
 
@@ -88,6 +90,11 @@ class SettingsViewModel(
                 viewModelScope.launch {
                     // 1. Записываем в DataStore
                     dataStore.setAccentColor(event.newColor)
+                }
+            }
+            is SettingsEvent.UseActionColorsToggled -> {
+                viewModelScope.launch {
+                    dataStore.setUseActionColors(event.use)
                 }
             }
 

@@ -83,4 +83,6 @@
 
     <string name="logs_title">Логи</string>
     <string name="no_records">нет записей</string>
+    <string name="use_action_colors">Использовать пользовательские цвета активностей</string>
+    <string name="select_color">Выбранный цвет</string>
 </resources>

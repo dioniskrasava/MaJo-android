@@ -15,7 +15,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import app.majo.domain.model.action.*
 import app.majo.R
+import app.majo.ui.theme.getColorByName
 import app.majo.ui.util.toLocalizedString
+import androidx.compose.material3.MaterialTheme
+import android.content.res.Configuration
+import androidx.compose.ui.platform.LocalConfiguration
 
 /**
  * Отображает карточку одной активности в списке.
@@ -32,8 +36,13 @@ import app.majo.ui.util.toLocalizedString
 @Composable
 fun ActionCard(
     action: Action,
+    useColors: Boolean,
     onClick: () -> Unit
 ) {
+
+    val configuration = LocalConfiguration.current
+    val isLight = configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_NO
+    val actionColor = if (useColors) getColorByName(action.color, isLight) else MaterialTheme.colorScheme.primary
 
     // Card = визуальный контейнер с фоном, скруглениями и тенью.
     Card(
@@ -62,7 +71,7 @@ fun ActionCard(
             Icon(
                 imageVector = getActionIcon(action.type),
                 contentDescription = action.name, // Используем название как описание для скринридера
-                tint = MaterialTheme.colorScheme.primary, // Основной акцентный цвет
+                tint = actionColor, // Основной акцентный цвет
                 modifier = Modifier.size(32.dp)
             )
 

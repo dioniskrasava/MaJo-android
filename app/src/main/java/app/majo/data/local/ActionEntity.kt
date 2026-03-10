@@ -37,5 +37,6 @@ data class ActionEntity(
     val pointsPerUnit: Double, // Очков за единицу
     val category: String,      // Категория (ActionCategory)
     val isActive: Boolean,     // Активна ли в списке
-    val createdAt: Long        // Когда была создана
+    val createdAt: Long,        // Когда была создана
+    val color: String = "Purple" // Цвет
 )

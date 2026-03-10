@@ -27,13 +27,20 @@ import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
 import app.majo.R
+import app.majo.ui.screens.settings.SettingsViewModel
+import app.majo.ui.theme.getColorByName
 import app.majo.ui.util.toLocalizedString
+import androidx.compose.material3.MaterialTheme
+import android.content.res.Configuration
+import androidx.compose.ui.platform.LocalConfiguration
+
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecordListScreen(
     viewModel: RecordListViewModel,
     sharedViewModel: SharedRecordsViewModel,
+    settingsViewModel: SettingsViewModel,
     onRecordClick: (Long) -> Unit,
     onLogsClick: () -> Unit
 ) {
@@ -46,6 +53,8 @@ fun RecordListScreen(
     val dayTotalPoints = remember(recordsMap) {
         recordsMap.keys.sumOf { it.totalPoints }
     }
+
+    val settingsState by settingsViewModel.state.collectAsState()
 
     LaunchedEffect(Unit) {
         val sharedDate = sharedViewModel.currentDayStartMs.value
@@ -128,7 +137,12 @@ fun RecordListScreen(
                     items(recordsMap.entries.toList()) { entry ->
                         val record = entry.key
                         val action = entry.value
-                        RecordItem(record = record, action = action, onClick = { onRecordClick(record.id) })
+                        RecordItem(
+                            record = record,
+                            action = action,
+                            useColors = settingsState.useActionColors,   // передаём флаг
+                            onClick = { onRecordClick(record.id) }
+                        )
                     }
                 }
             }
@@ -231,9 +245,18 @@ fun DaySummaryCard(totalPoints: Double) {
 fun RecordItem(
     record: ActionRecord,
     action: Action?,
+    useColors: Boolean,
     onClick: () -> Unit
 ) {
     val timeFormatter = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
+
+    val configuration = LocalConfiguration.current
+    val isLight = configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_NO
+    val iconColor = if (useColors && action != null) {
+        getColorByName(action.color, isLight)
+    } else {
+        MaterialTheme.colorScheme.primary
+    }
 
     Card(
         modifier = Modifier
@@ -254,9 +277,9 @@ fun RecordItem(
             // Иконка активности (используем хелпер из ActionCard.kt)
             if (action != null) {
                 Icon(
-                    imageVector = getActionIcon(action.type), //
+                    imageVector = if (action != null) getActionIcon(action.type) else Icons.Default.Delete, //
                     contentDescription = null,
-                    tint = MaterialTheme.colorScheme.primary,
+                    tint = if (action != null) iconColor else MaterialTheme.colorScheme.error,
                     modifier = Modifier.size(32.dp)
                 )
             } else {

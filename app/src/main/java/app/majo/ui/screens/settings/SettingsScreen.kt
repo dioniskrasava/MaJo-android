@@ -126,6 +126,29 @@ fun SettingsScreen(
                     viewModel.onEvent(SettingsEvent.AccentColorChanged(selectedColor))
                 }
             )
+
+            Spacer(Modifier.height(16.dp))
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clickable { viewModel.onEvent(SettingsEvent.UseActionColorsToggled(!state.useActionColors)) }
+                    .padding(vertical = 8.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = stringResource(R.string.use_action_colors), // нужно добавить строку в ресурсы
+                    style = MaterialTheme.typography.bodyLarge,
+                    modifier = Modifier.weight(1f)
+                )
+                Switch(
+                    checked = state.useActionColors,
+                    onCheckedChange = { use ->
+                        viewModel.onEvent(SettingsEvent.UseActionColorsToggled(use))
+                    }
+                )
+            }
         }
+
+
     }
 }

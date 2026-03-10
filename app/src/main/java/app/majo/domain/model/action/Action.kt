@@ -35,5 +35,6 @@ data class Action(
     val pointsPerUnit: Double,
     val category: ActionCategory = ActionCategory.OTHER,
     val isActive: Boolean = true,
-    val createdAt: Long = System.currentTimeMillis()
+    val createdAt: Long = System.currentTimeMillis(),
+    val color: String = "Purple"
 )

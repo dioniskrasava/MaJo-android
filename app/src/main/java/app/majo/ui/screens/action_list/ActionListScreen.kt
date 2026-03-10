@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import app.majo.R
 import app.majo.ui.components.ActionCard
+import app.majo.ui.screens.settings.SettingsViewModel
 
 
 /**
@@ -29,10 +30,12 @@ import app.majo.ui.components.ActionCard
 @Composable
 fun ActionListScreen(
     viewModel: ActionListViewModel,
+    settingsViewModel: SettingsViewModel,
     onItemClick: (Long) -> Unit,
     onNavigateToAddActivity: () -> Unit // <-- NEW: Добавляем обработчик
 ) {
     val state by viewModel.state.collectAsState()
+    val settingsState by settingsViewModel.state.collectAsState()
 
     Scaffold(
         // NEW: Верхний бар с кнопкой "Добавить Активность"
@@ -63,6 +66,7 @@ fun ActionListScreen(
             items(state.actions) { action ->
                 ActionCard(
                     action = action,
+                    useColors = settingsState.useActionColors,
                     onClick = { onItemClick(action.id) }
                 )
             }

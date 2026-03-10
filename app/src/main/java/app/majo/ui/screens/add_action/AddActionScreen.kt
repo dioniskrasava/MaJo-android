@@ -1,12 +1,17 @@
 package app.majo.ui.screens.add_action
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import app.majo.domain.model.action.ActionCategory
@@ -14,7 +19,12 @@ import app.majo.domain.model.action.ActionType
 import app.majo.domain.model.action.UnitType
 import app.majo.ui.common.SimpleTopAppBar
 import app.majo.R
+import app.majo.ui.theme.getColorByName
 import app.majo.ui.util.toLocalizedString
+import androidx.compose.ui.graphics.Color
+import androidx.compose.material3.ColorScheme
+import android.content.res.Configuration
+import androidx.compose.ui.platform.LocalConfiguration
 
 /**
  * Стандартная высота в dp для вертикального отступа между элементами формы.
@@ -133,6 +143,17 @@ fun AddActivityScreen(
 
             Spacer(Modifier.height(HEIGHT_SPACER.dp))
 
+            // Выбор цвета
+            Text(stringResource(R.string.select_color), style = MaterialTheme.typography.titleSmall)
+            ColorPicker(
+                colors = state.availableColors,
+                selectedColor = state.color,
+                onColorSelected = { viewModel.onEvent(AddActionEvent.OnColorChange(it)) }
+            )
+            Spacer(Modifier.height(HEIGHT_SPACER.dp))
+
+            Spacer(Modifier.height(HEIGHT_SPACER.dp))
+
             // Кнопка сохранения
             Button(
                 onClick = { viewModel.onEvent(AddActionEvent.OnSaveClick) },
@@ -222,6 +243,38 @@ fun <T> DropdownField(
                     }
                 )
             }
+        }
+    }
+}
+
+// КАСТОМНЫЙ ВЫБОР ЦВЕТА
+@Composable
+fun ColorPicker(
+    colors: List<String>,
+    selectedColor: String,
+    onColorSelected: (String) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val configuration = LocalConfiguration.current
+    val isLight = configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_NO // нужно получить текущую тему
+
+    LazyRow(
+        modifier = modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(colors) { colorName ->
+            val color = getColorByName(colorName, isLight)
+            Surface(
+                modifier = Modifier
+                    .size(40.dp)
+                    .clip(CircleShape)
+                    .clickable { onColorSelected(colorName) },
+                color = color,
+                border = BorderStroke(
+                    width = if (colorName == selectedColor) 3.dp else 1.dp,
+                    color = if (colorName == selectedColor) MaterialTheme.colorScheme.primary else Color.Transparent
+                )
+            ) {}
         }
     }
 }

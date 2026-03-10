@@ -20,18 +20,25 @@ import app.majo.domain.model.action.Action
 import app.majo.domain.model.record.ActionRecord
 import app.majo.ui.common.SimpleTopAppBar
 import app.majo.ui.components.getActionIcon
+import app.majo.ui.screens.settings.SettingsViewModel
+import app.majo.ui.theme.getColorByName
 import app.majo.ui.util.toLocalizedString
 import java.text.SimpleDateFormat
 import java.util.*
+import androidx.compose.material3.MaterialTheme
+import android.content.res.Configuration
+import androidx.compose.ui.platform.LocalConfiguration
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LogsScreen(
     viewModel: LogsViewModel,
+    settingsViewModel: SettingsViewModel,
     onRecordClick: (Long) -> Unit,
     onNavigateBack: () -> Unit
 ) {
     val flatLogList by viewModel.flatLogList.collectAsState()
+    val settingsState by settingsViewModel.state.collectAsState()
 
     Scaffold(
         topBar = {
@@ -66,6 +73,7 @@ fun LogsScreen(
                             LogsItem(
                                 record = item.record,
                                 action = item.action,
+                                useColors = settingsState.useActionColors,
                                 onClick = { onRecordClick(item.record.id) }
                                 // dateFormatter убираем — он не используется в LogsItem
                             )
@@ -81,10 +89,19 @@ fun LogsScreen(
 fun LogsItem(
     record: ActionRecord,
     action: Action?,
+    useColors: Boolean,
     onClick: () -> Unit
 ) {
 
     val timeFormatter = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
+
+    val configuration = LocalConfiguration.current
+    val isLight = configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_NO
+    val iconColor = if (useColors && action != null) {
+        getColorByName(action.color, isLight)
+    } else {
+        MaterialTheme.colorScheme.primary
+    }
 
     Card(
         modifier = Modifier
@@ -104,7 +121,7 @@ fun LogsItem(
             Icon(
                 imageVector = if (action != null) getActionIcon(action.type) else Icons.Default.Delete,
                 contentDescription = null,
-                tint = if (action != null) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.error,
+                tint = if (action != null) iconColor else MaterialTheme.colorScheme.error,
                 modifier = Modifier.size(32.dp)
             )
             Spacer(modifier = Modifier.width(12.dp))

@@ -82,6 +82,9 @@ class AddActionViewModel(
             is AddActionEvent.OnPointsChange ->
                 state.update { it.copy(pointsPerUnit = event.points, error = null) } // Сбрасываем ошибку
 
+            is AddActionEvent.OnColorChange ->
+                state.update { it.copy(color = event.color) }
+
             AddActionEvent.OnSaveClick ->
                 save() // Запускает валидацию и сохранение/обновление
 
@@ -122,7 +125,8 @@ class AddActionViewModel(
                 type = s.type,
                 unit = s.unit,
                 pointsPerUnit = points,
-                category = s.category
+                category = s.category,
+                color = s.color
             )
 
             repository.insert(newActivity)
@@ -164,7 +168,8 @@ class AddActionViewModel(
 
                         // Настраиваем режим редактирования
                         isEditMode = true,
-                        editId = id
+                        editId = id,
+                        color = it.color
                     )
                 }
             }
@@ -194,7 +199,8 @@ class AddActionViewModel(
                 type = s.type,
                 unit = s.unit,
                 pointsPerUnit = points,
-                category = s.category
+                category = s.category,
+                color = s.color
             )
 
             repository.update(updated)

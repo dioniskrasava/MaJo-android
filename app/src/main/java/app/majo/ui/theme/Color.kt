@@ -39,6 +39,26 @@ val Red200 = Color(0xFFD6A5A5)
 
 
 
+// Цвета для активностей
+
+val Amber500 = Color(0xFFFFC107)
+val Amber200 = Color(0xFFFFE082)
+val Cyan500 = Color(0xFF00BCD4)
+val Cyan200 = Color(0xFF80DEEA)
+val DeepOrange500 = Color(0xFFFF5722)
+val DeepOrange200 = Color(0xFFFFAB91)
+val Pink500 = Color(0xFFE91E63)
+val Pink200 = Color(0xFFF48FB1)
+val Indigo500 = Color(0xFF3F51B5)
+val Indigo200 = Color(0xFF9FA8DA)
+val Teal500 = Color(0xFF009688)
+val Teal200 = Color(0xFF80CBC4)
+val Lime500 = Color(0xFFCDDC39)
+val Lime200 = Color(0xFFE6EE9C)
+val Brown500 = Color(0xFF795548)
+val Brown200 = Color(0xFFBCAAA4)
+
+
 
 // NEW COLOR (OLD MAYBE DELETE)
 
@@ -172,6 +192,15 @@ fun getColorByName(name: String, isLight: Boolean): Color {
         "Green" -> if (isLight) Green500 else Green200
         "Purple" -> if (isLight) Purple40 else Purple80
         "Red" -> if (isLight) Red500 else Red200
-        else -> if (isLight) Purple40 else Purple80 // По умолчанию
+        "Amber" -> if (isLight) Amber500 else Amber200
+        "Cyan" -> if (isLight) Cyan500 else Cyan200
+        "DeepOrange" -> if (isLight) DeepOrange500 else DeepOrange200
+        "Pink" -> if (isLight) Pink500 else Pink200
+        "Indigo" -> if (isLight) Indigo500 else Indigo200
+        "Teal" -> if (isLight) Teal500 else Teal200
+        "Lime" -> if (isLight) Lime500 else Lime200
+        "Brown" -> if (isLight) Brown500 else Brown200
+        // добавьте другие по аналогии
+        else -> if (isLight) Purple40 else Purple80
     }
 }

@@ -148,6 +148,7 @@ fun MainScreen(
                 RecordListScreen(
                     viewModel = vm,
                     sharedViewModel = sharedRecordsViewModel,
+                    settingsViewModel = settingsViewModel,
                     onRecordClick = { recordId ->
                         navController.navigate("edit_record/$recordId")
                     },
@@ -169,6 +170,7 @@ fun MainScreen(
                 )
                 ActionListScreen(
                     viewModel = vm,
+                    settingsViewModel = settingsViewModel,
                     onItemClick = { id ->
                         navController.navigate("editActivity/$id")
                     },
@@ -273,6 +275,7 @@ fun MainScreen(
                 )
                 LogsScreen(
                     viewModel = vm,
+                    settingsViewModel = settingsViewModel,
                     onRecordClick = { recordId ->
                         navController.navigate("edit_record/$recordId")
                     },
