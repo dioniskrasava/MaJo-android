@@ -248,8 +248,6 @@ fun RecordItem(
     useColors: Boolean,
     onClick: () -> Unit
 ) {
-    val timeFormatter = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
-
     val configuration = LocalConfiguration.current
     val isLight = configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_NO
     val iconColor = if (useColors && action != null) {
@@ -258,14 +256,22 @@ fun RecordItem(
         MaterialTheme.colorScheme.primary
     }
 
+    val backgroundColor = if (useColors && action != null) {
+        getColorByName(action.color, isLight).copy(alpha = 0.2f)
+    } else {
+        MaterialTheme.colorScheme.surfaceVariant
+    }
+
+    val timeFormatter = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 4.dp)
             .clickable { onClick() },
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        //elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = backgroundColor
         )
     ) {
         Row(
@@ -274,16 +280,14 @@ fun RecordItem(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Иконка активности (используем хелпер из ActionCard.kt)
             if (action != null) {
                 Icon(
-                    imageVector = if (action != null) getActionIcon(action.type) else Icons.Default.Delete, //
+                    imageVector = getActionIcon(action.type),
                     contentDescription = null,
-                    tint = if (action != null) iconColor else MaterialTheme.colorScheme.error,
+                    tint = iconColor,
                     modifier = Modifier.size(32.dp)
                 )
             } else {
-                // Если активность была удалена, показываем заглушку
                 Icon(
                     imageVector = Icons.Default.Delete,
                     contentDescription = stringResource(R.string.deleted_activity),
@@ -291,10 +295,7 @@ fun RecordItem(
                     modifier = Modifier.size(32.dp)
                 )
             }
-
             Spacer(modifier = Modifier.width(16.dp))
-
-            // Основная информация
             Column(modifier = Modifier.weight(1f)) {
                 Text(
                     text = action?.name ?: stringResource(R.string.deleted_activity),
@@ -307,8 +308,6 @@ fun RecordItem(
                     color = MaterialTheme.colorScheme.outline
                 )
             }
-
-            // Значения и очки
             Column(horizontalAlignment = Alignment.End) {
                 Text(
                     text = "+${String.format("%.1f", record.totalPoints)}",

@@ -39,77 +39,54 @@ fun ActionCard(
     useColors: Boolean,
     onClick: () -> Unit
 ) {
-
     val configuration = LocalConfiguration.current
     val isLight = configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_NO
     val actionColor = if (useColors) getColorByName(action.color, isLight) else MaterialTheme.colorScheme.primary
 
-    // Card = визуальный контейнер с фоном, скруглениями и тенью.
+    val backgroundColor = if (useColors) {
+        actionColor.copy(alpha = 0.2f) // Полупрозрачный фон
+    } else {
+        MaterialTheme.colorScheme.surfaceVariant
+    }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            // небольшие внешние отступы между карточками
             .padding(horizontal = 12.dp, vertical = 6.dp)
-            // позволяет нажимать на карточку
             .clickable(onClick = onClick),
         colors = CardDefaults.cardColors(
-            // MaterialTheme автоматически подбирает цвета под тему (светлую/тёмную)
-            containerColor = MaterialTheme.colorScheme.surfaceVariant // Использует слегка отличающийся от фона цвет
+            containerColor = backgroundColor
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
+        //elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
-
-        // Row = горизонтальный контейнер, выравнивает все элементы по вертикали (CenterVertically)
         Row(
             modifier = Modifier.padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-
-            /**
-             * Иконка слева. Выбирается с помощью вспомогательной функции [getActionIcon].
-             */
             Icon(
                 imageVector = getActionIcon(action.type),
-                contentDescription = action.name, // Используем название как описание для скринридера
-                tint = actionColor, // Основной акцентный цвет
+                contentDescription = action.name,
+                tint = actionColor, // Иконка тоже цветная (или можно оставить primary)
                 modifier = Modifier.size(32.dp)
             )
-
             Spacer(modifier = Modifier.width(16.dp))
-
-            /**
-             * Основной текстовый блок. [Column] с [Modifier.weight(1f)] заставляет его
-             * занять всё доступное пространство между иконкой и чипом.
-             */
             Column(modifier = Modifier.weight(1f)) {
-
-                // Название активности
                 Text(
                     text = action.name,
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
                 )
-
                 Spacer(modifier = Modifier.height(4.dp))
-
-                // Тип и юнит (например: DISTANCE • KM)
                 Text(
-                    text =  "${action.type.toLocalizedString()} • ${action.unit.toLocalizedString()}",
+                    text = "${action.type.toLocalizedString()} • ${action.unit.toLocalizedString()}",
                     style = MaterialTheme.typography.bodySmall,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-
                 Spacer(modifier = Modifier.height(4.dp))
-
-                // Очки за единицу
                 Text(
                     text = stringResource(R.string.points_per_unit, action.pointsPerUnit.toString()),
                     style = MaterialTheme.typography.bodySmall
                 )
             }
-
-            /**
-             * Бейдж категории (правее всего), созданный отдельным композаблом.
-             */
             CategoryChip(action.category)
         }
     }

@@ -92,9 +92,6 @@ fun LogsItem(
     useColors: Boolean,
     onClick: () -> Unit
 ) {
-
-    val timeFormatter = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
-
     val configuration = LocalConfiguration.current
     val isLight = configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_NO
     val iconColor = if (useColors && action != null) {
@@ -103,13 +100,21 @@ fun LogsItem(
         MaterialTheme.colorScheme.primary
     }
 
+    val backgroundColor = if (useColors && action != null) {
+        getColorByName(action.color, isLight).copy(alpha = 0.2f)
+    } else {
+        MaterialTheme.colorScheme.surfaceVariant
+    }
+
+    val timeFormatter = remember { SimpleDateFormat("HH:mm", Locale.getDefault()) }
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 4.dp)
             .clickable { onClick() },
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surfaceVariant
+            containerColor = backgroundColor
         )
     ) {
         Row(
