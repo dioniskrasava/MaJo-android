@@ -101,7 +101,7 @@ fun LogsItem(
     }
 
     val backgroundColor = if (useColors && action != null) {
-        getColorByName(action.color, isLight).copy(alpha = 0.2f)
+        getColorByName(action.color, isLight).copy(alpha = 0.4f)
     } else {
         MaterialTheme.colorScheme.surfaceVariant
     }

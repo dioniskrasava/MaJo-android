@@ -43,6 +43,7 @@ android {
     }
 }
 
+
 dependencies {
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -77,4 +78,14 @@ dependencies {
 
     // DataStore
     implementation("androidx.datastore:datastore-preferences:1.0.0")
+
+
 }
+
+configurations {
+    all {
+        exclude(group = "com.google.ar", module = "core")
+    }
+}
+
+

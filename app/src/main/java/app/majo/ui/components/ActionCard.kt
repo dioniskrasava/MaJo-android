@@ -44,7 +44,7 @@ fun ActionCard(
     val actionColor = if (useColors) getColorByName(action.color, isLight) else MaterialTheme.colorScheme.primary
 
     val backgroundColor = if (useColors) {
-        actionColor.copy(alpha = 0.2f) // Полупрозрачный фон
+        actionColor.copy(alpha = 0.4f) // Полупрозрачный фон
     } else {
         MaterialTheme.colorScheme.surfaceVariant
     }
