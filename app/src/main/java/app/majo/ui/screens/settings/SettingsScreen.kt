@@ -172,12 +172,7 @@ fun SettingsScreen(
             Spacer(Modifier.height(16.dp))
 
             // ПРОЗРАЧНОСТЬ КАРТОЧЕК
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
+
                 Text(text = "Прозрачность карточек: ${(state.cardAlpha * 100).toInt()}%")
                 Slider(
                     value = state.cardAlpha,
@@ -185,7 +180,7 @@ fun SettingsScreen(
                     valueRange = 0.1f..1f, // Ограничим от 10% до 100%
                     modifier = Modifier.padding(horizontal = 16.dp)
                 )
-            }
+
 
 
         }
