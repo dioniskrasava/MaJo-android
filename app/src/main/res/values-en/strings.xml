@@ -72,5 +72,9 @@
     <string name="select_color">Выбранный цвет</string>
     <string name="theme_label_on_settings_screen">"Тема приложения : "</string>
     <string name="export_to_json">Экспортировать данные в JSON</string>
+    <string name="language_region">Язык</string>
+    <string name="appearance">Внешний вид</string>
+    <string name="card_transparency">Прозрачность карточек</string>
+    <string name="data_management">Управление данными</string>
 
 </resources>

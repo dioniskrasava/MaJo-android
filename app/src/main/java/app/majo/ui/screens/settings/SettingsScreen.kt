@@ -5,6 +5,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -37,19 +38,11 @@ fun SettingsScreen(
     viewModel: SettingsViewModel,
     onLanguageChange: () -> Unit
 ) {
-    // Подписываемся на реактивный поток состояния ViewModel
     val state by viewModel.state.collectAsState()
-
-
-    // Запоминаем язык при первом входе на экран
-    val initialLanguageCode = remember { state.currentLanguageCode }
-    val isFirstRender = remember { mutableStateOf(true) }
-
-
     val context = LocalContext.current
     var pendingJson by remember { mutableStateOf<String?>(null) }
 
-    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
+    val exportLauncher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
         uri?.let {
             pendingJson?.let { json ->
                 context.contentResolver.openOutputStream(uri)?.use { out ->
@@ -60,14 +53,18 @@ fun SettingsScreen(
         }
     }
 
-    // Следим за изменением языка
+    // Отслеживаем изменение языка, чтобы пересоздать Activity
     LaunchedEffect(state.currentLanguageCode) {
-        if (!isFirstRender.value && state.currentLanguageCode != initialLanguageCode) {
-            onLanguageChange()  // пересоздаём Activity только после реального изменения
-        }
-        isFirstRender.value = false
+        // Просто вызываем колбэк при любом изменении языка после инициализации
+        // Запоминаем начальное значение при первом запуске
+        val initial = state.currentLanguageCode
+        snapshotFlow { state.currentLanguageCode }
+            .collect { newCode ->
+                if (newCode != initial) {
+                    onLanguageChange()
+                }
+            }
     }
-
 
     Scaffold(
         topBar = {
@@ -75,7 +72,6 @@ fun SettingsScreen(
                 title = { Text(stringResource(R.string.settings_title)) },
                 navigationIcon = {
                     IconButton(onClick = onBack) {
-                        // Используем ArrowBack с поддержкой AutoMirrored для RTL/LTR
                         Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Назад")
                     }
                 }
@@ -85,140 +81,202 @@ fun SettingsScreen(
         Column(
             modifier = Modifier
                 .padding(padding)
-                .padding(16.dp)
-                .fillMaxWidth()
-                .verticalScroll(rememberScrollState())   // именно это позволяет скроллить экран... =)
+                .fillMaxSize()
+                .verticalScroll(rememberScrollState())
         ) {
-
-            val languageCodes = listOf("ru", "en")
-
-            //выбор языка
-            DropdownField(
-                label = stringResource(R.string.app_language),
-                current = state.currentLanguageCode,
-                items = languageCodes,
-                getDisplayText = { code ->
-                    when (code) {
-                        "ru" -> stringResource(R.string.russian)
-                        "en" -> stringResource(R.string.english)
-                        else -> stringResource(R.string.russian)
+            // Секция: Язык и регион
+            SettingsSection(title = stringResource(R.string.language_region)) {
+                DropdownField(
+                    label = stringResource(R.string.app_language),
+                    current = state.currentLanguageCode,
+                    items = listOf("ru", "en"),
+                    getDisplayText = { code ->
+                        when (code) {
+                            "ru" -> stringResource(R.string.russian)
+                            "en" -> stringResource(R.string.english)
+                            else -> stringResource(R.string.russian)
+                        }
+                    },
+                    onSelect = { code ->
+                        viewModel.onEvent(SettingsEvent.LanguageChanged(code))
                     }
-                },
-                onSelect = { code ->
-                    viewModel.onEvent(SettingsEvent.LanguageChanged(code))
-                }
-            )
-
-            Spacer(Modifier.height(32.dp))
-
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    // Улучшенный UX: клик по всей строке переключает тему
-                    .padding(vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(R.string.theme_label_on_settings_screen),
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.weight(1f) // Занимает всё доступное место слева
                 )
-
             }
 
-            Spacer(Modifier.height(16.dp))
-
-
-            // Аналогично для цвета
-            DropdownField(
-                label = stringResource(R.string.accent_color),
-                current = state.currentAccentColor,
-                items = state.availableAccentColors,
-                getDisplayText = { it },
-                onSelect = { selectedColor ->
-                    viewModel.onEvent(SettingsEvent.AccentColorChanged(selectedColor))
-                }
-            )
-
-            Spacer(Modifier.height(16.dp))
-
-            // --- 2. Переключатель Темной темы ---
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    // Улучшенный UX: клик по всей строке переключает тему
-                    .clickable { viewModel.onEvent(SettingsEvent.DarkModeToggled(!state.isDarkMode)) }
-                    .padding(vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = stringResource(R.string.dark_theme),
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.weight(1f) // Занимает всё доступное место слева
+            // Секция: Внешний вид
+            SettingsSection(title = stringResource(R.string.appearance)) {
+                // Акцентный цвет
+                DropdownField(
+                    label = stringResource(R.string.accent_color),
+                    current = state.currentAccentColor,
+                    items = state.availableAccentColors,
+                    getDisplayText = { it },
+                    onSelect = { color ->
+                        viewModel.onEvent(SettingsEvent.AccentColorChanged(color))
+                    }
                 )
-                Switch(
+
+                HorizontalDivider()
+
+                // Тёмная тема
+                SettingsSwitchItem(
+                    title = stringResource(R.string.dark_theme),
                     checked = state.isDarkMode,
-                    // Переключатель также отправляет событие
-                    onCheckedChange = { isChecked ->
-                        viewModel.onEvent(SettingsEvent.DarkModeToggled(isChecked))
+                    onCheckedChange = { viewModel.onEvent(SettingsEvent.DarkModeToggled(it)) }
+                )
+
+                HorizontalDivider()
+
+                // Использовать цвета действий
+                SettingsSwitchItem(
+                    title = stringResource(R.string.use_action_colors),
+                    checked = state.useActionColors,
+                    onCheckedChange = { viewModel.onEvent(SettingsEvent.UseActionColorsToggled(it)) }
+                )
+
+                HorizontalDivider()
+
+                // Прозрачность карточек
+                SettingsSliderItem(
+                    title = stringResource(R.string.card_transparency),
+                    value = state.cardAlpha,
+                    valueRange = 0.1f..1f,
+                    onValueChange = { viewModel.setCardAlpha(it) },
+                    valueFormatter = { "${(it * 100).toInt()}%" }
+                )
+            }
+
+            // Секция: Данные
+            SettingsSection(title = stringResource(R.string.data_management)) {
+                SettingsButtonItem(
+                    title = stringResource(R.string.export_to_json),
+                    onClick = {
+                        viewModel.exportData { json ->
+                            pendingJson = json
+                            exportLauncher.launch("majo_export.json")
+                        }
                     }
                 )
             }
 
-            Spacer(Modifier.height(16.dp))
+            Spacer(modifier = Modifier.height(16.dp))
+        }
+    }
+}
 
-            // Переключатель пользовательских цветов
-            Row(
+@Composable
+fun SettingsSection(
+    title: String,
+    content: @Composable ColumnScope.() -> Unit
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.titleMedium,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.padding(bottom = 4.dp, start = 8.dp)
+        )
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            shape = RoundedCornerShape(12.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+            )
+        ) {
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .clickable { viewModel.onEvent(SettingsEvent.UseActionColorsToggled(!state.useActionColors)) }
-                    .padding(vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
+                    .padding(vertical = 8.dp)
             ) {
-                Text(
-                    text = stringResource(R.string.use_action_colors), // нужно добавить строку в ресурсы
-                    style = MaterialTheme.typography.bodyLarge,
-                    modifier = Modifier.weight(1f)
-                )
-                Switch(
-                    checked = state.useActionColors,
-                    onCheckedChange = { use ->
-                        viewModel.onEvent(SettingsEvent.UseActionColorsToggled(use))
-                    }
-                )
+                content()
             }
-
-            Spacer(Modifier.height(16.dp))
-
-            // ПРОЗРАЧНОСТЬ КАРТОЧЕК
-
-            Text(text = "Прозрачность карточек: ${(state.cardAlpha * 100).toInt()}%")
-            Slider(
-                    value = state.cardAlpha,
-                    onValueChange = { viewModel.setCardAlpha(it) },
-                    valueRange = 0.1f..1f, // Ограничим от 10% до 100%
-                    modifier = Modifier.padding(horizontal = 16.dp)
-            )
-
-
-
-            // ЭКСПОРТ ИНФЫ, ДЕТКА
-            Button(
-                onClick = {
-                    viewModel.exportData { json ->
-                        pendingJson = json
-                        launcher.launch("export.json")
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(stringResource(R.string.export_to_json))
-            }
-
-
         }
+    }
+}
 
+@Composable
+fun SettingsSwitchItem(
+    title: String,
+    checked: Boolean,
+    onCheckedChange: (Boolean) -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onCheckedChange(!checked) }
+            .padding(horizontal = 16.dp, vertical = 12.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.weight(1f)
+        )
+        Switch(
+            checked = checked,
+            onCheckedChange = null // управление через клик по строке
+        )
+    }
+}
 
+@Composable
+fun SettingsSliderItem(
+    title: String,
+    value: Float,
+    valueRange: ClosedFloatingPointRange<Float>,
+    onValueChange: (Float) -> Unit,
+    valueFormatter: (Float) -> String = { "%.1f".format(it) }
+) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = 16.dp, vertical = 12.dp)
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween
+        ) {
+            Text(
+                text = title,
+                style = MaterialTheme.typography.bodyLarge
+            )
+            Text(
+                text = valueFormatter(value),
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+        Slider(
+            value = value,
+            onValueChange = onValueChange,
+            valueRange = valueRange,
+            modifier = Modifier.fillMaxWidth()
+        )
+    }
+}
+
+@Composable
+fun SettingsButtonItem(
+    title: String,
+    onClick: () -> Unit
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable { onClick() }
+            .padding(horizontal = 16.dp, vertical = 14.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.bodyLarge,
+            color = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.weight(1f)
+        )
+        // Можно добавить иконку перехода, например стрелку
     }
 }
