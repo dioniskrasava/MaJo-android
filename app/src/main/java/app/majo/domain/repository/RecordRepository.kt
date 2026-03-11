@@ -47,4 +47,6 @@ interface RecordRepository {
     suspend fun delete(id: Long)
 
     fun getAllRecords(): Flow<List<ActionRecord>>
+
+    suspend fun getAllRecordsSync(): List<ActionRecord>
 }

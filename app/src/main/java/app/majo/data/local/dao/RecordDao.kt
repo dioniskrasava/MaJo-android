@@ -30,4 +30,7 @@ interface RecordDao {
 
     @Query("SELECT * FROM records ORDER BY timestamp DESC")
     fun getAllRecords(): Flow<List<RecordEntity>>
+
+    @Query("SELECT * FROM records")
+    suspend fun getAllRecordsSync(): List<RecordEntity>
 }

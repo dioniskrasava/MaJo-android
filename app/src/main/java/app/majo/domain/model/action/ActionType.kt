@@ -1,5 +1,7 @@
 package app.majo.domain.model.action
 
+import kotlinx.serialization.Serializable
+
 /**
  * Тип отслеживаемой активности.
  *
@@ -11,6 +13,7 @@ package app.majo.domain.model.action
  * COUNT — количество повторений или единиц
  * BINARY — бинарная активность (сделано / не сделано)
  */
+@Serializable
 enum class ActionType {
     /**
      * Активность, результат которой измеряется **расстоянием** (например, бег, езда на велосипеде).

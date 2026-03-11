@@ -1,5 +1,7 @@
 package app.majo.domain.model.record
 
+import kotlinx.serialization.Serializable
+
 /**
  * Модель записи о выполнении активности.
  *
@@ -23,6 +25,7 @@ package app.majo.domain.model.record
  * @property totalPoints Общее количество очков, полученных за это выполнение.
  * Кешированное (предварительно рассчитанное) значение.
  */
+@Serializable
 data class ActionRecord(
     val id: Long,
     val activityId: Long,

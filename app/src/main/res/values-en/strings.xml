@@ -71,5 +71,6 @@
     <string name="use_action_colors">Использовать пользовательские цвета активностей</string>
     <string name="select_color">Выбранный цвет</string>
     <string name="theme_label_on_settings_screen">"Тема приложения : "</string>
+    <string name="export_to_json">Экспортировать данные в JSON</string>
 
 </resources>

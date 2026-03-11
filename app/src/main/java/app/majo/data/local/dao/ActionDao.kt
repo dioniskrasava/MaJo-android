@@ -79,4 +79,8 @@ interface ActionDao {
     @Query("DELETE FROM actions WHERE id = :id")
     suspend fun delete(id: Long)
 
+
+    @Query("SELECT * FROM actions")
+    suspend fun getAllActionsSync(): List<ActionEntity>
+
 }

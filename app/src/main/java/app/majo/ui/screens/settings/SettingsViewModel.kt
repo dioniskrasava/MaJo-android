@@ -3,10 +3,15 @@ package app.majo.ui.screens.settings
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope // Добавляем импорт
 import app.majo.data.local.datastore.SettingsDataStore // Добавляем импорт
+import app.majo.domain.repository.ActionRepository
+import app.majo.domain.repository.RecordRepository
+import app.majo.domain.service.ExportService
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch // Добавляем импорт
+import kotlinx.coroutines.withContext
 
 /**
  * Определяет все возможные **события (Intents)**, которые могут быть отправлены
@@ -43,8 +48,9 @@ sealed class SettingsEvent {
  * взаимодействуя с репозиторием ([UserSettingsRepository]) для персистентного хранения.
  */
 class SettingsViewModel(
-    // Изменяем конструктор, чтобы принимать наш DataStore Manager
-    private val dataStore: SettingsDataStore
+    private val dataStore: SettingsDataStore,
+    private val actionRepository: ActionRepository,
+    private val recordRepository: RecordRepository
 ) : ViewModel() {
 
     // Внутренний, изменяемый источник состояния (MutableStateFlow)
@@ -118,6 +124,19 @@ class SettingsViewModel(
     fun setCardAlpha(alpha: Float) {
         viewModelScope.launch {
             dataStore.setCardAlpha(alpha)
+        }
+    }
+
+    fun exportData(onResult: (String) -> Unit) {
+        viewModelScope.launch {
+            val actions = actionRepository.getAllActionsSync()
+            val records = recordRepository.getAllRecordsSync()
+            val json = withContext(Dispatchers.IO) {
+                ExportService.exportToJson(actions, records)
+            }
+            withContext(Dispatchers.Main) {
+                onResult(json)
+            }
         }
     }
 }

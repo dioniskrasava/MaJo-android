@@ -83,4 +83,8 @@ class ActionRepositoryImpl(
     override suspend fun delete(id: Long) {
         dao.delete(id)
     }
+
+
+    override suspend fun getAllActionsSync(): List<Action> =
+        dao.getAllActionsSync().map { it.toDomain() }
 }

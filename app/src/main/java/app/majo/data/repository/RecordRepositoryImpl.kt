@@ -40,4 +40,8 @@ class RecordRepositoryImpl(
 
     override fun getAllRecords(): Flow<List<ActionRecord>> =
         dao.getAllRecords().map { list -> list.map { it.toDomain() } }
+
+
+    override suspend fun getAllRecordsSync(): List<ActionRecord> =
+        dao.getAllRecordsSync().map { it.toDomain() }
 }

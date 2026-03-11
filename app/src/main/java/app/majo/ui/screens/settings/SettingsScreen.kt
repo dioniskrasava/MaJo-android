@@ -1,13 +1,18 @@
 package app.majo.ui.screens.settings
 
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -41,6 +46,20 @@ fun SettingsScreen(
     val isFirstRender = remember { mutableStateOf(true) }
 
 
+    val context = LocalContext.current
+    var pendingJson by remember { mutableStateOf<String?>(null) }
+
+    val launcher = rememberLauncherForActivityResult(ActivityResultContracts.CreateDocument("application/json")) { uri ->
+        uri?.let {
+            pendingJson?.let { json ->
+                context.contentResolver.openOutputStream(uri)?.use { out ->
+                    out.write(json.toByteArray())
+                }
+                pendingJson = null
+            }
+        }
+    }
+
     // Следим за изменением языка
     LaunchedEffect(state.currentLanguageCode) {
         if (!isFirstRender.value && state.currentLanguageCode != initialLanguageCode) {
@@ -68,6 +87,7 @@ fun SettingsScreen(
                 .padding(padding)
                 .padding(16.dp)
                 .fillMaxWidth()
+                .verticalScroll(rememberScrollState())   // именно это позволяет скроллить экран... =)
         ) {
 
             val languageCodes = listOf("ru", "en")
@@ -173,14 +193,28 @@ fun SettingsScreen(
 
             // ПРОЗРАЧНОСТЬ КАРТОЧЕК
 
-                Text(text = "Прозрачность карточек: ${(state.cardAlpha * 100).toInt()}%")
-                Slider(
+            Text(text = "Прозрачность карточек: ${(state.cardAlpha * 100).toInt()}%")
+            Slider(
                     value = state.cardAlpha,
                     onValueChange = { viewModel.setCardAlpha(it) },
                     valueRange = 0.1f..1f, // Ограничим от 10% до 100%
                     modifier = Modifier.padding(horizontal = 16.dp)
-                )
+            )
 
+
+
+            // ЭКСПОРТ ИНФЫ, ДЕТКА
+            Button(
+                onClick = {
+                    viewModel.exportData { json ->
+                        pendingJson = json
+                        launcher.launch("export.json")
+                    }
+                },
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text(stringResource(R.string.export_to_json))
+            }
 
 
         }

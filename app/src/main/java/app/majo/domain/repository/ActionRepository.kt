@@ -58,4 +58,7 @@ interface ActionRepository {
      * @param id ID активности, которую нужно удалить.
      */
     suspend fun delete(id: Long)
+
+
+    suspend fun getAllActionsSync(): List<Action>
 }

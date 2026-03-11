@@ -1,5 +1,7 @@
 package app.majo.domain.model.action
 
+import kotlinx.serialization.Serializable
+
 /**
  * Единицы измерения для активности.
  *
@@ -8,6 +10,7 @@ package app.majo.domain.model.action
  *
  * Для бинарных типов (ActionType.BINARY) обычно используется NONE.
  */
+@Serializable
 enum class UnitType {
     /**
      * Отсутствие единицы измерения. Используется для бинарных активностей

@@ -1,5 +1,7 @@
 package app.majo.domain.model.action
 
+import kotlinx.serialization.Serializable
+
 /**
  * Модель отслеживаемой активности.
  *
@@ -27,6 +29,7 @@ package app.majo.domain.model.action
  * @property isActive Флаг доступности. Значение по умолчанию: true.
  * @property createdAt Временная метка создания активности в миллисекундах. Значение по умолчанию: текущее время.
  */
+@Serializable
 data class Action(
     val id: Long,
     val name: String,

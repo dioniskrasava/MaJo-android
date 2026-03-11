@@ -97,7 +97,7 @@ class MainActivity : ComponentActivity() {
 
                 // Создаем SettingsViewModel с помощью Factory
                 val settingsViewModel: SettingsViewModel = viewModel(
-                    factory = SettingsViewModelFactory(settingsDataStore)
+                    factory = SettingsViewModelFactory(settingsDataStore, activityRepo, recordRepo)
                 )
 
                 val sharedRecordsViewModel: SharedRecordsViewModel = viewModel() // для передачи даты выбранного дня
