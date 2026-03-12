@@ -12,6 +12,7 @@ firebasePerfKtx = "21.0.1"
 foundation = "1.10.4"
 media3Effect = "1.9.2"
 rendering = "1.17.1"
+foundationLayout = "1.10.4"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -32,6 +33,7 @@ firebase-perf-ktx = { group = "com.google.firebase", name = "firebase-perf-ktx",
 androidx-compose-foundation = { group = "androidx.compose.foundation", name = "foundation", version.ref = "foundation" }
 androidx-media3-effect = { group = "androidx.media3", name = "media3-effect", version.ref = "media3Effect" }
 rendering = { group = "com.google.ar.sceneform", name = "rendering", version.ref = "rendering" }
+androidx-compose-foundation-layout = { group = "androidx.compose.foundation", name = "foundation-layout", version.ref = "foundationLayout" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

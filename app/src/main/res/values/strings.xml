@@ -91,4 +91,8 @@
     <string name="appearance">Внешний вид</string>
     <string name="card_transparency">Прозрачность карточек</string>
     <string name="data_management">Управление данными</string>
+    <string name="matrix_title">Матрица активностей</string>
+    <string name="today_short">Сегодня</string>
+    <string name="matrix_settings">Настройки матрицы</string>
+    <string name="back">Назад</string>
 </resources>

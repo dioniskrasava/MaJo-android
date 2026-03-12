@@ -42,7 +42,8 @@ fun RecordListScreen(
     sharedViewModel: SharedRecordsViewModel,
     settingsViewModel: SettingsViewModel,
     onRecordClick: (Long) -> Unit,
-    onLogsClick: () -> Unit
+    onLogsClick: () -> Unit,
+    onMatrixClick: () -> Unit
 ) {
     val recordsMap by viewModel.recordsWithActivities.collectAsState()
     val currentDayStart by viewModel.currentDayStartMs.collectAsState()
@@ -80,6 +81,16 @@ fun RecordListScreen(
                             onClick = {
                                 menuExpanded = false
                                 onLogsClick()
+                            }
+                        )
+
+                        DropdownMenuItem(
+                            text = { Text(stringResource(R.string.matrix_title)) },
+                            onClick = {
+                                menuExpanded = false
+                                // предполагаем, что onLogsClick теперь заменён на более общий вызов
+                                // или добавим новый callback onMatrixClick
+                                onMatrixClick() // нужно добавить в параметры
                             }
                         )
                     }

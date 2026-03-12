@@ -58,6 +58,7 @@ dependencies {
     implementation(libs.androidx.compose.foundation)
     implementation(libs.androidx.media3.effect)
     implementation(libs.rendering)
+    implementation(libs.androidx.compose.foundation.layout)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

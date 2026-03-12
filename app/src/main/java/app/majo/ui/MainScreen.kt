@@ -49,6 +49,9 @@ import app.majo.R
 import app.majo.ui.screens.logs.LogsScreen
 import app.majo.ui.screens.logs.LogsViewModel
 import app.majo.ui.screens.logs.LogsViewModelFactory
+import app.majo.ui.screens.matrix.MatrixScreen
+import app.majo.ui.screens.matrix.MatrixViewModel
+import app.majo.ui.screens.matrix.MatrixViewModelFactory
 
 /**
  * Главный экран-оболочка (Application Shell) приложения.
@@ -91,8 +94,7 @@ fun MainScreen(
                 containerColor = MaterialTheme.colorScheme.primary,
                 elevation = FloatingActionButtonDefaults.bottomAppBarFabElevation(),
                 shape = CircleShape,
-                modifier = Modifier
-                    .size(62.dp)
+                modifier = Modifier.size(62.dp)
             ) {
                 Icon(Icons.Filled.Add, stringResource(R.string.add_record_title), modifier = Modifier.size(32.dp))
             }
@@ -154,7 +156,8 @@ fun MainScreen(
                     },
                     onLogsClick = {
                         navController.navigate(Screen.Logs.route)
-                    }
+                    },
+                    onMatrixClick = { navController.navigate("matrix") }
                 )
             }
 
@@ -223,27 +226,25 @@ fun MainScreen(
 
             // Экран добавления записи
             composable(
-                route = "add_record?selectedDate={selectedDate}", // Обновленный маршрут
+                route = "add_record?selectedDate={selectedDate}&activityId={activityId}",
                 arguments = listOf(
-                    navArgument("selectedDate") {
-                        type = NavType.LongType
-                        defaultValue = -1L
-                    }
+                    navArgument("selectedDate") { type = NavType.LongType; defaultValue = -1L },
+                    navArgument("activityId") { type = NavType.LongType; defaultValue = -1L }
                 )
             ) { backStackEntry ->
                 val selectedDate = backStackEntry.arguments?.getLong("selectedDate") ?: -1L
-
+                val activityId = backStackEntry.arguments?.getLong("activityId") ?: -1L
                 val vm: AddRecordViewModel = viewModel(
                     factory = AddRecordViewModelFactory(actionRepository, recordRepository)
                 )
-
-                // Передаем дату в ViewModel при открытии экрана
-                LaunchedEffect(selectedDate) {
+                LaunchedEffect(selectedDate, activityId) {
                     if (selectedDate != -1L) {
                         vm.updateTimestamp(selectedDate)
                     }
+                    if (activityId != -1L && !vm.isEditMode.value) {
+                        vm.selectActionById(activityId) // нужно добавить этот метод
+                    }
                 }
-
                 AddRecordScreen(
                     viewModel = vm,
                     onNavigateBack = { navController.popBackStack() }
@@ -280,6 +281,25 @@ fun MainScreen(
                         navController.navigate("edit_record/$recordId")
                     },
                     onNavigateBack = { navController.popBackStack() }
+                )
+            }
+
+            // В MainScreen, внутри NavHost, после composable(Screen.Logs.route) добавить:
+            composable("matrix") {
+                MatrixScreen(
+                    actionRepository = actionRepository,
+                    recordRepository = recordRepository,
+                    onNavigateBack = { navController.popBackStack() },
+                    onSquareClick = { recordId, activityId, dayStart ->
+                        if (recordId != null) {
+                            navController.navigate("edit_record/$recordId")
+                        } else {
+                            navController.navigate("add_record?selectedDate=$dayStart&activityId=$activityId")
+                        }
+                    },
+                    onSettingsClick = {
+                        // Пока заглушка
+                    }
                 )
             }
 

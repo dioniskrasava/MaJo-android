@@ -9,6 +9,7 @@ import app.majo.domain.repository.RecordRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.util.Calendar
 
@@ -208,6 +209,16 @@ class AddRecordViewModel(
         viewModelScope.launch {
             recordRepository.delete(id)
             onSuccess()
+        }
+    }
+
+
+    fun selectActionById(activityId: Long) {
+        viewModelScope.launch {
+            // Дождёмся загрузки списка активностей
+            actionRepository.getActions().first()
+            val action = activities.value.find { it.id == activityId }
+            action?.let { selectAction(it) }
         }
     }
 
