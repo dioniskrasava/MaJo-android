@@ -21,19 +21,11 @@ import kotlinx.coroutines.withContext
  * а ViewModel реагирует, обновляя состояние.
  */
 sealed class SettingsEvent {
-    /**
-     * Событие: Пользователь выбрал новый язык в выпадающем списке.
-     * @property newLanguage Строковое название выбранного языка (например, "Русский").
-     */
+
     data class LanguageChanged(val languageCode: String) : SettingsEvent()
 
-    /**
-     * Событие: Пользователь переключил состояние темной темы.
-     * @property isChecked Текущее логическое значение переключателя.
-     */
     data class DarkModeToggled(val isChecked: Boolean) : SettingsEvent()
 
-    // Акцентный цвет для приложения
     data class AccentColorChanged(val newColor: String) : SettingsEvent()
 
     data class UseActionColorsToggled(val use: Boolean) : SettingsEvent()
@@ -41,6 +33,10 @@ sealed class SettingsEvent {
     data class ToggleUseTickersInMatrix(val use: Boolean) : SettingsEvent()
 
     data class ToggleMatrixVertical(val isVertical: Boolean) : SettingsEvent()
+
+    data class MatrixCellSizeChanged(val size: Int) : SettingsEvent()
+
+    data class MatrixPeriodTypeChanged(val type: MatrixPeriodType) : SettingsEvent()
 }
 
 
@@ -115,6 +111,13 @@ class SettingsViewModel(
                 viewModelScope.launch {
                     dataStore.setMatrixVertical(event.isVertical)
                 }
+            }
+
+            is SettingsEvent.MatrixCellSizeChanged -> {
+                viewModelScope.launch { dataStore.setMatrixCellSize(event.size) }
+            }
+            is SettingsEvent.MatrixPeriodTypeChanged -> {
+                viewModelScope.launch { dataStore.setMatrixPeriodType(event.type) }
             }
 
         }

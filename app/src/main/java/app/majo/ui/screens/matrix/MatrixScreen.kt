@@ -25,9 +25,9 @@ import app.majo.R
 import app.majo.domain.repository.ActionRepository
 import app.majo.domain.repository.RecordRepository
 import app.majo.ui.common.SimpleTopAppBar
+import app.majo.ui.screens.settings.MatrixPeriodType
 import java.text.SimpleDateFormat
 import java.util.*
-
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -38,11 +38,19 @@ fun MatrixScreen(
     onSquareClick: (Long?, Long, Long) -> Unit,
     onSettingsClick: () -> Unit,
     useTickers: Boolean,
-    isVertical: Boolean
+    isVertical: Boolean,
+    cellSize: Int,                     // размер ячейки в dp (новый параметр)
+    periodType: MatrixPeriodType        // тип периода (новый параметр)
 ) {
     val viewModel: MatrixViewModel = viewModel(
         factory = MatrixViewModelFactory(actionRepository, recordRepository)
     )
+
+    // Обновляем тип периода при изменении настройки
+    LaunchedEffect(periodType) {
+        viewModel.updatePeriodType(periodType)
+    }
+
     val state by viewModel.state.collectAsState()
     val monthFormatter = remember { SimpleDateFormat("LLLL yyyy", Locale("ru")) }
     val dayFormatter = remember { SimpleDateFormat("d", Locale.getDefault()) }
@@ -79,7 +87,7 @@ fun MatrixScreen(
                 .padding(padding)
                 .fillMaxSize()
         ) {
-            // Панель переключения месяцев
+            // Панель переключения периодов (заголовок с названием месяца/недели)
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -87,18 +95,26 @@ fun MatrixScreen(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                IconButton(onClick = viewModel::prevMonth) {
+                IconButton(onClick = viewModel::prevPeriod) {  // используем общий prevPeriod
                     Text("<")
                 }
                 Text(
-                    text = monthFormatter.format(Date(state.monthStart)),
+                    // Формируем заголовок в зависимости от типа периода
+                    text = when (state.periodType) {
+                        MatrixPeriodType.MONTH -> monthFormatter.format(Date(state.startDate))
+                        MatrixPeriodType.WEEK_CALENDAR, MatrixPeriodType.WEEK_ROLLING -> {
+                            val start = Date(state.startDate)
+                            val end = Date(state.startDate + 6 * 24 * 60 * 60 * 1000L)
+                            "${dayFormatter.format(start)} – ${dayFormatter.format(end)}"
+                        }
+                    },
                     style = MaterialTheme.typography.titleLarge
                 )
                 Row {
-                    IconButton(onClick = viewModel::setCurrentMonth) {
+                    IconButton(onClick = viewModel::setCurrentPeriod) {
                         Text(stringResource(R.string.today_short))
                     }
-                    IconButton(onClick = viewModel::nextMonth) {
+                    IconButton(onClick = viewModel::nextPeriod) {
                         Text(">")
                     }
                 }
@@ -114,14 +130,16 @@ fun MatrixScreen(
                         state = state,
                         useTickers = useTickers,
                         leftColumnWidth = leftColumnWidth,
+                        dayCellSize = cellSize.dp,          // передаём размер ячейки
                         onSquareClick = onSquareClick,
-                        modifier = Modifier.weight(1f)   // занимаем оставшееся пространство
+                        modifier = Modifier.weight(1f)
                     )
                 } else {
                     HorizontalMatrixContent(
                         state = state,
                         useTickers = useTickers,
                         leftColumnWidth = leftColumnWidth,
+                        dayCellSize = cellSize.dp,          // передаём размер ячейки
                         dayFormatter = dayFormatter,
                         onSquareClick = onSquareClick,
                         modifier = Modifier.weight(1f)
@@ -137,10 +155,10 @@ fun MatrixScreenVertical(
     state: MatrixState,
     useTickers: Boolean,
     leftColumnWidth: Dp,
+    dayCellSize: Dp,                     // новый параметр
     onSquareClick: (Long?, Long, Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val dayCellSize = 40.dp
     val days = state.days
     val actions = state.actions
     val recordInfo = state.recordInfo
@@ -225,13 +243,14 @@ fun HorizontalMatrixContent(
     state: MatrixState,
     useTickers: Boolean,
     leftColumnWidth: Dp,
+    dayCellSize: Dp,                      // новый параметр
     dayFormatter: SimpleDateFormat,
     onSquareClick: (Long?, Long, Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val horizontalScrollState = rememberScrollState()
     Box(
-        modifier = modifier   // применяем переданный модификатор (с весом)
+        modifier = modifier
     ) {
         Column(
             modifier = Modifier
@@ -247,7 +266,7 @@ fun HorizontalMatrixContent(
                 state.days.forEach { day ->
                     Box(
                         modifier = Modifier
-                            .size(40.dp)
+                            .size(dayCellSize)          // используем переданный размер
                             .padding(2.dp),
                         contentAlignment = Alignment.Center
                     ) {
@@ -282,7 +301,7 @@ fun HorizontalMatrixContent(
                         }
                         Box(
                             modifier = Modifier
-                                .size(40.dp)
+                                .size(dayCellSize)      // используем переданный размер
                                 .padding(2.dp)
                                 .clip(RoundedCornerShape(4.dp))
                                 .background(color)

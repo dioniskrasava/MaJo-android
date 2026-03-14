@@ -6,8 +6,10 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.floatPreferencesKey
+import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
+import app.majo.ui.screens.settings.MatrixPeriodType
 import app.majo.ui.screens.settings.SettingsState
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.map
@@ -24,6 +26,8 @@ object PreferencesKeys {
     val CARD_ALPHA = floatPreferencesKey("card_alpha")
     val USE_TICKERS_IN_MATRIX = booleanPreferencesKey("use_tickers_in_matrix")
     val IS_MATRIX_VERTICAL = booleanPreferencesKey("is_matrix_vertical")
+    val MATRIX_CELL_SIZE = intPreferencesKey("matrix_cell_size")
+    val MATRIX_PERIOD_TYPE = stringPreferencesKey("matrix_period_type")
 }
 
 class SettingsDataStore(private val context: Context) {
@@ -38,7 +42,11 @@ class SettingsDataStore(private val context: Context) {
                 useActionColors = preferences[PreferencesKeys.USE_ACTION_COLORS] ?: true,   // по умолчанию true
                 cardAlpha = preferences[PreferencesKeys.CARD_ALPHA] ?: 0.4f,
                 useTickersInMatrix = preferences[PreferencesKeys.USE_TICKERS_IN_MATRIX] ?: false,
-                isMatrixVertical = preferences[PreferencesKeys.IS_MATRIX_VERTICAL] ?: false
+                isMatrixVertical = preferences[PreferencesKeys.IS_MATRIX_VERTICAL] ?: false,
+                matrixCellSize = preferences[PreferencesKeys.MATRIX_CELL_SIZE] ?: 40,
+                matrixPeriodType = MatrixPeriodType.valueOf(
+                    preferences[PreferencesKeys.MATRIX_PERIOD_TYPE] ?: MatrixPeriodType.MONTH.name
+                )
             )
         }
 
@@ -89,6 +97,18 @@ class SettingsDataStore(private val context: Context) {
     suspend fun setMatrixVertical(isVertical: Boolean) {
         context.dataStore.edit { settings ->
             settings[PreferencesKeys.IS_MATRIX_VERTICAL] = isVertical
+        }
+    }
+
+    suspend fun setMatrixCellSize(size: Int) {
+        context.dataStore.edit { settings ->
+            settings[PreferencesKeys.MATRIX_CELL_SIZE] = size
+        }
+    }
+
+    suspend fun setMatrixPeriodType(type: MatrixPeriodType) {
+        context.dataStore.edit { settings ->
+            settings[PreferencesKeys.MATRIX_PERIOD_TYPE] = type.name
         }
     }
 }
