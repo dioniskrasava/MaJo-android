@@ -39,6 +39,8 @@ sealed class SettingsEvent {
     data class UseActionColorsToggled(val use: Boolean) : SettingsEvent()
 
     data class ToggleUseTickersInMatrix(val use: Boolean) : SettingsEvent()
+
+    data class ToggleMatrixVertical(val isVertical: Boolean) : SettingsEvent()
 }
 
 
@@ -107,6 +109,12 @@ class SettingsViewModel(
             }
             is SettingsEvent.ToggleUseTickersInMatrix -> {
                 viewModelScope.launch { dataStore.setUseTickersInMatrix(event.use) }
+            }
+
+            is SettingsEvent.ToggleMatrixVertical -> {
+                viewModelScope.launch {
+                    dataStore.setMatrixVertical(event.isVertical)
+                }
             }
 
         }

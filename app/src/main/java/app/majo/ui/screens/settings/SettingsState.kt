@@ -21,5 +21,6 @@ data class SettingsState(
     val currentAccentColor: String = "Purple", // Текущий (актуальный) акцентный цвет
     val useActionColors: Boolean = true,
     val cardAlpha: Float = 0.4f,
-    val useTickersInMatrix: Boolean = false
+    val useTickersInMatrix: Boolean = false,
+    val isMatrixVertical: Boolean = false
 )

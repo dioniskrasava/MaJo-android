@@ -303,7 +303,8 @@ fun MainScreen(
                         }
                     },
                     onSettingsClick = { navController.navigate("matrixSettings") },
-                    useTickers = settingsState.useTickersInMatrix
+                    useTickers = settingsState.useTickersInMatrix,
+                    isVertical = settingsState.isMatrixVertical
                 )
             }
 
