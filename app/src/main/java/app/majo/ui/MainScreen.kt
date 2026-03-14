@@ -52,6 +52,10 @@ import app.majo.ui.screens.logs.LogsViewModelFactory
 import app.majo.ui.screens.matrix.MatrixScreen
 import app.majo.ui.screens.matrix.MatrixViewModel
 import app.majo.ui.screens.matrix.MatrixViewModelFactory
+import app.majo.ui.screens.matrix_setting.MatrixSettingsScreen
+import app.majo.ui.screens.ticker_setting.TickerSettingsScreen
+import app.majo.ui.screens.ticker_setting.TickerSettingsViewModel
+import app.majo.ui.screens.ticker_setting.TickerSettingsViewModelFactory
 
 /**
  * Главный экран-оболочка (Application Shell) приложения.
@@ -286,6 +290,7 @@ fun MainScreen(
 
             // В MainScreen, внутри NavHost, после composable(Screen.Logs.route) добавить:
             composable("matrix") {
+                val settingsState by settingsViewModel.state.collectAsState()
                 MatrixScreen(
                     actionRepository = actionRepository,
                     recordRepository = recordRepository,
@@ -297,9 +302,27 @@ fun MainScreen(
                             navController.navigate("add_record?selectedDate=$dayStart&activityId=$activityId")
                         }
                     },
-                    onSettingsClick = {
-                        // Пока заглушка для экрана настроек
-                    }
+                    onSettingsClick = { navController.navigate("matrixSettings") },
+                    useTickers = settingsState.useTickersInMatrix
+                )
+            }
+
+
+            composable("matrixSettings") {
+                MatrixSettingsScreen(
+                    settingsViewModel = settingsViewModel,
+                    onNavigateBack = { navController.popBackStack() },
+                    onConfigureTickers = { navController.navigate("tickerSettings") }
+                )
+            }
+
+            composable("tickerSettings") {
+                val vm: TickerSettingsViewModel = viewModel(
+                    factory = TickerSettingsViewModelFactory(actionRepository)
+                )
+                TickerSettingsScreen(
+                    viewModel = vm,
+                    onNavigateBack = { navController.popBackStack() }
                 )
             }
 

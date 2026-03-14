@@ -14,7 +14,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.majo.R
@@ -31,7 +33,8 @@ fun MatrixScreen(
     recordRepository: RecordRepository,
     onNavigateBack: () -> Unit,
     onSquareClick: (Long?, Long, Long) -> Unit,
-    onSettingsClick: () -> Unit
+    onSettingsClick: () -> Unit,
+    useTickers: Boolean
 ) {
     val viewModel: MatrixViewModel = viewModel(
         factory = MatrixViewModelFactory(actionRepository, recordRepository)
@@ -39,6 +42,22 @@ fun MatrixScreen(
     val state by viewModel.state.collectAsState()
     val monthFormatter = remember { SimpleDateFormat("LLLL yyyy", Locale("ru")) }
     val dayFormatter = remember { SimpleDateFormat("d", Locale.getDefault()) }
+
+
+    // Измерение максимальной ширины текста
+    val density = LocalDensity.current
+    val textMeasurer = rememberTextMeasurer()
+    val style = MaterialTheme.typography.bodyMedium
+    val maxTextWidth = remember(state.actions, useTickers) {
+        var max = 0
+        state.actions.forEach { action ->
+            val text = if (useTickers && action.ticker.isNotBlank()) action.ticker else action.name
+            val width = textMeasurer.measure(text, style).size.width
+            if (width > max) max = width
+        }
+        max
+    }
+    val leftColumnWidth = with(density) { maxTextWidth.toDp() + 16.dp } // добавим отступ
 
     Scaffold(
         topBar = {
@@ -126,13 +145,9 @@ fun MatrixScreen(
                                 modifier = Modifier.fillMaxWidth(),
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Box(
-                                    modifier = Modifier
-                                        .width(100.dp)
-                                        .padding(end = 4.dp)
-                                ) {
+                                Box(modifier = Modifier.width(leftColumnWidth).padding(end = 4.dp)) {
                                     Text(
-                                        text = action.name,
+                                        text = if (useTickers && action.ticker.isNotBlank()) action.ticker else action.name,
                                         maxLines = 1,
                                         style = MaterialTheme.typography.bodyMedium
                                     )

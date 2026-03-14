@@ -33,7 +33,8 @@ fun ActionEntity.toDomain(): Action = Action(
     category = ActionCategory.valueOf(category),
     isActive = isActive,
     createdAt = createdAt,
-    color = color
+    color = color,
+    ticker = ticker
 )
 
 /**
@@ -53,5 +54,6 @@ fun Action.toEntity(): ActionEntity = ActionEntity(
     category = category.name,
     isActive = isActive,
     createdAt = createdAt,
-    color = color
+    color = color,
+    ticker = ticker
 )

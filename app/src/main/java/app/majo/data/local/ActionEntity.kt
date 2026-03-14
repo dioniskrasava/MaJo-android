@@ -38,5 +38,6 @@ data class ActionEntity(
     val category: String,      // Категория (ActionCategory)
     val isActive: Boolean,     // Активна ли в списке
     val createdAt: Long,        // Когда была создана
-    val color: String = "Purple" // Цвет
+    val color: String = "Purple", // Цвет
+    val ticker: String = ""
 )

@@ -39,5 +39,6 @@ data class Action(
     val category: ActionCategory = ActionCategory.OTHER,
     val isActive: Boolean = true,
     val createdAt: Long = System.currentTimeMillis(),
-    val color: String = "Purple"
+    val color: String = "Purple",
+    val ticker: String = ""
 )

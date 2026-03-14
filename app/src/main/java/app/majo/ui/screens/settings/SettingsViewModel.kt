@@ -37,6 +37,8 @@ sealed class SettingsEvent {
     data class AccentColorChanged(val newColor: String) : SettingsEvent()
 
     data class UseActionColorsToggled(val use: Boolean) : SettingsEvent()
+
+    data class ToggleUseTickersInMatrix(val use: Boolean) : SettingsEvent()
 }
 
 
@@ -102,6 +104,9 @@ class SettingsViewModel(
                 viewModelScope.launch {
                     dataStore.setUseActionColors(event.use)
                 }
+            }
+            is SettingsEvent.ToggleUseTickersInMatrix -> {
+                viewModelScope.launch { dataStore.setUseTickersInMatrix(event.use) }
             }
 
         }

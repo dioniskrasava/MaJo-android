@@ -31,6 +31,12 @@ object AppDatabaseInstance {
         }
     }
 
+    val MIGRATION_3_4 = object : Migration(3, 4) {
+        override fun migrate(database: SupportSQLiteDatabase) {
+            database.execSQL("ALTER TABLE actions ADD COLUMN ticker TEXT NOT NULL DEFAULT ''")
+        }
+    }
+
     /**
      * Предоставляет синглтон-экземпляр [AppDatabase].
      *
@@ -49,7 +55,7 @@ object AppDatabaseInstance {
                 AppDatabase::class.java,
                 "majo_database"
             )
-                .addMigrations(MIGRATION_2_3)   // добавлено
+                .addMigrations(MIGRATION_2_3, MIGRATION_3_4)   // добавлено
                 .build().also { db ->
                     INSTANCE = db
                 }

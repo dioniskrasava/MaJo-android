@@ -15,20 +15,11 @@ package app.majo.ui.screens.settings
  * в выпадающем меню.
  */
 data class SettingsState(
-    // Текущий выбранный язык (например, "ru" или "en")
     val currentLanguageCode: String = "ru",
-
-    // Флаг для переключателя (например, "Темная тема")
     val isDarkMode: Boolean = false,
-
-
-    // Доступные акцентные цвета
-    val availableAccentColors: List<String> = listOf("Purple", "Blue", "Green", "Red"),
-
-    // Текущий (актуальный) акцентный цвет
-    val currentAccentColor: String = "Purple",
-
+    val availableAccentColors: List<String> = listOf("Purple", "Blue", "Green", "Red"), // Доступные акцентные цвета
+    val currentAccentColor: String = "Purple", // Текущий (актуальный) акцентный цвет
     val useActionColors: Boolean = true,
-
-    val cardAlpha: Float = 0.4f
+    val cardAlpha: Float = 0.4f,
+    val useTickersInMatrix: Boolean = false
 )

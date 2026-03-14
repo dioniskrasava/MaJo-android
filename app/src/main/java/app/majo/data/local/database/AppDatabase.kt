@@ -21,7 +21,7 @@ import app.majo.data.local.dao.RecordDao
     // entities: Список всех классов-сущностей (таблиц) в базе данных.
     entities = [ActionEntity::class, RecordEntity::class],  // ← пока только 1 таблица
     // version: Версия базы данных. Должна увеличиваться при изменении схемы (например, добавлении столбца).
-    version = 3
+    version = 4
 )
 abstract class AppDatabase : RoomDatabase() {
 

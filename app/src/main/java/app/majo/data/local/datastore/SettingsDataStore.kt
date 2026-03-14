@@ -22,6 +22,7 @@ object PreferencesKeys {
     val ACCENT_COLOR = stringPreferencesKey("accent_color")
     val USE_ACTION_COLORS = booleanPreferencesKey("use_action_colors")
     val CARD_ALPHA = floatPreferencesKey("card_alpha")
+    val USE_TICKERS_IN_MATRIX = booleanPreferencesKey("use_tickers_in_matrix")
 }
 
 class SettingsDataStore(private val context: Context) {
@@ -34,7 +35,8 @@ class SettingsDataStore(private val context: Context) {
                 currentLanguageCode = preferences[PreferencesKeys.LANGUAGE_CODE] ?: "ru",
                 currentAccentColor = preferences[PreferencesKeys.ACCENT_COLOR] ?: "Purple",
                 useActionColors = preferences[PreferencesKeys.USE_ACTION_COLORS] ?: true,   // по умолчанию true
-                cardAlpha = preferences[PreferencesKeys.CARD_ALPHA] ?: 0.4f
+                cardAlpha = preferences[PreferencesKeys.CARD_ALPHA] ?: 0.4f,
+                useTickersInMatrix = preferences[PreferencesKeys.USE_TICKERS_IN_MATRIX] ?: false
             )
         }
 
@@ -73,6 +75,12 @@ class SettingsDataStore(private val context: Context) {
     suspend fun setCardAlpha(alpha: Float) {
         context.dataStore.edit { settings ->
             settings[PreferencesKeys.CARD_ALPHA] = alpha
+        }
+    }
+
+    suspend fun setUseTickersInMatrix(use: Boolean) {
+        context.dataStore.edit { settings ->
+            settings[PreferencesKeys.USE_TICKERS_IN_MATRIX] = use
         }
     }
 }
