@@ -67,7 +67,7 @@ fun ActionCard(
             Icon(
                 imageVector = getActionIcon(action.type),
                 contentDescription = action.name,
-                tint = actionColor, // Иконка тоже цветная (или можно оставить primary)
+                tint = MaterialTheme.colorScheme.primary, // Иконка тоже цветная (или можно оставить primary)
                 modifier = Modifier.size(32.dp)
             )
             Spacer(modifier = Modifier.width(16.dp))

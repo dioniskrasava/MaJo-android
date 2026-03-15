@@ -46,6 +46,8 @@ import app.majo.ui.screens.record_list.RecordListViewModel
 import app.majo.ui.screens.record_list.RecordListViewModelFactory
 import app.majo.ui.shared.SharedRecordsViewModel
 import app.majo.R
+import app.majo.ui.screens.help_topics.HelpDetailScreen
+import app.majo.ui.screens.help_topics.HelpTopicsScreen
 import app.majo.ui.screens.logs.LogsScreen
 import app.majo.ui.screens.logs.LogsViewModel
 import app.majo.ui.screens.logs.LogsViewModelFactory
@@ -222,7 +224,8 @@ fun MainScreen(
                     viewModel = settingsViewModel,
                     onLanguageChange = {
                         context.findActivity().recreate()   // перезапуск после сохранения языка
-                    }
+                    },
+                    onNavigateToHelp = { navController.navigate("help_topics") }
                 )
             }
 
@@ -325,6 +328,25 @@ fun MainScreen(
                 )
                 TickerSettingsScreen(
                     viewModel = vm,
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+
+
+            // СПРАВКИ
+
+            composable("help_topics") {
+                HelpTopicsScreen(
+                    onNavigateBack = { navController.popBackStack() },
+                    onTopicClick = { topicId ->
+                        navController.navigate("help_detail/$topicId")
+                    }
+                )
+            }
+            composable("help_detail/{topicId}") { backStackEntry ->
+                val topicId = backStackEntry.arguments?.getString("topicId") ?: ""
+                HelpDetailScreen(
+                    topicId = topicId,
                     onNavigateBack = { navController.popBackStack() }
                 )
             }

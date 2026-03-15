@@ -36,7 +36,8 @@ import app.majo.R
 fun SettingsScreen(
     onBack: () -> Unit,
     viewModel: SettingsViewModel,
-    onLanguageChange: () -> Unit
+    onLanguageChange: () -> Unit,
+    onNavigateToHelp: () -> Unit
 ) {
     val state by viewModel.state.collectAsState()
     val context = LocalContext.current
@@ -160,6 +161,14 @@ fun SettingsScreen(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
+
+            // о приложении (справка)
+            SettingsSection(title = stringResource(R.string.about_app)) {
+                SettingsButtonItem(
+                    title = stringResource(R.string.help),
+                    onClick = { onNavigateToHelp() }
+                )
+            }
         }
     }
 }

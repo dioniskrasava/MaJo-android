@@ -97,7 +97,8 @@ fun LogsItem(
     val configuration = LocalConfiguration.current
     val isLight = configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_NO
     val iconColor = if (useColors && action != null) {
-        getColorByName(action.color, isLight)
+        //getColorByName(action.color, isLight)
+        MaterialTheme.colorScheme.primary
     } else {
         MaterialTheme.colorScheme.primary
     }

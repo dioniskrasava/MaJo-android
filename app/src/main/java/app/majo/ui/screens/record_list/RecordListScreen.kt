@@ -264,7 +264,8 @@ fun RecordItem(
     val configuration = LocalConfiguration.current
     val isLight = configuration.uiMode and Configuration.UI_MODE_NIGHT_MASK == Configuration.UI_MODE_NIGHT_NO
     val iconColor = if (useColors && action != null) {
-        getColorByName(action.color, isLight)
+        //getColorByName(action.color, isLight) // берем кастомный цвет активности
+        MaterialTheme.colorScheme.primary // пока поменяем на праймари. кажется что цвет карточки это цвет карточки, а не еще цвет иконки (иначе иногда не видно)
     } else {
         MaterialTheme.colorScheme.primary
     }

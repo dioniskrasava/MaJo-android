@@ -95,4 +95,13 @@
     <string name="today_short">Сегодня</string>
     <string name="matrix_settings">Настройки матрицы</string>
     <string name="back">Назад</string>
+    <string name="about_app">О приложении</string>
+    <string name="help">Справка</string>
+    <string name="help_topic_activity">Что такое активность?</string>
+    <string name="help_topic_record">Что такое запись?</string>
+    <string name="help_topic_points">Об очках</string>
+    <string name="help_content_activity">Активность — это вид действия, которое вы отслеживаете…</string>
+    <string name="help_content_record">Запись — это фиксация выполненной активности с указанием значения…</string>
+    <string name="help_content_points">Очки рассчитываются на основе значения и коэффициента активности…</string>
+    <string name="help_content_default">Текст для данной справки не найден</string>
 </resources>
