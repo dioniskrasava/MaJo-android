@@ -25,7 +25,6 @@ object PreferencesKeys {
     val USE_ACTION_COLORS = booleanPreferencesKey("use_action_colors")
     val CARD_ALPHA = floatPreferencesKey("card_alpha")
     val USE_TICKERS_IN_MATRIX = booleanPreferencesKey("use_tickers_in_matrix")
-    val IS_MATRIX_VERTICAL = booleanPreferencesKey("is_matrix_vertical")
     val MATRIX_CELL_SIZE = intPreferencesKey("matrix_cell_size")
     val MATRIX_PERIOD_TYPE = stringPreferencesKey("matrix_period_type")
 }
@@ -42,7 +41,6 @@ class SettingsDataStore(private val context: Context) {
                 useActionColors = preferences[PreferencesKeys.USE_ACTION_COLORS] ?: true,   // по умолчанию true
                 cardAlpha = preferences[PreferencesKeys.CARD_ALPHA] ?: 0.4f,
                 useTickersInMatrix = preferences[PreferencesKeys.USE_TICKERS_IN_MATRIX] ?: false,
-                isMatrixVertical = preferences[PreferencesKeys.IS_MATRIX_VERTICAL] ?: false,
                 matrixCellSize = preferences[PreferencesKeys.MATRIX_CELL_SIZE] ?: 40,
                 matrixPeriodType = MatrixPeriodType.valueOf(
                     preferences[PreferencesKeys.MATRIX_PERIOD_TYPE] ?: MatrixPeriodType.MONTH.name
@@ -94,11 +92,6 @@ class SettingsDataStore(private val context: Context) {
         }
     }
 
-    suspend fun setMatrixVertical(isVertical: Boolean) {
-        context.dataStore.edit { settings ->
-            settings[PreferencesKeys.IS_MATRIX_VERTICAL] = isVertical
-        }
-    }
 
     suspend fun setMatrixCellSize(size: Int) {
         context.dataStore.edit { settings ->

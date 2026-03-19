@@ -38,9 +38,8 @@ fun MatrixScreen(
     onSquareClick: (Long?, Long, Long) -> Unit,
     onSettingsClick: () -> Unit,
     useTickers: Boolean,
-    isVertical: Boolean,
-    cellSize: Int,                     // размер ячейки в dp (новый параметр)
-    periodType: MatrixPeriodType        // тип периода (новый параметр)
+    cellSize: Int,
+    periodType: MatrixPeriodType
 ) {
     val viewModel: MatrixViewModel = viewModel(
         factory = MatrixViewModelFactory(actionRepository, recordRepository)
@@ -125,30 +124,20 @@ fun MatrixScreen(
                     CircularProgressIndicator()
                 }
             } else {
-                if (isVertical) {
-                    MatrixScreenVertical(
-                        state = state,
-                        useTickers = useTickers,
-                        leftColumnWidth = leftColumnWidth,
-                        dayCellSize = cellSize.dp,          // передаём размер ячейки
-                        onSquareClick = onSquareClick,
-                        modifier = Modifier.weight(1f)
-                    )
-                } else {
-                    HorizontalMatrixContent(
-                        state = state,
-                        useTickers = useTickers,
-                        leftColumnWidth = leftColumnWidth,
-                        dayCellSize = cellSize.dp,          // передаём размер ячейки
-                        dayFormatter = dayFormatter,
-                        onSquareClick = onSquareClick,
-                        modifier = Modifier.weight(1f)
-                    )
+                // Всегда горизонтальный режим
+                HorizontalMatrixContent(
+                    state = state,
+                    useTickers = useTickers,
+                    leftColumnWidth = leftColumnWidth,
+                    dayCellSize = cellSize.dp,
+                    dayFormatter = dayFormatter,
+                    onSquareClick = onSquareClick,
+                    modifier = Modifier.weight(1f)
+                )
                 }
             }
         }
     }
-}
 
 @Composable
 fun MatrixScreenVertical(
@@ -243,73 +232,70 @@ fun HorizontalMatrixContent(
     state: MatrixState,
     useTickers: Boolean,
     leftColumnWidth: Dp,
-    dayCellSize: Dp,                      // новый параметр
+    dayCellSize: Dp,
     dayFormatter: SimpleDateFormat,
     onSquareClick: (Long?, Long, Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val horizontalScrollState = rememberScrollState()
-    Box(
+    val verticalScrollState = rememberScrollState()
+
+    Column(
         modifier = modifier
+            .verticalScroll(verticalScrollState)   // вертикальная прокрутка для всех строк
+            .padding(horizontal = 8.dp)
     ) {
-        Column(
-            modifier = Modifier
-                .horizontalScroll(horizontalScrollState)
-                .padding(horizontal = 8.dp)
+        // Заголовок дней (горизонтальная прокрутка)
+        Row(
+            modifier = Modifier.horizontalScroll(horizontalScrollState)
         ) {
-            // Заголовки дней
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                verticalAlignment = Alignment.Bottom
-            ) {
-                Spacer(modifier = Modifier.width(leftColumnWidth))
-                state.days.forEach { day ->
-                    Box(
-                        modifier = Modifier
-                            .size(dayCellSize)          // используем переданный размер
-                            .padding(2.dp),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Text(
-                            text = dayFormatter.format(Date(day)),
-                            style = MaterialTheme.typography.bodySmall
-                        )
-                    }
+            Spacer(modifier = Modifier.width(leftColumnWidth))
+            state.days.forEach { day ->
+                Box(
+                    modifier = Modifier
+                        .size(dayCellSize)
+                        .padding(2.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = dayFormatter.format(Date(day)),
+                        style = MaterialTheme.typography.bodySmall
+                    )
                 }
             }
-            // Строки действий
-            state.actions.forEach { action ->
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Box(modifier = Modifier.width(leftColumnWidth).padding(end = 4.dp)) {
-                        Text(
-                            text = if (useTickers && action.ticker.isNotBlank()) action.ticker else action.name,
-                            maxLines = 1,
-                            style = MaterialTheme.typography.bodyMedium
-                        )
+        }
+
+        // Строки действий (горизонтальная прокрутка синхронизирована)
+        state.actions.forEach { action ->
+            Row(
+                modifier = Modifier.horizontalScroll(horizontalScrollState)
+            ) {
+                Box(modifier = Modifier.width(leftColumnWidth).padding(end = 4.dp)) {
+                    Text(
+                        text = if (useTickers && action.ticker.isNotBlank()) action.ticker else action.name,
+                        maxLines = 1,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+                state.days.forEach { dayStart ->
+                    val key = Pair(action.id, dayStart)
+                    val recordInfo = state.recordInfo[key]
+                    val hasRecord = recordInfo != null
+                    val recordId = recordInfo?.first
+                    val color = when {
+                        hasRecord -> Color(0xFF4CAF50)
+                        else -> Color.LightGray
                     }
-                    state.days.forEach { dayStart ->
-                        val key = Pair(action.id, dayStart)
-                        val recordInfo = state.recordInfo[key]
-                        val hasRecord = recordInfo != null
-                        val recordId = recordInfo?.first
-                        val color = when {
-                            hasRecord -> Color(0xFF4CAF50)
-                            else -> Color.LightGray
-                        }
-                        Box(
-                            modifier = Modifier
-                                .size(dayCellSize)      // используем переданный размер
-                                .padding(2.dp)
-                                .clip(RoundedCornerShape(4.dp))
-                                .background(color)
-                                .clickable {
-                                    onSquareClick(recordId, action.id, dayStart)
-                                }
-                        )
-                    }
+                    Box(
+                        modifier = Modifier
+                            .size(dayCellSize)
+                            .padding(2.dp)
+                            .clip(RoundedCornerShape(4.dp))
+                            .background(color)
+                            .clickable {
+                                onSquareClick(recordId, action.id, dayStart)
+                            }
+                    )
                 }
             }
         }

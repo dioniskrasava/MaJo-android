@@ -32,8 +32,6 @@ sealed class SettingsEvent {
 
     data class ToggleUseTickersInMatrix(val use: Boolean) : SettingsEvent()
 
-    data class ToggleMatrixVertical(val isVertical: Boolean) : SettingsEvent()
-
     data class MatrixCellSizeChanged(val size: Int) : SettingsEvent()
 
     data class MatrixPeriodTypeChanged(val type: MatrixPeriodType) : SettingsEvent()
@@ -107,11 +105,7 @@ class SettingsViewModel(
                 viewModelScope.launch { dataStore.setUseTickersInMatrix(event.use) }
             }
 
-            is SettingsEvent.ToggleMatrixVertical -> {
-                viewModelScope.launch {
-                    dataStore.setMatrixVertical(event.isVertical)
-                }
-            }
+
 
             is SettingsEvent.MatrixCellSizeChanged -> {
                 viewModelScope.launch { dataStore.setMatrixCellSize(event.size) }

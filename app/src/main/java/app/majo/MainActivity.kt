@@ -33,7 +33,6 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 import java.util.Locale
 
-// ...
 
 /**
  * Единственная Activity в приложении (Single Activity Architecture).

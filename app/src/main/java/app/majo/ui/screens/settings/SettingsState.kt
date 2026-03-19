@@ -22,7 +22,6 @@ data class SettingsState(
     val useActionColors: Boolean = true,
     val cardAlpha: Float = 0.4f,
     val useTickersInMatrix: Boolean = false,
-    val isMatrixVertical: Boolean = false,
     val matrixCellSize: Int = 40,              // размер ячейки в dp
     val matrixPeriodType: MatrixPeriodType = MatrixPeriodType.MONTH
 )

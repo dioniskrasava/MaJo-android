@@ -68,25 +68,6 @@ fun MatrixSettingsScreen(
                     }
                     HorizontalDivider()
 
-                    // НОВЫЙ переключатель вертикальной матрицы
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .clickable { settingsViewModel.onEvent(SettingsEvent.ToggleMatrixVertical(!state.isMatrixVertical)) }
-                            .padding(vertical = 12.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            text = "Вертикальная матрица",
-                            modifier = Modifier.weight(1f),
-                            style = MaterialTheme.typography.bodyLarge
-                        )
-                        Switch(
-                            checked = state.isMatrixVertical,
-                            onCheckedChange = { settingsViewModel.onEvent(SettingsEvent.ToggleMatrixVertical(it)) }
-                        )
-                    }
-                    HorizontalDivider()
 
                     TextButton(
                         onClick = onConfigureTickers,
