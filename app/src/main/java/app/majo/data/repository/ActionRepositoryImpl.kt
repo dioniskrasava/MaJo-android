@@ -7,6 +7,7 @@ import app.majo.domain.model.action.Action
 import app.majo.domain.repository.ActionRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
 /**
  * Конкретная реализация интерфейса [ActionRepository].
@@ -18,7 +19,7 @@ import kotlinx.coroutines.flow.map
  * @property dao Объект доступа к данным [ActionDao], через который
  * осуществляется фактическое взаимодействие с локальной базой данных.
  */
-class ActionRepositoryImpl(
+class ActionRepositoryImpl @Inject constructor(
     private val dao: ActionDao
 ) : ActionRepository {
 

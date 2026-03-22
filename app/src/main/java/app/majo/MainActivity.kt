@@ -15,23 +15,19 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.lifecycleScope
-//import androidx.activity.viewModels // Импорт для делегата by viewModels()
-import androidx.lifecycle.viewmodel.compose.viewModel // Добавляем импорт
-import app.majo.data.local.database.AppDatabaseInstance
-import app.majo.data.repository.ActionRepositoryImpl
+import androidx.lifecycle.viewmodel.compose.viewModel
 import app.majo.ui.MainScreen
-import app.majo.ui.screens.settings.SettingsViewModel // ViewModel для управления настройками
-import app.majo.ui.screens.settings.SettingsViewModelFactory // Добавляем импорт
-import app.majo.ui.theme.MaJoTheme // Корневой Composable для применения темы
-import app.majo.data.local.datastore.SettingsDataStore // Добавляем импорт
-
-import app.majo.data.repository.RecordRepositoryImpl // <-- Добавлен импорт
-import app.majo.domain.repository.ActionRepository // Добавлен импорт для явного указания типа
-import app.majo.domain.repository.RecordRepository // <-- Добавлен импорт для явного указания типа
+import app.majo.ui.screens.settings.SettingsViewModel
+import app.majo.ui.screens.settings.SettingsViewModelFactory
+import app.majo.ui.theme.MaJoTheme
+import app.majo.data.local.datastore.SettingsDataStore
+import app.majo.domain.repository.ActionRepository
+import app.majo.domain.repository.RecordRepository
 import app.majo.ui.shared.SharedRecordsViewModel
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.runBlocking
 import java.util.Locale
+import javax.inject.Inject
 
 
 /**
@@ -43,16 +39,17 @@ import java.util.Locale
  * 3. Создание ViewModel, привязанной к жизненному циклу Activity (SettingsViewModel).
  * 4. Установку корневого Composable-дерева ([MaJoTheme] и [MainScreen]).
  */
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
-    /**
-     * 1. Создание единственного экземпляра [SettingsViewModel].
-     *
-     * Делегат `by viewModels()` привязывает эту ViewModel к жизненному циклу [MainActivity],
-     * что позволяет ей управлять глобальным состоянием (например, темной темой)
-     * и быть доступной для всех дочерних экранов.
-     */
+    @Inject
+    lateinit var actionRepository: ActionRepository
 
+    @Inject
+    lateinit var recordRepository: RecordRepository
+
+    @Inject
+    lateinit var settingsDataStore: SettingsDataStore
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -73,44 +70,16 @@ class MainActivity : ComponentActivity() {
         setContent {
 
             if (isReady) {
-                // Ваш основной контент
-                // --- Инициализация зависимостей (Repository Layer) ---
-                val context = LocalContext.current
+                val settingsFactory = SettingsViewModelFactory(settingsDataStore, actionRepository, recordRepository)
+                val settingsViewModel: SettingsViewModel = viewModel(factory = settingsFactory)
 
-                // Получаем или создаем экземпляр базы данных Room
-                val database = remember { AppDatabaseInstance.getDatabase(context) }
+                val sharedRecordsViewModel: SharedRecordsViewModel = viewModel()
 
-                // Получаем DAO
-                val actionDao = database.actionDao()
-
-                // Получаем DAO для записей
-                val recordDao = database.recordDao()
-
-                // Создаем реализацию репозитория, используя DAO
-                val activityRepo = remember { ActionRepositoryImpl(actionDao) }
-
-                val recordRepo: RecordRepository = remember { RecordRepositoryImpl(recordDao) }
-
-                // Создаем DataStore
-                val settingsDataStore = remember { SettingsDataStore(context) }
-
-                // Создаем SettingsViewModel с помощью Factory
-                val settingsViewModel: SettingsViewModel = viewModel(
-                    factory = SettingsViewModelFactory(settingsDataStore, activityRepo, recordRepo)
-                )
-
-                val sharedRecordsViewModel: SharedRecordsViewModel = viewModel() // для передачи даты выбранного дня
-
-                // 2. Применение Темы
-                // MaJoTheme использует settingsViewModel для реактивного переключения темы.
                 MaJoTheme(settingsViewModel = settingsViewModel) {
-
-                    // 3. Корневой Экран
-                    // MainScreen получает все необходимые зависимости для дальнейшей передачи в NavHost.
                     MainScreen(
-                        actionRepository = activityRepo,
-                        recordRepository = recordRepo,
-                        settingsViewModel = settingsViewModel, // Передача общего VM в NavHost для SettingsScreen
+                        actionRepository = actionRepository,
+                        recordRepository = recordRepository,
+                        settingsViewModel = settingsViewModel,
                         sharedRecordsViewModel = sharedRecordsViewModel
                     )
                 }

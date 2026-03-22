@@ -7,8 +7,9 @@ import app.majo.domain.model.record.ActionRecord
 import app.majo.domain.repository.RecordRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import javax.inject.Inject
 
-class RecordRepositoryImpl(
+class RecordRepositoryImpl @Inject constructor(
     private val dao: RecordDao
 ) : RecordRepository {
 
