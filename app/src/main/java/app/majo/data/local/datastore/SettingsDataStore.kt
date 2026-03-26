@@ -27,6 +27,7 @@ object PreferencesKeys {
     val USE_TICKERS_IN_MATRIX = booleanPreferencesKey("use_tickers_in_matrix")
     val MATRIX_CELL_SIZE = intPreferencesKey("matrix_cell_size")
     val MATRIX_PERIOD_TYPE = stringPreferencesKey("matrix_period_type")
+    val AUTO_FILLED_TICKERS_DONE = booleanPreferencesKey("auto_filled_tickers_done")
 }
 
 class SettingsDataStore(private val context: Context) {
@@ -80,12 +81,14 @@ class SettingsDataStore(private val context: Context) {
         }
     }
 
+    // установить карт прозрачность
     suspend fun setCardAlpha(alpha: Float) {
         context.dataStore.edit { settings ->
             settings[PreferencesKeys.CARD_ALPHA] = alpha
         }
     }
 
+    // установить использование тикеров в матрице
     suspend fun setUseTickersInMatrix(use: Boolean) {
         context.dataStore.edit { settings ->
             settings[PreferencesKeys.USE_TICKERS_IN_MATRIX] = use
@@ -102,6 +105,18 @@ class SettingsDataStore(private val context: Context) {
     suspend fun setMatrixPeriodType(type: MatrixPeriodType) {
         context.dataStore.edit { settings ->
             settings[PreferencesKeys.MATRIX_PERIOD_TYPE] = type.name
+        }
+    }
+
+    // получить автоматически заполненные тикеры (done = сделано)
+    suspend fun getAutoFilledTickersDone(): Boolean = context.dataStore.data.map { preferences ->
+        preferences[PreferencesKeys.AUTO_FILLED_TICKERS_DONE] ?: false
+    }.first()
+
+    // установить автоматически заполненные тикеры (done = сделано)
+    suspend fun setAutoFilledTickersDone(done: Boolean) {
+        context.dataStore.edit { settings ->
+            settings[PreferencesKeys.AUTO_FILLED_TICKERS_DONE] = done
         }
     }
 }

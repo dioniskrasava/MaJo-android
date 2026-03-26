@@ -1,8 +1,8 @@
 package app.majo.ui.screens.settings
 
 import androidx.lifecycle.ViewModel
-import androidx.lifecycle.viewModelScope // Добавляем импорт
-import app.majo.data.local.datastore.SettingsDataStore // Добавляем импорт
+import androidx.lifecycle.viewModelScope
+import app.majo.data.local.datastore.SettingsDataStore
 import app.majo.domain.repository.ActionRepository
 import app.majo.domain.repository.RecordRepository
 import app.majo.domain.service.ExportService
@@ -10,7 +10,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.launch // Добавляем импорт
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 /**
@@ -102,7 +102,20 @@ class SettingsViewModel(
                 }
             }
             is SettingsEvent.ToggleUseTickersInMatrix -> {
-                viewModelScope.launch { dataStore.setUseTickersInMatrix(event.use) }
+                // Если включаем опцию и авто-заполнение ещё не выполнялось
+                if (event.use) {
+                    viewModelScope.launch {
+                        val alreadyDone = dataStore.getAutoFilledTickersDone()
+                        if (!alreadyDone) {
+                            autoFillTickers()
+                            dataStore.setAutoFilledTickersDone(true)
+                        }
+                    }
+                }
+                // Сохраняем настройку
+                viewModelScope.launch {
+                    dataStore.setUseTickersInMatrix(event.use)
+                }
             }
 
 
@@ -113,6 +126,8 @@ class SettingsViewModel(
             is SettingsEvent.MatrixPeriodTypeChanged -> {
                 viewModelScope.launch { dataStore.setMatrixPeriodType(event.type) }
             }
+
+
 
         }
     }
@@ -146,6 +161,20 @@ class SettingsViewModel(
             }
             withContext(Dispatchers.Main) {
                 onResult(json)
+            }
+        }
+    }
+
+
+    private suspend fun autoFillTickers() {
+        val actions = actionRepository.getAllActionsSync()
+        actions.forEach { action ->
+            if (action.ticker.isBlank()) {
+                val ticker = action.name.take(3).uppercase()
+                if (ticker.isNotBlank()) {
+                    val updated = action.copy(ticker = ticker)
+                    actionRepository.update(updated)
+                }
             }
         }
     }
