@@ -186,7 +186,7 @@ fun AddRecordScreen(
                 onClick = {
                     viewModel.saveRecord(onSuccess = onNavigateBack)
                 },
-                enabled = selectedAction != null && calculatedPoints > 0.0,
+                enabled = selectedAction != null && recordValue.isNotBlank(),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text(if (isEditMode) stringResource(R.string.update_record) else stringResource(R.string.save_record))

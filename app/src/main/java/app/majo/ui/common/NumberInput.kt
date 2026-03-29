@@ -22,7 +22,12 @@ fun NumberInput(
         onValueChange = { newValue ->
             // Фильтрация ввода: разрешены только цифры и одна точка/запятая
             // (регулярное выражение уже есть в ViewModel, но здесь можно сделать более жесткую проверку UI)
-            val filteredValue = newValue.filter { it.isDigit() || it == '.' || it == ',' }
+            val filteredValue = when {
+                newValue.isEmpty() -> newValue
+                newValue == "-" -> newValue
+                newValue.matches(Regex("^-?\\d*\\.?\\d*$")) -> newValue
+                else -> value
+            }
             onValueChange(filteredValue)
         },
         label = { Text(label) },

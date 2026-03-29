@@ -122,7 +122,7 @@ class AddRecordViewModel(
 
     fun updateRecordValue(value: String) {
         // Простая валидация: только числа
-        if (value.isEmpty() || value.matches(Regex("^\\d*\\.?\\d*\$"))) {
+        if (value.isEmpty() || value.matches(Regex("^-?\\d*\\.?\\d*\$")))  {
             _recordValue.value = value
             calculatePoints()
         }
@@ -170,8 +170,7 @@ class AddRecordViewModel(
         val action = _selectedAction.value ?: return // Нечего сохранять без выбранной активности
         val value = _recordValue.value.toDoubleOrNull() ?: return // Нечего сохранять без значения
 
-        // Проверяем, что очков больше нуля
-        if (_calculatedPoints.value <= 0.0) return
+
 
         if (_isEditMode.value) {
             // Редактирование

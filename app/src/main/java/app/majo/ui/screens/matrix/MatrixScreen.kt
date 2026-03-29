@@ -138,7 +138,7 @@ fun MatrixScreen(
             }
         }
     }
-
+/*
 @Composable
 fun MatrixScreenVertical(
     state: MatrixState,
@@ -226,6 +226,8 @@ fun MatrixScreenVertical(
         }
     }
 }
+*/
+
 
 @Composable
 fun HorizontalMatrixContent(
@@ -282,10 +284,14 @@ fun HorizontalMatrixContent(
                     val recordInfo = state.recordInfo[key]
                     val hasRecord = recordInfo != null
                     val recordId = recordInfo?.first
+                    val points = recordInfo?.second ?: 0.0
+
                     val color = when {
-                        hasRecord -> Color(0xFF4CAF50)
-                        else -> Color.LightGray
+                        !hasRecord -> Color.LightGray
+                        points < 0 -> Color(0xFFFF5252)   // красный для отрицательных
+                        else -> Color(0xFF4CAF50)         // зелёный для положительных и нуля
                     }
+
                     Box(
                         modifier = Modifier
                             .size(dayCellSize)
