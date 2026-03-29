@@ -104,4 +104,14 @@
     <string name="help_content_record">Запись — это фиксация выполненной активности с указанием значения…</string>
     <string name="help_content_points">Очки рассчитываются на основе значения и коэффициента активности…</string>
     <string name="help_content_default">Текст для данной справки не найден</string>
+
+    <!-- СТАТИСТИКА -->
+    <string name="statistics_title">Статистика</string>
+    <string name="total_points_all_time">Всего очков (за всё время)</string>
+    <string name="total_points_this_month">За текущий месяц</string>
+    <string name="total_points_this_week">За последние 7 дней</string>
+    <string name="total_records">Всего записей</string>
+    <string name="top_actions">Самые активные действия</string>
+    <string name="points_by_category">Очки по категориям</string>
+
 </resources>

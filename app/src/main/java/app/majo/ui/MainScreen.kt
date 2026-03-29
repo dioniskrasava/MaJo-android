@@ -58,6 +58,10 @@ import app.majo.ui.screens.matrix_setting.MatrixSettingsScreen
 import app.majo.ui.screens.ticker_setting.TickerSettingsScreen
 import app.majo.ui.screens.ticker_setting.TickerSettingsViewModel
 import app.majo.ui.screens.ticker_setting.TickerSettingsViewModelFactory
+import app.majo.ui.screens.statistics.StatisticsScreen
+import app.majo.ui.screens.statistics.StatisticsViewModel
+import androidx.hilt.navigation.compose.hiltViewModel
+
 
 /**
  * Главный экран-оболочка (Application Shell) приложения.
@@ -82,7 +86,7 @@ fun MainScreen(
     val navController = rememberNavController()
 
     // Состояние для отслеживания выбранной вкладки (Records или Activities или Настройки)
-    val navItems = listOf(Screen.Records, Screen.Activities, Screen.Settings)
+    val navItems = listOf(Screen.Records, Screen.Activities, Screen.Statistics, Screen.Settings)
 
     // НОВЫЙ КОД: Сохраняем только СТРОКУ маршрута, которая поддерживается rememberSaveable.
     var selectedRoute by rememberSaveable { mutableStateOf(Screen.Records.route) } 
@@ -349,6 +353,19 @@ fun MainScreen(
                     onNavigateBack = { navController.popBackStack() }
                 )
             }
+
+            // СТАТИСТИКА
+
+            composable(Screen.Statistics.route) {
+                val vm: StatisticsViewModel = hiltViewModel() // Hilt сам предоставит экземпляр
+                StatisticsScreen(
+                    viewModel = vm,
+                    settingsViewModel = settingsViewModel,
+                    onNavigateBack = { navController.popBackStack() }
+                )
+            }
+
+
 
 
         }

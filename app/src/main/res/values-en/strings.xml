@@ -90,4 +90,13 @@
     <string name="help_content_points">Очки рассчитываются на основе значения и коэффициента активности…</string>
     <string name="help_content_default">Текст для данной справки не найден</string>
 
+    <!-- СТАТИСТИКА -->
+    <string name="statistics_title">Statistics</string>
+    <string name="total_points_all_time">Total points (all time)</string>
+    <string name="total_points_this_month">This month</string>
+    <string name="total_points_this_week">Last 7 days</string>
+    <string name="total_records">Total records</string>
+    <string name="top_actions">Top activities</string>
+    <string name="points_by_category">Points by category</string>
+
 </resources>
