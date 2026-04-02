@@ -184,7 +184,7 @@ fun DateControlBar(
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
         shape = RoundedCornerShape(8.dp),
-        color = MaterialTheme.colorScheme.secondary                     // фон
+        color = MaterialTheme.colorScheme.secondary
     ) {
         Row(
             modifier = Modifier
