@@ -78,20 +78,20 @@ fun StatisticsScreen(
                         title = stringResource(R.string.total_points_this_month),
                         value = "%.1f".format(state.totalPointsThisMonth),
                         modifier = Modifier.weight(1f),
-                        color = MaterialTheme.colorScheme.secondary
+                        color = MaterialTheme.colorScheme.primary
                     )
                     StatsCard(
                         title = stringResource(R.string.total_points_this_week),
                         value = "%.1f".format(state.totalPointsThisWeek),
                         modifier = Modifier.weight(1f),
-                        color = MaterialTheme.colorScheme.tertiary
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
                 // Карточка общего количества записей
                 StatsCard(
                     title = stringResource(R.string.total_records),
                     value = state.totalRecords.toString(),
-                    color = MaterialTheme.colorScheme.primaryContainer
+                    color = MaterialTheme.colorScheme.primary
                 )
                 // Топ действий
                 if (state.topActions.isNotEmpty()) {
@@ -181,7 +181,7 @@ fun StatsCard(
         colors = CardDefaults.cardColors(
             containerColor = color.copy(alpha = 0.2f)
         ),
-        elevation = CardDefaults.cardElevation(2.dp)
+        //elevation = CardDefaults.cardElevation(2.dp)
     ) {
         Column(
             modifier = Modifier
