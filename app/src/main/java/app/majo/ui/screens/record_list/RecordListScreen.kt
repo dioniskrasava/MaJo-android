@@ -33,12 +33,13 @@ import app.majo.ui.util.toLocalizedString
 import androidx.compose.material3.MaterialTheme
 import android.content.res.Configuration
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.hilt.navigation.compose.hiltViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RecordListScreen(
-    viewModel: RecordListViewModel,
+    viewModel: RecordListViewModel = hiltViewModel(),
     sharedViewModel: SharedRecordsViewModel,
     settingsViewModel: SettingsViewModel,
     onRecordClick: (Long) -> Unit,

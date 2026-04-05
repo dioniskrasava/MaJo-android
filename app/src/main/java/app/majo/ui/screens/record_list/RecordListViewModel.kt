@@ -9,6 +9,7 @@ import app.majo.domain.model.record.ActionRecord
 import app.majo.domain.repository.ActionRepository
 import app.majo.domain.repository.RecordRepository
 import app.majo.ui.util.atStartOfDay
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
@@ -17,9 +18,10 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
-
-class RecordListViewModel(
+@HiltViewModel
+class RecordListViewModel @Inject constructor(
     private val actionRepository: ActionRepository,
     private val recordRepository: RecordRepository
 ) : ViewModel() {

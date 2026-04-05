@@ -44,7 +44,6 @@ import app.majo.ui.screens.add_record.AddRecordScreen
 import app.majo.ui.screens.record_list.RecordListScreen
 import app.majo.ui.util.Screen
 import app.majo.ui.screens.record_list.RecordListViewModel
-import app.majo.ui.screens.record_list.RecordListViewModelFactory
 import app.majo.ui.shared.SharedRecordsViewModel
 import app.majo.R
 import app.majo.ui.screens.help_topics.HelpDetailScreen
@@ -178,9 +177,7 @@ fun MainScreen(
             
             // МАРШРУТ 1: Список ЗАПИСЕЙ (новый главный экран)
             composable(Screen.Records.route) {
-                val vm: RecordListViewModel = viewModel(
-                    factory = RecordListViewModelFactory(actionRepository, recordRepository)
-                )
+                val vm: RecordListViewModel = hiltViewModel()
                 RecordListScreen(
                     viewModel = vm,
                     sharedViewModel = sharedRecordsViewModel,
