@@ -13,6 +13,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
@@ -61,6 +62,8 @@ import app.majo.ui.screens.ticker_setting.TickerSettingsViewModelFactory
 import app.majo.ui.screens.statistics.StatisticsScreen
 import app.majo.ui.screens.statistics.StatisticsViewModel
 import androidx.hilt.navigation.compose.hiltViewModel
+import app.majo.domain.model.record.ActionRecord
+import kotlinx.coroutines.launch
 
 
 /**
@@ -92,6 +95,27 @@ fun MainScreen(
     var selectedRoute by rememberSaveable { mutableStateOf(Screen.Records.route) } 
 
     val currentDayStart by sharedRecordsViewModel.currentDayStartMs.collectAsState()
+
+
+    // Для бинарного ввода записи
+    val scope = rememberCoroutineScope()
+
+    val onAddBinaryRecord: (Long, Double, Long) -> Unit = { actionId, value, dayStart ->
+        scope.launch {
+            val action = actionRepository.getActionById(actionId)
+            if (action != null) {
+                val totalPoints = value * action.pointsPerUnit
+                val record = ActionRecord(
+                    id = 0,
+                    activityId = actionId,
+                    value = value,
+                    timestamp = dayStart,
+                    totalPoints = totalPoints
+                )
+                recordRepository.insert(record)
+            }
+        }
+    }
 
 
     Scaffold(
@@ -312,7 +336,8 @@ fun MainScreen(
                     onSettingsClick = { navController.navigate("matrixSettings") },
                     useTickers = settingsState.useTickersInMatrix,
                     cellSize = settingsState.matrixCellSize,
-                    periodType = settingsState.matrixPeriodType
+                    periodType = settingsState.matrixPeriodType,
+                    onAddBinaryRecord = onAddBinaryRecord
                 )
             }
 

@@ -39,6 +39,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -52,6 +53,7 @@ import java.util.Calendar
 import java.util.Date
 import java.util.Locale
 import app.majo.R
+import app.majo.domain.model.action.ActionType
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -116,13 +118,53 @@ fun AddRecordScreen(
 
             Spacer(modifier = Modifier.height(16.dp))
 
-            // 2. Поле ввода Значения
-            NumberInput( // NumberInput должен существовать или быть реализован
-                value = recordValue,
-                onValueChange = viewModel::updateRecordValue,
-                label = stringResource(R.string.value_hint, selectedAction?.unit?.name?.lowercase() ?: ""),
-                keyboardType = KeyboardType.Number
-            )
+            // 2. Поле ввода Значения или бинарный ввод
+            if (selectedAction?.type == ActionType.BINARY && !viewModel.showNumberInput.collectAsState().value) {
+                // Бинарный выбор
+                Column(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ) {
+                    Text(
+                        text = "Выберите значение",
+                        style = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        Button(
+                            onClick = { viewModel.setBinaryValue(1.0) },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text("Да", color = Color.White)
+                        }
+                        Button(
+                            onClick = { viewModel.setBinaryValue(-1.0) },
+                            colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF44336)),
+                            modifier = Modifier.weight(1f)
+                        ) {
+                            Text("Нет", color = Color.White)
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+                    TextButton(
+                        onClick = { viewModel.enableNumberInput() }
+                    ) {
+                        Text("Стандартный ввод")
+                    }
+                }
+            } else {
+                // Обычный ввод числа
+                NumberInput(
+                    value = recordValue,
+                    onValueChange = viewModel::updateRecordValue,
+                    label = stringResource(R.string.value_hint, selectedAction?.unit?.name?.lowercase() ?: ""),
+                    keyboardType = KeyboardType.Number
+                )
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
 

@@ -3,6 +3,7 @@ package app.majo.ui.screens.add_record
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import app.majo.domain.model.action.Action
+import app.majo.domain.model.action.ActionType
 import app.majo.domain.model.record.ActionRecord
 import app.majo.domain.repository.ActionRepository
 import app.majo.domain.repository.RecordRepository
@@ -44,13 +45,18 @@ class AddRecordViewModel(
     private val _editId = MutableStateFlow<Long?>(null)
     val editId: StateFlow<Long?> = _editId.asStateFlow()
 
+    // Добавление бинарной активности (Да/Нет)
+    private val _showNumberInput = MutableStateFlow(false)
+    val showNumberInput: StateFlow<Boolean> = _showNumberInput.asStateFlow()
+
     init {
         viewModelScope.launch {
             actionRepository.getActions().collect { list ->
                 _activities.value = list
-                // Если режим редактирования, не сбрасываем выбранную активность
+                // Выбираем первую активность только если нет выбранной и не в режиме редактирования
                 if (!_isEditMode.value && _selectedAction.value == null && list.isNotEmpty()) {
                     _selectedAction.value = list.first()
+                    _showNumberInput.value = (list.first().type != ActionType.BINARY)
                     calculatePoints()
                 }
             }
@@ -95,28 +101,12 @@ class AddRecordViewModel(
     }
 
 
-    init {
-        // Запускаем загрузку списка активностей
-        viewModelScope.launch {
-            actionRepository.getActions().collect { list ->
-                _activities.value = list
-                // Если активности появились, выбираем первую по умолчанию
-                if (_selectedAction.value == null && list.isNotEmpty()) {
-                    _selectedAction.value = list.first()
-                    calculatePoints()
-                }
-
-                // Если режим редактирования, не сбрасываем выбранную активность
-                if (!_isEditMode.value && _selectedAction.value == null && list.isNotEmpty()) {
-                    _selectedAction.value = list.first()
-                    calculatePoints()
-                }
-            }
-        }
-    }
-
     fun selectAction(action: Action) {
         _selectedAction.value = action
+        _showNumberInput.value = (action.type != ActionType.BINARY)
+        if (action.type == ActionType.BINARY) {
+            _recordValue.value = ""   // очищаем значение
+        }
         calculatePoints()
     }
 
@@ -147,20 +137,26 @@ class AddRecordViewModel(
             val record = recordRepository.getRecordById(recordId) ?: return@launch
             _isEditMode.value = true
             _editId.value = recordId
-
-            // Устанавливаем timestamp
             _timestamp.value = record.timestamp
-
-            // Ищем активность по id
             val action = activities.value.find { it.id == record.activityId }
             if (action != null) {
                 _selectedAction.value = action
+                if (action.type == ActionType.BINARY) {
+                    val value = record.value
+                    if (value == 1.0 || value == -1.0) {
+                        _showNumberInput.value = false
+                        _recordValue.value = value.toString()
+                    } else {
+                        _showNumberInput.value = true
+                        _recordValue.value = value.toString()
+                    }
+                } else {
+                    _showNumberInput.value = true
+                    _recordValue.value = record.value.toString()
+                }
+            } else {
+                _recordValue.value = record.value.toString()
             }
-
-            // Устанавливаем значение
-            _recordValue.value = record.value.toString()
-
-            // Пересчёт очков (произойдёт автоматически при изменении value)
             calculatePoints()
         }
     }
@@ -220,6 +216,23 @@ class AddRecordViewModel(
             action?.let { selectAction(it) }
         }
     }
+
+
+    fun setBinaryValue(value: Double) {
+        _recordValue.value = value.toString()
+        calculatePoints()
+    }
+
+    // Добавим метод для переключения в режим ручного ввода
+    fun enableNumberInput() {
+        if (selectedAction.value?.type == ActionType.BINARY) {
+            _showNumberInput.value = true
+            _recordValue.value = "" // очищаем, чтобы пользователь ввёл новое значение
+            calculatePoints()
+        }
+    }
+
+
 
 
 

@@ -20,8 +20,11 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.majo.R
+import app.majo.domain.model.action.Action
+import app.majo.domain.model.action.ActionType
 import app.majo.domain.repository.ActionRepository
 import app.majo.domain.repository.RecordRepository
 import app.majo.ui.common.SimpleTopAppBar
@@ -39,7 +42,8 @@ fun MatrixScreen(
     onSettingsClick: () -> Unit,
     useTickers: Boolean,
     cellSize: Int,
-    periodType: MatrixPeriodType
+    periodType: MatrixPeriodType,
+    onAddBinaryRecord: (Long, Double, Long) -> Unit
 ) {
     val viewModel: MatrixViewModel = viewModel(
         factory = MatrixViewModelFactory(actionRepository, recordRepository)
@@ -67,6 +71,11 @@ fun MatrixScreen(
         max
     }
     val leftColumnWidth = with(density) { maxTextWidth.toDp() + 16.dp }
+
+
+    var showBinaryDialog by remember { mutableStateOf(false) }
+    var pendingBinaryActionId by remember { mutableStateOf<Long?>(null) }
+    var pendingBinaryDayStart by remember { mutableStateOf<Long?>(null) }
 
     Scaffold(
         topBar = {
@@ -132,101 +141,41 @@ fun MatrixScreen(
                     dayCellSize = cellSize.dp,
                     dayFormatter = dayFormatter,
                     onSquareClick = onSquareClick,
-                    modifier = Modifier.weight(1f)
-                )
-                }
-            }
-        }
-    }
-/*
-@Composable
-fun MatrixScreenVertical(
-    state: MatrixState,
-    useTickers: Boolean,
-    leftColumnWidth: Dp,
-    dayCellSize: Dp,                     // новый параметр
-    onSquareClick: (Long?, Long, Long) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    val days = state.days
-    val actions = state.actions
-    val recordInfo = state.recordInfo
-    val dayNumberFormatter = remember { SimpleDateFormat("d", Locale.getDefault()) }
-
-    Column(
-        modifier = modifier
-            .fillMaxWidth()
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 8.dp)
-    ) {
-        // Строка заголовков действий (названия сверху)
-        Row(
-            modifier = Modifier.horizontalScroll(rememberScrollState())
-        ) {
-            // Пустая ячейка над колонкой дат
-            Spacer(modifier = Modifier.width(dayCellSize))
-            actions.forEach { action ->
-                Box(
-                    modifier = Modifier
-                        .width(leftColumnWidth)
-                        .padding(horizontal = 4.dp),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    Text(
-                        text = if (useTickers && action.ticker.isNotBlank()) action.ticker else action.name,
-                        maxLines = 1,
-                        style = MaterialTheme.typography.bodyMedium
-                    )
-                }
-            }
-        }
-
-        // Строки для каждого дня
-        days.forEach { dayStart ->
-            Row(
-                modifier = Modifier.horizontalScroll(rememberScrollState())
-            ) {
-                // Ячейка с датой
-                Box(
-                    modifier = Modifier
-                        .size(dayCellSize)
-                        .padding(2.dp)
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(Color.Transparent),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = dayNumberFormatter.format(Date(dayStart)),
-                        style = MaterialTheme.typography.bodySmall
-                    )
-                }
-
-                // Квадраты действий
-                actions.forEach { action ->
-                    val key = Pair(action.id, dayStart)
-                    val recordInfoPair = recordInfo[key]
-                    val hasRecord = recordInfoPair != null
-                    val recordId = recordInfoPair?.first
-                    val color = when {
-                        hasRecord -> Color(0xFF4CAF50)
-                        else -> Color.LightGray
+                    modifier = Modifier.weight(1f),
+                    onBinaryAction = { actionId, dayStart ->
+                        pendingBinaryActionId = actionId
+                        pendingBinaryDayStart = dayStart
+                        showBinaryDialog = true
                     }
-                    Box(
-                        modifier = Modifier
-                            .size(dayCellSize)
-                            .padding(2.dp)
-                            .clip(RoundedCornerShape(4.dp))
-                            .background(color)
-                            .clickable {
-                                onSquareClick(recordId, action.id, dayStart)
-                            }
-                    )
-                }
+
+                )
             }
+
+
         }
+
+        // Диалог бинарного ввода
+        if (showBinaryDialog && pendingBinaryActionId != null && pendingBinaryDayStart != null) {
+            BinaryRecordDialog(
+                action = state.actions.find { it.id == pendingBinaryActionId }!!,
+                dayStart = pendingBinaryDayStart!!,
+                onDismiss = { showBinaryDialog = false },
+                onConfirm = { value ->
+                    // Создаём запись через переданный колбэк
+                    onAddBinaryRecord(pendingBinaryActionId!!, value, pendingBinaryDayStart!!)
+                    showBinaryDialog = false
+                },
+                onStandardInput = {
+                    showBinaryDialog = false
+                    // Переходим на экран добавления записи с выбранной датой и активностью
+                    onSquareClick(null, pendingBinaryActionId!!, pendingBinaryDayStart!!)
+                }
+            )
+        }
+
     }
+
 }
-*/
 
 
 @Composable
@@ -237,17 +186,18 @@ fun HorizontalMatrixContent(
     dayCellSize: Dp,
     dayFormatter: SimpleDateFormat,
     onSquareClick: (Long?, Long, Long) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onBinaryAction: (Long, Long) -> Unit,
 ) {
     val horizontalScrollState = rememberScrollState()
     val verticalScrollState = rememberScrollState()
 
     Column(
         modifier = modifier
-            .verticalScroll(verticalScrollState)   // вертикальная прокрутка для всех строк
+            .verticalScroll(verticalScrollState)
             .padding(horizontal = 8.dp)
     ) {
-        // Заголовок дней (горизонтальная прокрутка)
+        // Заголовок дней
         Row(
             modifier = Modifier.horizontalScroll(horizontalScrollState)
         ) {
@@ -267,7 +217,7 @@ fun HorizontalMatrixContent(
             }
         }
 
-        // Строки действий (горизонтальная прокрутка синхронизирована)
+        // Строки действий
         state.actions.forEach { action ->
             Row(
                 modifier = Modifier.horizontalScroll(horizontalScrollState)
@@ -282,14 +232,13 @@ fun HorizontalMatrixContent(
                 state.days.forEach { dayStart ->
                     val key = Pair(action.id, dayStart)
                     val recordInfo = state.recordInfo[key]
-                    val hasRecord = recordInfo != null
                     val recordId = recordInfo?.first
                     val points = recordInfo?.second ?: 0.0
 
                     val color = when {
-                        !hasRecord -> Color.LightGray
-                        points < 0 -> Color(0xFFFF5252)   // красный для отрицательных
-                        else -> Color(0xFF4CAF50)         // зелёный для положительных и нуля
+                        recordId == null -> Color.LightGray
+                        points < 0 -> Color(0xFFFF5252)
+                        else -> Color(0xFF4CAF50)
                     }
 
                     Box(
@@ -299,11 +248,93 @@ fun HorizontalMatrixContent(
                             .clip(RoundedCornerShape(4.dp))
                             .background(color)
                             .clickable {
-                                onSquareClick(recordId, action.id, dayStart)
+                                if (action.type == ActionType.BINARY && recordId == null) {
+                                    onBinaryAction(action.id, dayStart)
+                                } else {
+                                    onSquareClick(recordId, action.id, dayStart)
+                                }
                             }
                     )
                 }
             }
         }
     }
+}
+
+// Бинарная запись (диалог)
+@Composable
+fun BinaryRecordDialog(
+    action: Action,
+    dayStart: Long,
+    onDismiss: () -> Unit,
+    onConfirm: (Double) -> Unit,
+    onStandardInput: () -> Unit
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Card(
+            shape = RoundedCornerShape(16.dp),
+            colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(16.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                // Заголовок
+                Text(
+                    text = action.name,
+                    style = MaterialTheme.typography.titleLarge
+                )
+                // Текст
+                Text(
+                    text = "Выберите значение для ${formatDate(dayStart)}",
+                    style = MaterialTheme.typography.bodyMedium
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                // Первая строка: Да / Нет
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Button(
+                        onClick = { onConfirm(1.0) },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4CAF50)),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Да", color = Color.White)
+                    }
+                    Button(
+                        onClick = { onConfirm(-1.0) },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFFF44336)),
+                        modifier = Modifier.weight(1f)
+                    ) {
+                        Text("Нет", color = Color.White)
+                    }
+                }
+                // Вторая строка: Отмена (серая кнопка)
+                Button(
+                    onClick = onDismiss,
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Отмена")
+                }
+                // Третья строка: Стандартный ввод
+                TextButton(
+                    onClick = onStandardInput,
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text("Стандартный ввод")
+                }
+            }
+        }
+    }
+}
+
+private fun formatDate(timestamp: Long): String {
+    val formatter = SimpleDateFormat("dd.MM.yyyy", Locale.getDefault())
+    return formatter.format(Date(timestamp))
 }
