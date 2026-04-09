@@ -98,5 +98,6 @@
     <string name="total_records">Total records</string>
     <string name="top_actions">Top activities</string>
     <string name="points_by_category">Points by category</string>
+    <string name="loading">Loading...</string>
 
 </resources>

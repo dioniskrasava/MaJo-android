@@ -14,6 +14,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.lifecycle.lifecycleScope
 import androidx.lifecycle.viewmodel.compose.viewModel
 import app.majo.ui.MainScreen
@@ -85,7 +86,7 @@ class MainActivity : ComponentActivity() {
                 }
             } else {
                 // Показываем загрузку
-                Text("Download...")
+                Text(stringResource(R.string.loading))
             }
 
 

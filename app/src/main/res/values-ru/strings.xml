@@ -113,5 +113,6 @@
     <string name="total_records">Всего записей</string>
     <string name="top_actions">Самые активные действия</string>
     <string name="points_by_category">Очки по категориям</string>
+    <string name="loading">Загрузка...</string>
 
 </resources>
