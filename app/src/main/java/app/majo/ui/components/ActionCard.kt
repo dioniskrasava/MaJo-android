@@ -20,6 +20,9 @@ import app.majo.ui.util.toLocalizedString
 import androidx.compose.material3.MaterialTheme
 import android.content.res.Configuration
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.tooling.preview.Preview
+import app.majo.ui.theme.PurpleDark
+import app.majo.ui.theme.PurpleLight
 
 /**
  * Отображает карточку одной активности в списке.
@@ -33,6 +36,7 @@ import androidx.compose.ui.platform.LocalConfiguration
  * @param action Данные активности из доменной модели.
  * @param onClick Лямбда-функция, вызываемая при нажатии на карточку (например, для перехода на экран деталей).
  */
+
 @Composable
 fun ActionCard(
     action: Action,
@@ -53,15 +57,14 @@ fun ActionCard(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 12.dp, vertical = 6.dp)
+            .padding(horizontal = 12.dp, vertical = 3.dp)
             .clickable(onClick = onClick),
         colors = CardDefaults.cardColors(
             containerColor = backgroundColor
         ),
-        //elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Row(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(6.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             Icon(
@@ -70,19 +73,23 @@ fun ActionCard(
                 tint = MaterialTheme.colorScheme.primary, // Иконка тоже цветная (или можно оставить primary)
                 modifier = Modifier.size(32.dp)
             )
-            Spacer(modifier = Modifier.width(16.dp))
+            Spacer(modifier = Modifier.width(6.dp))
             Column(modifier = Modifier.weight(1f)) {
-                Text(
-                    text = action.name,
-                    style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold)
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "${action.type.toLocalizedString()} • ${action.unit.toLocalizedString()}",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                )
-                Spacer(modifier = Modifier.height(4.dp))
+                Row{
+                    Text(
+                        text = action.name,
+                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.Bold),
+                        modifier = Modifier.alignByBaseline()
+                    )
+                    Spacer(modifier = Modifier.width(7.dp))
+                    Text(
+                        text = "${action.type.toLocalizedString()} • ${action.unit.toLocalizedString()}",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        modifier = Modifier.alignByBaseline()
+                    )
+                }
+                Spacer(modifier = Modifier.height(1.dp))
                 Text(
                     text = stringResource(R.string.points_per_unit, action.pointsPerUnit.toString()),
                     style = MaterialTheme.typography.bodySmall
@@ -156,4 +163,47 @@ fun getActionIcon(type: ActionType) = when (type) {
 
     // Бинарная активность (сделано/не сделано) — галочка
     ActionType.BINARY   -> Icons.Filled.Check
+}
+
+
+// ТЕСТИРУЕМ ВИЗУАЛ КАРТОЧКИ ЧЕРЕЗ ПРЕВЬЮ
+
+// ===== Превью =====
+
+private fun previewAction(
+    name: String = "Пробежка",
+    type: ActionType = ActionType.DISTANCE,
+    unit: UnitType = UnitType.KM,
+    pointsPerUnit: Double = 2.5,
+    category: ActionCategory = ActionCategory.FITNESS,
+    color: String = "Purple"
+) = Action(
+    id = 1L,
+    name = name,
+    type = type,
+    unit = unit,
+    pointsPerUnit = pointsPerUnit,
+    category = category,
+    isActive = true,
+    createdAt = 0L,
+    color = color,
+    ticker = name.take(3).uppercase()
+)
+
+@Composable
+private fun PreviewTheme(
+    content: @Composable () -> Unit
+) {
+    MaterialTheme(
+        colorScheme = PurpleLight,
+        content = content
+    )
+}
+
+@Preview(name = "Light", showBackground = true)
+@Composable
+fun ActionCardPreviewLight() {
+    PreviewTheme() {
+        ActionCard(previewAction(), useColors = true, cardAlpha = 0.4f, onClick = {})
+    }
 }
