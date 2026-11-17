@@ -45,6 +45,11 @@ fun HelpDetailScreen(
             R.string.help_content_points,
             null//R.drawable.help_points
         )
+        "about_app" -> Triple(
+            R.string.help_topic_app,
+            R.string.help_content_app,
+            null//R.drawable.help_points
+        )
         else -> Triple(R.string.help, R.string.help_content_default, null)
     }
 

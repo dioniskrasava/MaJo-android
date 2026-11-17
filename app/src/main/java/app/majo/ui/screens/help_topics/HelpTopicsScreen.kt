@@ -28,7 +28,8 @@ fun HelpTopicsScreen(
     val topics = listOf(
         "what_is_activity" to R.string.help_topic_activity,
         "what_is_record" to R.string.help_topic_record,
-        "about_points" to R.string.help_topic_points
+        "about_points" to R.string.help_topic_points,
+        "about_app" to R.string.help_topic_app
     )
 
     Scaffold(

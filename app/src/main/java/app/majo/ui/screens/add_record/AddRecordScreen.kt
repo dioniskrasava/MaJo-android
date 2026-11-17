@@ -1,5 +1,3 @@
-// Файл: /home/ivan/AndroidStudioProjects/MaJo-android/app/src/main/java/app/majo/ui/screens/addrecord/AddRecordScreen.kt
-
 package app.majo.ui.screens.add_record
 
 import android.app.TimePickerDialog
